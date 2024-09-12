@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:15 2024
+        MODULE INIT_GEOM_1__genmod
+          INTERFACE 
+            SUBROUTINE INIT_GEOM_1(G)
+              INTEGER(KIND=4) :: G
+            END SUBROUTINE INIT_GEOM_1
+          END INTERFACE 
+        END MODULE INIT_GEOM_1__genmod

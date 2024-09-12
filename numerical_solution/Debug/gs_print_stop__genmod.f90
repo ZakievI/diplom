@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:09 2024
+        MODULE GS_PRINT_STOP__genmod
+          INTERFACE 
+            SUBROUTINE GS_PRINT_STOP(S)
+              CHARACTER(*) :: S
+            END SUBROUTINE GS_PRINT_STOP
+          END INTERFACE 
+        END MODULE GS_PRINT_STOP__genmod

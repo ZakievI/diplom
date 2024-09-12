@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:03 2024
+        MODULE MKL_PROGRESS__genmod
+          INTERFACE 
+            FUNCTION MKL_PROGRESS(THREAD,STEP,STAGE)
+              INTEGER(KIND=4) :: THREAD
+              INTEGER(KIND=4) :: STEP
+              CHARACTER(*) :: STAGE
+              INTEGER(KIND=4) :: MKL_PROGRESS
+            END FUNCTION MKL_PROGRESS
+          END INTERFACE 
+        END MODULE MKL_PROGRESS__genmod

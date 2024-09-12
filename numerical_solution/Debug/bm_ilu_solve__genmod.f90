@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:03 2024
+        MODULE BM_ILU_SOLVE__genmod
+          INTERFACE 
+            SUBROUTINE BM_ILU_SOLVE(BM,BMILU,X)
+              USE SLAU_BLOCK
+              TYPE (MAIN_BLOCK_MATRIX) ,TARGET :: BM
+              TYPE (MAIN_BLOCK_MATRIX) ,TARGET :: BMILU
+              REAL(KIND=8) :: X(:)
+            END SUBROUTINE BM_ILU_SOLVE
+          END INTERFACE 
+        END MODULE BM_ILU_SOLVE__genmod

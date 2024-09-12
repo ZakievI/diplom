@@ -1,0 +1,17 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:24 2024
+        MODULE TEST_NEED_CASH__genmod
+          INTERFACE 
+            SUBROUTINE TEST_NEED_CASH(NEED_CASH_BB_,NEED_CASH_BA_,      &
+     &NEED_CASH_AB_,NEED_CASH_AA_,NEED_CASH_BB,NEED_CASH_BA,NEED_CASH_AB&
+     &,NEED_CASH_AA)
+              LOGICAL(KIND=4) :: NEED_CASH_BB_(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_BA_(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_AB_(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_AA_(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_BB(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_BA(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_AB(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_AA(0:)
+            END SUBROUTINE TEST_NEED_CASH
+          END INTERFACE 
+        END MODULE TEST_NEED_CASH__genmod

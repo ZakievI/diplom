@@ -1,0 +1,14 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:16 2024
+        MODULE PG_ADD_BOUNDLINE_GEOMLINE__genmod
+          INTERFACE 
+            SUBROUTINE PG_ADD_BOUNDLINE_GEOMLINE(IBNDL,NPANEL,X1,Y1,X2, &
+     &Y2)
+              INTEGER(KIND=4) :: NPANEL
+              INTEGER(KIND=4) :: IBNDL
+              REAL(KIND=8) :: X1
+              REAL(KIND=8) :: Y1
+              REAL(KIND=8) :: X2
+              REAL(KIND=8) :: Y2
+            END SUBROUTINE PG_ADD_BOUNDLINE_GEOMLINE
+          END INTERFACE 
+        END MODULE PG_ADD_BOUNDLINE_GEOMLINE__genmod

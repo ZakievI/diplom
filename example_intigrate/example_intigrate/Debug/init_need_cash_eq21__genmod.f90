@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:02 2024
+        MODULE INIT_NEED_CASH_EQ21__genmod
+          INTERFACE 
+            SUBROUTINE INIT_NEED_CASH_EQ21(MODE,DER,NEED_CASH_B,        &
+     &NEED_CASH_A)
+              INTEGER(KIND=4) :: MODE
+              INTEGER(KIND=4) :: DER
+              LOGICAL(KIND=4) :: NEED_CASH_B(0:)
+              LOGICAL(KIND=4) :: NEED_CASH_A(0:)
+            END SUBROUTINE INIT_NEED_CASH_EQ21
+          END INTERFACE 
+        END MODULE INIT_NEED_CASH_EQ21__genmod

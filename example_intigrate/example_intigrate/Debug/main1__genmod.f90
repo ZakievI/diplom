@@ -1,0 +1,7 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 12 14:21:05 2024
+        MODULE MAIN1__genmod
+          INTERFACE 
+            SUBROUTINE MAIN1
+            END SUBROUTINE MAIN1
+          END INTERFACE 
+        END MODULE MAIN1__genmod

@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:11 2024
+        MODULE DO_GET_ARVAL_FUNP2__genmod
+          INTERFACE 
+            SUBROUTINE DO_GET_ARVAL_FUNP2(KND,KP,IAV,IPSIAR,MODE)
+              INTEGER(KIND=4) :: KND
+              INTEGER(KIND=4) :: KP
+              INTEGER(KIND=4) :: IAV
+              INTEGER(KIND=4) :: IPSIAR
+              INTEGER(KIND=4) :: MODE
+            END SUBROUTINE DO_GET_ARVAL_FUNP2
+          END INTERFACE 
+        END MODULE DO_GET_ARVAL_FUNP2__genmod

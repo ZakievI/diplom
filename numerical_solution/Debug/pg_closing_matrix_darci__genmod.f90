@@ -1,0 +1,17 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:16 2024
+        MODULE PG_CLOSING_MATRIX_DARCI__genmod
+          INTERFACE 
+            SUBROUTINE PG_CLOSING_MATRIX_DARCI(IA1,IBND1,IBNDL1,IA2,    &
+     &IBND2,IBNDL2,S_DARCI,ALF,BET)
+              INTEGER(KIND=4) :: IA1
+              INTEGER(KIND=4) :: IBND1
+              INTEGER(KIND=4) :: IBNDL1
+              INTEGER(KIND=4) :: IA2
+              INTEGER(KIND=4) :: IBND2
+              INTEGER(KIND=4) :: IBNDL2
+              REAL(KIND=8) :: S_DARCI
+              REAL(KIND=8) :: ALF
+              REAL(KIND=8) :: BET
+            END SUBROUTINE PG_CLOSING_MATRIX_DARCI
+          END INTERFACE 
+        END MODULE PG_CLOSING_MATRIX_DARCI__genmod

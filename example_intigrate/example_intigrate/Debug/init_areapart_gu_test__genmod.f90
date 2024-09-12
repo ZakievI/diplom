@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:57 2024
+        MODULE INIT_AREAPART_GU_TEST__genmod
+          INTERFACE 
+            SUBROUTINE INIT_AREAPART_GU_TEST(IPART,G,K,NEED_TEST,ERR,   &
+     &IERR,ERRE)
+              INTEGER(KIND=4) :: IPART
+              REAL(KIND=8) :: G(GSAREA%A%PART((IPART))%NTR)
+              INTEGER(KIND=4) :: K
+              LOGICAL(KIND=4) :: NEED_TEST
+              REAL(KIND=8) :: ERR
+              INTEGER(KIND=4) :: IERR
+              REAL(KIND=8) :: ERRE
+            END SUBROUTINE INIT_AREAPART_GU_TEST
+          END INTERFACE 
+        END MODULE INIT_AREAPART_GU_TEST__genmod

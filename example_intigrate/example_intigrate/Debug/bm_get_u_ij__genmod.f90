@@ -1,0 +1,13 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 15:15:02 2024
+        MODULE BM_GET_U_IJ__genmod
+          INTERFACE 
+            FUNCTION BM_GET_U_IJ(BMILU,I,J,U_IJ) RESULT(RES)
+              USE SLAU_BLOCK
+              TYPE (MAIN_BLOCK_MATRIX) ,TARGET :: BMILU
+              INTEGER(KIND=4) :: I
+              INTEGER(KIND=4) :: J
+              REAL(KIND=8) :: U_IJ
+              LOGICAL(KIND=4) :: RES
+            END FUNCTION BM_GET_U_IJ
+          END INTERFACE 
+        END MODULE BM_GET_U_IJ__genmod

@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:17 2024
+        MODULE PG_COPY_BOUNDLINE_DXDY__genmod
+          INTERFACE 
+            SUBROUTINE PG_COPY_BOUNDLINE_DXDY(IBNDL,IP2,IA2,IBND2,IBNDL2&
+     &,DX,DY)
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: IP2
+              INTEGER(KIND=4) :: IA2
+              INTEGER(KIND=4) :: IBND2
+              INTEGER(KIND=4) :: IBNDL2
+              REAL(KIND=8) :: DX
+              REAL(KIND=8) :: DY
+            END SUBROUTINE PG_COPY_BOUNDLINE_DXDY
+          END INTERFACE 
+        END MODULE PG_COPY_BOUNDLINE_DXDY__genmod

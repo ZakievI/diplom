@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:21 2024
+        MODULE GA_INIT_MESH_QUADCELL__genmod
+          INTERFACE 
+            SUBROUTINE GA_INIT_MESH_QUADCELL(XX,YY,NX1,NY1,NPE)
+              INTEGER(KIND=4) :: NY1
+              INTEGER(KIND=4) :: NX1
+              REAL(KIND=8) :: XX(NX1)
+              REAL(KIND=8) :: YY(NY1)
+              INTEGER(KIND=4) :: NPE
+            END SUBROUTINE GA_INIT_MESH_QUADCELL
+          END INTERFACE 
+        END MODULE GA_INIT_MESH_QUADCELL__genmod

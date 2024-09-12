@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:11 2024
+        MODULE ELEMAREA__genmod
+          INTERFACE 
+            FUNCTION ELEMAREA(I)
+              INTEGER(KIND=4) :: I
+              REAL(KIND=8) :: ELEMAREA
+            END FUNCTION ELEMAREA
+          END INTERFACE 
+        END MODULE ELEMAREA__genmod

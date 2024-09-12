@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:03 2024
+        MODULE WRITE_BY_TIMEF__genmod
+          INTERFACE 
+            FUNCTION WRITE_BY_TIMEF(STR)
+              CHARACTER(*) :: STR
+              LOGICAL(KIND=4) :: WRITE_BY_TIMEF
+            END FUNCTION WRITE_BY_TIMEF
+          END INTERFACE 
+        END MODULE WRITE_BY_TIMEF__genmod

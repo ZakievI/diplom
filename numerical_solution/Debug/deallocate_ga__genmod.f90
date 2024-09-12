@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:08 2024
+        MODULE DEALLOCATE_GA__genmod
+          INTERFACE 
+            SUBROUTINE DEALLOCATE_GA(IA,IBND,IBNDL,IGA)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: IBND
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: IGA
+            END SUBROUTINE DEALLOCATE_GA
+          END INTERFACE 
+        END MODULE DEALLOCATE_GA__genmod

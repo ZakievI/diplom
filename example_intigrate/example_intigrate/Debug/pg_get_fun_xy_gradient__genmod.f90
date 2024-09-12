@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:13 2024
+        MODULE PG_GET_FUN_XY_GRADIENT__genmod
+          INTERFACE 
+            SUBROUTINE PG_GET_FUN_XY_GRADIENT(XX,YY,NF,MODE,FF)
+              REAL(KIND=8) :: XX
+              REAL(KIND=8) :: YY
+              INTEGER(KIND=4) :: NF
+              INTEGER(KIND=4) :: MODE
+              REAL(KIND=8) :: FF(2)
+            END SUBROUTINE PG_GET_FUN_XY_GRADIENT
+          END INTERFACE 
+        END MODULE PG_GET_FUN_XY_GRADIENT__genmod

@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:22 2024
+        MODULE GET_ARVAL_FUNP2__genmod
+          INTERFACE 
+            SUBROUTINE GET_ARVAL_FUNP2(KU1,KU2,KND)
+              INTEGER(KIND=4) :: KU1
+              INTEGER(KIND=4) :: KU2
+              INTEGER(KIND=4) :: KND
+            END SUBROUTINE GET_ARVAL_FUNP2
+          END INTERFACE 
+        END MODULE GET_ARVAL_FUNP2__genmod

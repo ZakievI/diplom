@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:13 2024
+        MODULE CP_CALCINT_NF2627_2__genmod
+          INTERFACE 
+            SUBROUTINE CP_CALCINT_NF2627_2(ZTC,R,MODE,VAL,VAL2)
+              COMPLEX(KIND=8) :: ZTC
+              REAL(KIND=8) :: R
+              INTEGER(KIND=4) :: MODE
+              REAL(KIND=8) :: VAL
+              REAL(KIND=8) :: VAL2
+            END SUBROUTINE CP_CALCINT_NF2627_2
+          END INTERFACE 
+        END MODULE CP_CALCINT_NF2627_2__genmod

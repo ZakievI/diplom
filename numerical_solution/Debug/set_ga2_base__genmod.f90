@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:08 2024
+        MODULE SET_GA2_BASE__genmod
+          INTERFACE 
+            SUBROUTINE SET_GA2_BASE(GA)
+              USE PGMOD
+              TYPE (TBOUNLINEFUNCAPPROX) :: GA
+            END SUBROUTINE SET_GA2_BASE
+          END INTERFACE 
+        END MODULE SET_GA2_BASE__genmod

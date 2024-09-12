@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:08 2024
+        MODULE ALLOCATE_GU__genmod
+          INTERFACE 
+            SUBROUTINE ALLOCATE_GU(IGU,IVAL)
+              INTEGER(KIND=4) :: IGU
+              INTEGER(KIND=4) :: IVAL
+            END SUBROUTINE ALLOCATE_GU
+          END INTERFACE 
+        END MODULE ALLOCATE_GU__genmod

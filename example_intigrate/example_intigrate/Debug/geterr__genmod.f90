@@ -1,0 +1,7 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 12 14:21:05 2024
+        MODULE GETERR__genmod
+          INTERFACE 
+            SUBROUTINE GETERR
+            END SUBROUTINE GETERR
+          END INTERFACE 
+        END MODULE GETERR__genmod

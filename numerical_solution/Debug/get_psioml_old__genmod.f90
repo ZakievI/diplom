@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:22 2024
+        MODULE GET_PSIOML_OLD__genmod
+          INTERFACE 
+            SUBROUTINE GET_PSIOML_OLD(IA,KND,NMAX)
+              INTEGER(KIND=4) :: NMAX
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: KND
+            END SUBROUTINE GET_PSIOML_OLD
+          END INTERFACE 
+        END MODULE GET_PSIOML_OLD__genmod

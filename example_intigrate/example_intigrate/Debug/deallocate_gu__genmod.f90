@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:57 2024
+        MODULE DEALLOCATE_GU__genmod
+          INTERFACE 
+            SUBROUTINE DEALLOCATE_GU(IA,IBND,IBNDL,IGU,IS_ADD)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: IBND
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: IGU
+              LOGICAL(KIND=4) :: IS_ADD
+            END SUBROUTINE DEALLOCATE_GU
+          END INTERFACE 
+        END MODULE DEALLOCATE_GU__genmod

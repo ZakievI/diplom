@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:21 2024
+        MODULE GA_INIT_GEOM_SQUARE__genmod
+          INTERFACE 
+            SUBROUTINE GA_INIT_GEOM_SQUARE(X0,Y0,MCELLNJ,A)
+              REAL(KIND=8) :: X0
+              REAL(KIND=8) :: Y0
+              INTEGER(KIND=4) :: MCELLNJ
+              REAL(KIND=8) :: A
+            END SUBROUTINE GA_INIT_GEOM_SQUARE
+          END INTERFACE 
+        END MODULE GA_INIT_GEOM_SQUARE__genmod

@@ -1,0 +1,13 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:56 2024
+        MODULE INITCASHINTEGRAL_NF__genmod
+          INTERFACE 
+            SUBROUTINE INITCASHINTEGRAL_NF(C,NF,N1,N2,IA)
+              USE PGMOD
+              TYPE (TCASHINTEGRAL) :: C
+              INTEGER(KIND=4) :: NF
+              INTEGER(KIND=4) :: N1
+              INTEGER(KIND=4) :: N2
+              INTEGER(KIND=4) :: IA
+            END SUBROUTINE INITCASHINTEGRAL_NF
+          END INTERFACE 
+        END MODULE INITCASHINTEGRAL_NF__genmod

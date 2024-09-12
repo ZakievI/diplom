@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 15:15:01 2024
+        MODULE BM_NULL_MROW__genmod
+          INTERFACE 
+            SUBROUTINE BM_NULL_MROW(MROW)
+              USE SLAU_BLOCK
+              TYPE (SPARSE_MATRIX_ROW) :: MROW
+            END SUBROUTINE BM_NULL_MROW
+          END INTERFACE 
+        END MODULE BM_NULL_MROW__genmod

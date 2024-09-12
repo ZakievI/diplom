@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:08 2024
+        MODULE PG_BIND_BOUND__genmod
+          INTERFACE 
+            SUBROUTINE PG_BIND_BOUND(K)
+              INTEGER(KIND=4) :: K
+            END SUBROUTINE PG_BIND_BOUND
+          END INTERFACE 
+        END MODULE PG_BIND_BOUND__genmod

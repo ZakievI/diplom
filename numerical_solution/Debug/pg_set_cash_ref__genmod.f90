@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:09 2024
+        MODULE PG_SET_CASH_REF__genmod
+          INTERFACE 
+            SUBROUTINE PG_SET_CASH_REF(IP,IA)
+              INTEGER(KIND=4) :: IP
+              INTEGER(KIND=4) :: IA
+            END SUBROUTINE PG_SET_CASH_REF
+          END INTERFACE 
+        END MODULE PG_SET_CASH_REF__genmod

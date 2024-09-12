@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:55 2024
+        MODULE PG_SET_CONSTVALA__genmod
+          INTERFACE 
+            SUBROUTINE PG_SET_CONSTVALA(IA,I1,I2)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: I1
+              INTEGER(KIND=4) :: I2
+            END SUBROUTINE PG_SET_CONSTVALA
+          END INTERFACE 
+        END MODULE PG_SET_CONSTVALA__genmod

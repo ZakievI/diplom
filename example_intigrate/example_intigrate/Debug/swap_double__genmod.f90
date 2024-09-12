@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 15:15:14 2024
+        MODULE SWAP_DOUBLE__genmod
+          INTERFACE 
+            SUBROUTINE SWAP_DOUBLE(I1,I2)
+              REAL(KIND=8) :: I1
+              REAL(KIND=8) :: I2
+            END SUBROUTINE SWAP_DOUBLE
+          END INTERFACE 
+        END MODULE SWAP_DOUBLE__genmod

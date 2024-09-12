@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:20 2024
+        MODULE GA_INIT_MESH_QUADCELL_TEST__genmod
+          INTERFACE 
+            SUBROUTINE GA_INIT_MESH_QUADCELL_TEST(XX,YY,NX1,NY1,NPE,    &
+     &FTEST)
+              INTEGER(KIND=4) :: NY1
+              INTEGER(KIND=4) :: NX1
+              REAL(KIND=8) :: XX(NX1)
+              REAL(KIND=8) :: YY(NY1)
+              INTEGER(KIND=4) :: NPE
+              LOGICAL(KIND=4) :: FTEST
+              EXTERNAL FTEST
+            END SUBROUTINE GA_INIT_MESH_QUADCELL_TEST
+          END INTERFACE 
+        END MODULE GA_INIT_MESH_QUADCELL_TEST__genmod

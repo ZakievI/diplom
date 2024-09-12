@@ -1,0 +1,17 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:11 2024
+        MODULE PG_INIT_BOUNDLINE_GEOM_ELLIPSE__genmod
+          INTERFACE 
+            SUBROUTINE PG_INIT_BOUNDLINE_GEOM_ELLIPSE(IBNDL,NPANEL,X0,Y0&
+     &,RX,RY,G0,GAM1,GAM2)
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: NPANEL
+              REAL(KIND=8) :: X0
+              REAL(KIND=8) :: Y0
+              REAL(KIND=8) :: RX
+              REAL(KIND=8) :: RY
+              REAL(KIND=8) :: G0
+              REAL(KIND=8) :: GAM1
+              REAL(KIND=8) :: GAM2
+            END SUBROUTINE PG_INIT_BOUNDLINE_GEOM_ELLIPSE
+          END INTERFACE 
+        END MODULE PG_INIT_BOUNDLINE_GEOM_ELLIPSE__genmod

@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:57 2024
+        MODULE INIT_BOUND_CASH__genmod
+          INTERFACE 
+            SUBROUTINE INIT_BOUND_CASH(CASH,NB)
+              USE PGMOD
+              TYPE (TCASH) ,TARGET :: CASH
+              INTEGER(KIND=4) :: NB
+            END SUBROUTINE INIT_BOUND_CASH
+          END INTERFACE 
+        END MODULE INIT_BOUND_CASH__genmod

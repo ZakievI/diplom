@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:08 2024
+        MODULE NULLAREA__genmod
+          INTERFACE 
+            SUBROUTINE NULLAREA(IA)
+              INTEGER(KIND=4) :: IA
+            END SUBROUTINE NULLAREA
+          END INTERFACE 
+        END MODULE NULLAREA__genmod

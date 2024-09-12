@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:56:57 2024
+        MODULE ALLOCATE_GU_GEN__genmod
+          INTERFACE 
+            SUBROUTINE ALLOCATE_GU_GEN(GU,N)
+              USE PGMOD
+              TYPE (TBOUNDLINE_GU) :: GU
+              INTEGER(KIND=4) :: N
+            END SUBROUTINE ALLOCATE_GU_GEN
+          END INTERFACE 
+        END MODULE ALLOCATE_GU_GEN__genmod

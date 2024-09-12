@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 15:15:01 2024
+        MODULE NULL_BLOCK__genmod
+          INTERFACE 
+            SUBROUTINE NULL_BLOCK(B)
+              USE SLAU_BLOCK
+              TYPE (BLOCK_MATRIX) :: B
+            END SUBROUTINE NULL_BLOCK
+          END INTERFACE 
+        END MODULE NULL_BLOCK__genmod

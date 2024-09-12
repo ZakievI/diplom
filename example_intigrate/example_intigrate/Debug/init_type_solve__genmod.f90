@@ -1,0 +1,16 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:02 2024
+        MODULE INIT_TYPE_SOLVE__genmod
+          INTERFACE 
+            SUBROUTINE INIT_TYPE_SOLVE(IA,TYPE_ROTATE,NI,NF,TYPE_SOLVE, &
+     &NF_REF,CI_REF)
+              USE PGMOD
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: TYPE_ROTATE
+              INTEGER(KIND=4) :: NI
+              INTEGER(KIND=4) :: NF(20)
+              INTEGER(KIND=4) :: TYPE_SOLVE(20)
+              INTEGER(KIND=4) :: NF_REF(20)
+              TYPE (TCASHINTEGRAL) :: CI_REF
+            END SUBROUTINE INIT_TYPE_SOLVE
+          END INTERFACE 
+        END MODULE INIT_TYPE_SOLVE__genmod

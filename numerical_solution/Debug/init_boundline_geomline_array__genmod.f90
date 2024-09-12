@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:10 2024
+        MODULE INIT_BOUNDLINE_GEOMLINE_ARRAY__genmod
+          INTERFACE 
+            SUBROUTINE INIT_BOUNDLINE_GEOMLINE_ARRAY(NPANEL,X1,Y1,X2,Y2,&
+     &X,Y)
+              INTEGER(KIND=4) :: NPANEL
+              REAL(KIND=8) :: X1
+              REAL(KIND=8) :: Y1
+              REAL(KIND=8) :: X2
+              REAL(KIND=8) :: Y2
+              REAL(KIND=8) :: X(NPANEL+1)
+              REAL(KIND=8) :: Y(NPANEL+1)
+            END SUBROUTINE INIT_BOUNDLINE_GEOMLINE_ARRAY
+          END INTERFACE 
+        END MODULE INIT_BOUNDLINE_GEOMLINE_ARRAY__genmod

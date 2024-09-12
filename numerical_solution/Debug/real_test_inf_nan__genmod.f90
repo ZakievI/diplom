@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:12 2024
+        MODULE REAL_TEST_INF_NAN__genmod
+          INTERFACE 
+            FUNCTION REAL_TEST_INF_NAN(X,X1) RESULT(RES)
+              REAL(KIND=8) :: X
+              REAL(KIND=8) :: X1
+              REAL(KIND=8) :: RES
+            END FUNCTION REAL_TEST_INF_NAN
+          END INTERFACE 
+        END MODULE REAL_TEST_INF_NAN__genmod

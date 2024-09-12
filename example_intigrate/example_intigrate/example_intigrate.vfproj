@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{3D8CD619-C756-46D4-9E99-81038F4E123A}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" OpenMP="OpenMPParallelCode" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug" UseMkl="mklParallel"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd">
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func_mod.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\gen_mod_new.f90"/>
+		<File RelativePath=".\mod.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/></Filter>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\example_intigrate.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\geom_add.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\intf_dxdy.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_calc.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_calcd.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_clacc.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_geom.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_get.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_get_fun.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_matrix.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\slau.f90"/>
+		<File RelativePath="..\..\..\..\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\slau_block.f90"/></Filter>
+		<File RelativePath=".\ReadMe.txt"/></Files>
+	<Globals/></VisualStudioProject>
