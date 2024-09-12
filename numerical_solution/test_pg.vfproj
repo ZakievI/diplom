@@ -28,7 +28,8 @@
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func_mod.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\gen_mod_new.f90"/>
 		<File RelativePath=".\mod.f90"/>
-		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/></Filter>
+		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/>
+		<File RelativePath=".\test.f90"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func.f90"/>
