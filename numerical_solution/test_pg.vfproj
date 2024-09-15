@@ -28,10 +28,11 @@
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func_mod.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\gen_mod_new.f90"/>
 		<File RelativePath=".\mod.f90"/>
-		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/>
-		<File RelativePath=".\test.f90"/></Filter>
+		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\build_geom.f90"/>
+		<File RelativePath=".\diplom_2024.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\geom_add.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\intf_dxdy.f90"/>
@@ -46,5 +47,6 @@
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_gu.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pg_matrix.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\slau.f90"/>
-		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\slau_block.f90"/></Filter></Files>
+		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\slau_block.f90"/>
+		<File RelativePath=".\test.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
