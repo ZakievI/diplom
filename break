@@ -1,0 +1,317 @@
+[33mcommit c3207187b93ca0b5b0864f40cb9504732342314e[m[33m ([m[1;36mHEAD -> [m[1;32msecond[m[33m)[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Sun Sep 15 14:00:56 2024 +0300
+
+    add: sort and create program file
+
+[1mdiff --git a/numerical_solution/Debug/BuildLog.htm b/numerical_solution/Debug/BuildLog.htm[m
+[1mindex eaf5c79..0c60cb7 100644[m
+Binary files a/numerical_solution/Debug/BuildLog.htm and b/numerical_solution/Debug/BuildLog.htm differ
+[1mdiff --git a/numerical_solution/Debug/build_geom.obj b/numerical_solution/Debug/build_geom.obj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ab98807[m
+Binary files /dev/null and b/numerical_solution/Debug/build_geom.obj differ
+[1mdiff --git a/numerical_solution/Debug/build_mesh__genmod.f90 b/numerical_solution/Debug/build_mesh__genmod.f90[m
+[1mindex 9f2e4c1..9b1b6c3 100644[m
+[1m--- a/numerical_solution/Debug/build_mesh__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/build_mesh__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE BUILD_MESH__genmod[m
+           INTERFACE [m
+             SUBROUTINE BUILD_MESH(G)[m
+[1mdiff --git a/numerical_solution/Debug/build_mesh__genmod.mod b/numerical_solution/Debug/build_mesh__genmod.mod[m
+[1mindex 178c5e4..96322e6 100644[m
+Binary files a/numerical_solution/Debug/build_mesh__genmod.mod and b/numerical_solution/Debug/build_mesh__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/closing_2__genmod.f90 b/numerical_solution/Debug/closing_2__genmod.f90[m
+[1mindex d546552..2ec454d 100644[m
+[1m--- a/numerical_solution/Debug/closing_2__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/closing_2__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE CLOSING_2__genmod[m
+           INTERFACE [m
+             SUBROUTINE CLOSING_2(G)[m
+[1mdiff --git a/numerical_solution/Debug/closing_2__genmod.mod b/numerical_solution/Debug/closing_2__genmod.mod[m
+[1mindex 67a1df0..2a3efc5 100644[m
+Binary files a/numerical_solution/Debug/closing_2__genmod.mod and b/numerical_solution/Debug/closing_2__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/closing_3__genmod.f90 b/numerical_solution/Debug/closing_3__genmod.f90[m
+[1mindex fc618b8..5ba9482 100644[m
+[1m--- a/numerical_solution/Debug/closing_3__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/closing_3__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE CLOSING_3__genmod[m
+           INTERFACE [m
+             SUBROUTINE CLOSING_3(G)[m
+[1mdiff --git a/numerical_solution/Debug/closing_3__genmod.mod b/numerical_solution/Debug/closing_3__genmod.mod[m
+[1mindex e16a73a..3f7f401 100644[m
+Binary files a/numerical_solution/Debug/closing_3__genmod.mod and b/numerical_solution/Debug/closing_3__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/closing__genmod.f90 b/numerical_solution/Debug/closing__genmod.f90[m
+[1mindex b0b47ff..c1dc9e7 100644[m
+[1m--- a/numerical_solution/Debug/closing__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/closing__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE CLOSING__genmod[m
+           INTERFACE [m
+             SUBROUTINE CLOSING(G)[m
+[1mdiff --git a/numerical_solution/Debug/closing__genmod.mod b/numerical_solution/Debug/closing__genmod.mod[m
+[1mindex 0ba10b9..1957360 100644[m
+Binary files a/numerical_solution/Debug/closing__genmod.mod and b/numerical_solution/Debug/closing__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/closing_cheking__genmod.f90 b/numerical_solution/Debug/closing_cheking__genmod.f90[m
+[1mindex e4c63f8..0502162 100644[m
+[1m--- a/numerical_solution/Debug/closing_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/closing_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE CLOSING_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE CLOSING_CHEKING[m
+[1mdiff --git a/numerical_solution/Debug/closing_cheking__genmod.mod b/numerical_solution/Debug/closing_cheking__genmod.mod[m
+[1mindex 80c7ffc..baf3405 100644[m
+Binary files a/numerical_solution/Debug/closing_cheking__genmod.mod and b/numerical_solution/Debug/closing_cheking__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/compute_pressure__genmod.f90 b/numerical_solution/Debug/compute_pressure__genmod.f90[m
+[1mindex bc99df3..6f19d37 100644[m
+[1m--- a/numerical_solution/Debug/compute_pressure__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/compute_pressure__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE COMPUTE_PRESSURE__genmod[m
+           INTERFACE [m
+             SUBROUTINE COMPUTE_PRESSURE(G)[m
+[1mdiff --git a/numerical_solution/Debug/compute_pressure__genmod.mod b/numerical_solution/Debug/compute_pressure__genmod.mod[m
+[1mindex 257d407..eb21dd4 100644[m
+Binary files a/numerical_solution/Debug/compute_pressure__genmod.mod and b/numerical_solution/Debug/compute_pressure__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/dfdl2__genmod.f90 b/numerical_solution/Debug/dfdl2__genmod.f90[m
+[1mindex d55a5ac..1a86c53 100644[m
+[1m--- a/numerical_solution/Debug/dfdl2__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/dfdl2__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE DFDL2__genmod[m
+           INTERFACE [m
+             FUNCTION DFDL2(X,Y,XDER,YDER)[m
+[1mdiff --git a/numerical_solution/Debug/dfdl2__genmod.mod b/numerical_solution/Debug/dfdl2__genmod.mod[m
+[1mindex 0fbd845..49ef5c4 100644[m
+Binary files a/numerical_solution/Debug/dfdl2__genmod.mod and b/numerical_solution/Debug/dfdl2__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/dfdl__genmod.f90 b/numerical_solution/Debug/dfdl__genmod.f90[m
+[1mindex f49bf37..1271d10 100644[m
+[1m--- a/numerical_solution/Debug/dfdl__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/dfdl__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE DFDL__genmod[m
+           INTERFACE [m
+             FUNCTION DFDL(X,Y,XDER,YDER)[m
+[1mdiff --git a/numerical_solution/Debug/dfdl__genmod.mod b/numerical_solution/Debug/dfdl__genmod.mod[m
+[1mindex 3a4cbdd..8e7b27e 100644[m
+Binary files a/numerical_solution/Debug/dfdl__genmod.mod and b/numerical_solution/Debug/dfdl__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/diplom_2024.obj b/numerical_solution/Debug/diplom_2024.obj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9534a56[m
+Binary files /dev/null and b/numerical_solution/Debug/diplom_2024.obj differ
+[1mdiff --git a/numerical_solution/Debug/draw__genmod.f90 b/numerical_solution/Debug/draw__genmod.f90[m
+[1mindex 1c50cdd..a07c23f 100644[m
+[1m--- a/numerical_solution/Debug/draw__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/draw__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE DRAW__genmod[m
+           INTERFACE [m
+             SUBROUTINE DRAW(G1,NUMBER_TASK)[m
+[1mdiff --git a/numerical_solution/Debug/draw__genmod.mod b/numerical_solution/Debug/draw__genmod.mod[m
+[1mindex 9cf3d23..5a70b28 100644[m
+Binary files a/numerical_solution/Debug/draw__genmod.mod and b/numerical_solution/Debug/draw__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/draw_square__genmod.f90 b/numerical_solution/Debug/draw_square__genmod.f90[m
+[1mindex e7e9bec..594f0c4 100644[m
+[1m--- a/numerical_solution/Debug/draw_square__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/draw_square__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE DRAW_SQUARE__genmod[m
+           INTERFACE [m
+             SUBROUTINE DRAW_SQUARE(G1)[m
+[1mdiff --git a/numerical_solution/Debug/draw_square__genmod.mod b/numerical_solution/Debug/draw_square__genmod.mod[m
+[1mindex 7d5ff9f..70170a3 100644[m
+Binary files a/numerical_solution/Debug/draw_square__genmod.mod and b/numerical_solution/Debug/draw_square__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/draw_square_cheking__genmod.f90 b/numerical_solution/Debug/draw_square_cheking__genmod.f90[m
+[1mindex 76f07de..dad40c4 100644[m
+[1m--- a/numerical_solution/Debug/draw_square_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/draw_square_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE DRAW_SQUARE_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE DRAW_SQUARE_CHEKING[m
+[1mdiff --git a/numerical_solution/Debug/draw_square_cheking__genmod.mod b/numerical_solution/Debug/draw_square_cheking__genmod.mod[m
+[1mindex 3ccac64..d5dfc87 100644[m
+Binary files a/numerical_solution/Debug/draw_square_cheking__genmod.mod and b/numerical_solution/Debug/draw_square_cheking__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/error__genmod.f90 b/numerical_solution/Debug/error__genmod.f90[m
+[1mindex 848d735..0469277 100644[m
+[1m--- a/numerical_solution/Debug/error__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/error__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE ERROR__genmod[m
+           INTERFACE [m
+             SUBROUTINE ERROR(NUMBER_TASK,BOUND)[m
+[1mdiff --git a/numerical_solution/Debug/error__genmod.mod b/numerical_solution/Debug/error__genmod.mod[m
+[1mindex 36e82e1..982b747 100644[m
+Binary files a/numerical_solution/Debug/error__genmod.mod and b/numerical_solution/Debug/error__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/fcn__genmod.f90 b/numerical_solution/Debug/fcn__genmod.f90[m
+[1mindex 459c771..e457997 100644[m
+[1m--- a/numerical_solution/Debug/fcn__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/fcn__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:33:28 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:28:06 2024[m
+         MODULE FCN__genmod[m
+           INTERFACE [m
+             SUBROUTINE FCN(N,T,Y,YPRIME)[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_1__genmod.f90 b/numerical_solution/Debug/init_geom_1__genmod.f90[m
+[1mindex 8718983..40135b3 100644[m
+[1m--- a/numerical_solution/Debug/init_geom_1__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_geom_1__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GEOM_1__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GEOM_1(G)[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_1__genmod.mod b/numerical_solution/Debug/init_geom_1__genmod.mod[m
+[1mindex 3de3d67..1137520 100644[m
+Binary files a/numerical_solution/Debug/init_geom_1__genmod.mod and b/numerical_solution/Debug/init_geom_1__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_geom_1_cheking__genmod.f90 b/numerical_solution/Debug/init_geom_1_cheking__genmod.f90[m
+[1mindex a84759a..dea767a 100644[m
+[1m--- a/numerical_solution/Debug/init_geom_1_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_geom_1_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GEOM_1_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GEOM_1_CHEKING[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_1_cheking__genmod.mod b/numerical_solution/Debug/init_geom_1_cheking__genmod.mod[m
+[1mindex 0230280..fd94a60 100644[m
+Binary files a/numerical_solution/Debug/init_geom_1_cheking__genmod.mod and b/numerical_solution/Debug/init_geom_1_cheking__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_geom_2__genmod.f90 b/numerical_solution/Debug/init_geom_2__genmod.f90[m
+[1mindex 0cf3683..c78e86b 100644[m
+[1m--- a/numerical_solution/Debug/init_geom_2__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_geom_2__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GEOM_2__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GEOM_2(G)[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_2__genmod.mod b/numerical_solution/Debug/init_geom_2__genmod.mod[m
+[1mindex 528c0f0..075bf4c 100644[m
+Binary files a/numerical_solution/Debug/init_geom_2__genmod.mod and b/numerical_solution/Debug/init_geom_2__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_geom_2_cheking__genmod.f90 b/numerical_solution/Debug/init_geom_2_cheking__genmod.f90[m
+[1mindex 188bf4e..9330b82 100644[m
+[1m--- a/numerical_solution/Debug/init_geom_2_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_geom_2_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GEOM_2_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GEOM_2_CHEKING[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_2_cheking__genmod.mod b/numerical_solution/Debug/init_geom_2_cheking__genmod.mod[m
+[1mindex a35c025..19be543 100644[m
+Binary files a/numerical_solution/Debug/init_geom_2_cheking__genmod.mod and b/numerical_solution/Debug/init_geom_2_cheking__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_geom__genmod.f90 b/numerical_solution/Debug/init_geom__genmod.f90[m
+[1mindex 2fcb98c..de47d55 100644[m
+[1m--- a/numerical_solution/Debug/init_geom__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_geom__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GEOM__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GEOM[m
+[1mdiff --git a/numerical_solution/Debug/init_geom__genmod.mod b/numerical_solution/Debug/init_geom__genmod.mod[m
+[1mindex f9be1c5..618e560 100644[m
+Binary files a/numerical_solution/Debug/init_geom__genmod.mod and b/numerical_solution/Debug/init_geom__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_geom_new__genmod.f90 b/numerical_solution/Debug/init_geom_new__genmod.f90[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c14b19f[m
+[1m--- /dev/null[m
+[1m+++ b/numerical_solution/Debug/init_geom_new__genmod.f90[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:56:35 2024[m
+[32m+[m[32m        MODULE INIT_GEOM_NEW__genmod[m
+[32m+[m[32m          INTERFACE[m[41m [m
+[32m+[m[32m            SUBROUTINE INIT_GEOM_NEW(G,H1,L1)[m
+[32m+[m[32m              INTEGER(KIND=4) :: G[m
+[32m+[m[32m              REAL(KIND=8) :: H1[m
+[32m+[m[32m              REAL(KIND=8) :: L1[m
+[32m+[m[32m            END SUBROUTINE INIT_GEOM_NEW[m
+[32m+[m[32m          END INTERFACE[m[41m [m
+[32m+[m[32m        END MODULE INIT_GEOM_NEW__genmod[m
+[1mdiff --git a/numerical_solution/Debug/init_geom_new__genmod.mod b/numerical_solution/Debug/init_geom_new__genmod.mod[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bb7b82e[m
+Binary files /dev/null and b/numerical_solution/Debug/init_geom_new__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_gu_1__genmod.f90 b/numerical_solution/Debug/init_gu_1__genmod.f90[m
+[1mindex 428211c..9a4d2f6 100644[m
+[1m--- a/numerical_solution/Debug/init_gu_1__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_gu_1__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GU_1__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GU_1(G)[m
+[1mdiff --git a/numerical_solution/Debug/init_gu_1__genmod.mod b/numerical_solution/Debug/init_gu_1__genmod.mod[m
+[1mindex 55b0a91..b3bdebf 100644[m
+Binary files a/numerical_solution/Debug/init_gu_1__genmod.mod and b/numerical_solution/Debug/init_gu_1__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_gu_1_cheking__genmod.f90 b/numerical_solution/Debug/init_gu_1_cheking__genmod.f90[m
+[1mindex 3821a81..0ee0e5d 100644[m
+[1m--- a/numerical_solution/Debug/init_gu_1_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_gu_1_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GU_1_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GU_1_CHEKING[m
+[1mdiff --git a/numerical_solution/Debug/init_gu_1_cheking__genmod.mod b/numerical_solution/Debug/init_gu_1_cheking__genmod.mod[m
+[1mindex d30f145..aea5b53 100644[m
+Binary files a/numerical_solution/Debug/init_gu_1_cheking__genmod.mod and b/numerical_solution/Debug/init_gu_1_cheking__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_gu_2__genmod.f90 b/numerical_solution/Debug/init_gu_2__genmod.f90[m
+[1mindex 4282765..3b80eba 100644[m
+[1m--- a/numerical_solution/Debug/init_gu_2__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_gu_2__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GU_2__genmod[m
+           INTERFACE [m
+             SUBROUTINE INIT_GU_2(G)[m
+[1mdiff --git a/numerical_solution/Debug/init_gu_2__genmod.mod b/numerical_solution/Debug/init_gu_2__genmod.mod[m
+[1mindex da9c48b..bbe116c 100644[m
+Binary files a/numerical_solution/Debug/init_gu_2__genmod.mod and b/numerical_solution/Debug/init_gu_2__genmod.mod differ
+[1mdiff --git a/numerical_solution/Debug/init_gu_2_cheking__genmod.f90 b/numerical_solution/Debug/init_gu_2_cheking__genmod.f90[m
+[1mindex 85959c4..12beacd 100644[m
+[1m--- a/numerical_solution/Debug/init_gu_2_cheking__genmod.f90[m
+[1m+++ b/numerical_solution/Debug/init_gu_2_cheking__genmod.f90[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 12 23:25:44 2024[m
+[32m+[m[32m        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024[m
+         MODULE INIT_GU_2_CHEKING__genmod[m
+           INTERFACE [m
+             SUBROUTINE INI

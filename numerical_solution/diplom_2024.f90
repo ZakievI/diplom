@@ -1,4 +1,4 @@
-subroutine main_1(g)
+subroutine main_1_1(g)
   use mod
   integer(4) g
   call pg_start
@@ -533,7 +533,7 @@ subroutine print_fi_const(fi,g1)
   end do
   close(1)
 end
-subroutine main_2
+subroutine main_1_2
   use mod
   call pg_start
   call pg_allocate_problems(1)
@@ -983,7 +983,7 @@ subroutine closing_3(g)
        deallocate(eq)          
       end select
  end
-subroutine main_3(g)
+subroutine main_1_3(g)
   use mod
   !g-1 -квадрат с кругом постановка №1,
   !  3 -квадрат с кругом постановка №2

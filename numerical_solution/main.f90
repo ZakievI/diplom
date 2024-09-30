@@ -1,27 +1,23 @@
 program main
   use mod
+  !real(8):: H1=2*d1, L1=6*d1
+  !nj=100
+  !ds=pi/nj
+  !ds2=ds
+  !call pg_start
+  !call pg_allocate_problems(1)
+  !call pg_bind_problem(1)
+  !call pg_allocate_domains(1)
+  !call pg_bind_domain(1)
+  !call pg_set_domain_equation(3)
+  !call pg_allocate_bounds(1)
+  !call pg_bind_bound(1)
+  !call init_geom_new(1, H1, L1)
+  !call pg_geom_postprocessor
+  !call build_mesh_2(H1, L1)
+  !call pg_areageom_postprocessor
+  !call ga_drw_trmesh(1)
+  !call pg_finish
   call testing()
-  h=5.0d0
-  R_1=d1
-  R_2=(h+R_1)/2
-  nj=100
-  ds=pi/nj
-  ds2=ds*h/R_1
-  F_m=1
-  call main_1(2) !1-постоянен, 2-1/r^^3, 3-Ar+b1
-  !call main_2
-  !call main_3(2) !1-квадртат с вырезом, разрез сил горизонтален, 2-вертикален
-  
-  
-  
-  !OPEN (10,FILE='E.dat')
-  !do nj=100,1000,100
-  !  ds=pi/nj
-  !  ds2=ds*h/R_1
-  !end do
-  !close(10)
-  
   pause
-  !call main_3(2)
-  !call main_3_cheking
 end
