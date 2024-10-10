@@ -1,3 +1,6 @@
+  !call main_1(2) !1-постоянен, 2-1/r^^3, 3-Ar+b1
+  !call main_2
+  !call main_3(2) !1-квадртат с вырезом, разрез сил горизонтален, 2-вертикален
 subroutine main_1_1(g)
   use mod
   integer(4) g
@@ -64,7 +67,7 @@ subroutine init_gu
     call pg_bind_boundline(2)
     call pg_init_boundline_gu_val_const(1,3,d0)
 
-    call pg_bind_boundline(3)
+    call pg_bind_boundline(3)22222222222222222222222222222222
     call pg_init_boundline_gu_val_const(1,1,d0)
     call pg_init_boundline_gu_val_const(2,3,d0)
 

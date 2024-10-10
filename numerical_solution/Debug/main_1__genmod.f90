@@ -1,8 +1,7 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Sun Sep 15 13:53:02 2024
+        !COMPILER-GENERATED INTERFACE MODULE: Wed Oct 02 22:29:04 2024
         MODULE MAIN_1__genmod
           INTERFACE 
-            SUBROUTINE MAIN_1(G)
-              INTEGER(KIND=4) :: G
+            SUBROUTINE MAIN_1
             END SUBROUTINE MAIN_1
           END INTERFACE 
         END MODULE MAIN_1__genmod

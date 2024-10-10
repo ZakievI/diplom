@@ -1,6 +1,6 @@
-subroutine build_mesh_2(H1, L1)
+subroutine build_mesh()
     use mod
-    real(8) bndg(200),bndrv(200),rr(200),H1,L1
+    real(8) bndg(200),bndrv(200),rr(200)
     integer(4) ng,nr
     ng=60
     nr=20

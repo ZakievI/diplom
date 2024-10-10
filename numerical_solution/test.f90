@@ -5,7 +5,7 @@ subroutine testing()
     real(8)::param(mxparm), t, tend, tol, y(n), istep, alfa, y_analit_max, x_analit_max, y_max, x_max, x_zero
     real(8), parameter :: g = 9.81, v0 = 10.0
     real(8):: y_old(n), sred,dt
-    external fcn
+    external fcn1
     alfa        = pi/4
     t           = 0.0           !Начальные условия
     y(1)        = 0.0
@@ -29,17 +29,16 @@ subroutine testing()
         WRITE(2,*) istep, t, y 
         if ((y_old(2)>0).and.(y(2)<0)) then
             x_zero = sred(y_old(2),y(2),y_old(1),y(1),d0)
-            t_zero = 
             print *, x_zero, v0**2*dsin(2*alfa)/g
             ido =3
         end if 
         y_old = y
         !if (istep == 2) ido = 3 !Освобождаем память
     end do    
-    call divprk(ido, n, fcn, t, t+dt, tol, param, y)
+    call divprk(ido, n, fcn1, t, t+dt, tol, param, y)
 end subroutine testing
 
-subroutine fcn(n, t, y, yprime)
+subroutine fcn1(n, t, y, yprime)
     use mod
     integer(4) :: n
     real(8) t, y(n), yprime(n)
@@ -48,4 +47,4 @@ subroutine fcn(n, t, y, yprime)
     yprime(2) = y(4)
     yprime(3) = d0
     yprime(4) = -g
-end subroutine fcn
+end subroutine fcn1

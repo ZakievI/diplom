@@ -31,9 +31,9 @@
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\pgmod.f90"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\_Solver_.f90"/>
 		<File RelativePath=".\build_geom.f90"/>
 		<File RelativePath=".\build_mesh.f90"/>
-		<File RelativePath=".\diplom_2024.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\func.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\pg3\geom_add.f90"/>
 		<File RelativePath="C:\Users\Ислам\OneDrive - Казанский (Приволжский) Федеральный Университет\Документы\Visual Studio 2010\Projects\common\intf_dxdy.f90"/>
