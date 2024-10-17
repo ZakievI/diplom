@@ -15,5 +15,5 @@ real(8) ds2 !размер €чейки дл€ наружней границы
 !type(areapart), target :: ap
 real(8), allocatable :: ff(:),err(:)
 logical, allocatable :: ffknow(:)
-real(8), parameter :: st = 1d0
+real(8) st
 end

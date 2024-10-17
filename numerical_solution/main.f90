@@ -6,7 +6,7 @@ end
 subroutine main_1()
     use mod
     H1=2*d1
-    L1=6*d1
+    L1=8*d1
     nj=100
     ds=pi/nj
     ds2=ds
@@ -31,7 +31,6 @@ subroutine main_1()
     call draw_square
     call pg_finish
     !call testing()
-    !call solve()
     
 end
 subroutine draw_square
