@@ -1,0 +1,35 @@
+[33mcommit 9954f0e3aa0d299e70d6fa7bc9448aaf2264a3db[m[33m ([m[1;36mHEAD -> [m[1;32msecond[m[33m)[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Sun Oct 13 09:37:01 2024 +0300
+
+    переделан решатель интергала под производную от длины дуги
+
+[33mcommit 3d6592f81818750f2aea0557c30794730021fd1d[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Thu Oct 10 10:46:20 2024 +0300
+
+    add: добавлен решатель для отслеживания траектории
+
+[33mcommit 99568b64e3dfe7b380573b3f63bb10ed61a8060f[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Mon Sep 30 22:27:26 2024 +0300
+
+    fixed: test programm
+
+[33mcommit c3207187b93ca0b5b0864f40cb9504732342314e[m[33m ([m[1;31morigin/second[m[33m)[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Sun Sep 15 14:00:56 2024 +0300
+
+    add: sort and create program file
+
+[33mcommit 6e37a743ab88b544e5add3941d1dcf87a66d0a08[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Thu Sep 12 23:36:40 2024 +0300
+
+    add test ivprk
+
+[33mcommit 494de1c4d335b0cb24536b0dfe8b2029dcd257fc[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: IslamZ <143954875+ZakievI@users.noreply.github.com>
+Date:   Thu Sep 12 21:34:59 2024 +0300
+
+    create

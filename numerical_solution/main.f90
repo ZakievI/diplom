@@ -6,7 +6,7 @@ end
 subroutine main_1()
     use mod
     H1=2*d1
-    L1=8*d1
+    L1=14*d1
     nj=100
     ds=pi/nj
     ds2=ds
