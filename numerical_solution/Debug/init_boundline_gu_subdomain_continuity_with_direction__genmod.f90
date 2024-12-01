@@ -1,4 +1,4 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Mon Sep 09 10:15:18 2024
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Nov 16 21:00:30 2024
         MODULE                                                          &
      &INIT_BOUNDLINE_GU_SUBDOMAIN_CONTINUITY_WITH_DIRECTION__genmod
           INTERFACE 

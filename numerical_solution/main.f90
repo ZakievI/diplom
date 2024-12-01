@@ -6,7 +6,7 @@ end
 subroutine main_1()
     use mod
     H1=2*d1
-    L1=14*d1
+    L1=10*d1
     nj=100
     ds=pi/nj
     ds2=ds
@@ -27,7 +27,9 @@ subroutine main_1()
     call pg_get_matrix
     call pg_solve
     call pg_get_psioml
-    call solve
+    !call build_bound()
+    call build_curve()
+    !call solve
     call draw_square
     call pg_finish
     !call testing()
