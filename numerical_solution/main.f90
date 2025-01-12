@@ -30,7 +30,7 @@ subroutine main_1()
     !call build_bound()
     call build_curve()
     !call solve
-    call draw_square
+    !call draw_square
     call pg_finish
     !call testing()
     

@@ -1,9 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 26 11:02:20 2024
-        MODULE ERROR__genmod
-          INTERFACE 
-            SUBROUTINE ERROR(NUMBER_TASK,BOUND)
-              INTEGER(KIND=4) :: NUMBER_TASK
-              INTEGER(KIND=4) :: BOUND
-            END SUBROUTINE ERROR
-          END INTERFACE 
-        END MODULE ERROR__genmod

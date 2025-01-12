@@ -1,8 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 26 11:02:20 2024
-        MODULE CLOSING_2__genmod
-          INTERFACE 
-            SUBROUTINE CLOSING_2(G)
-              INTEGER(KIND=4) :: G
-            END SUBROUTINE CLOSING_2
-          END INTERFACE 
-        END MODULE CLOSING_2__genmod

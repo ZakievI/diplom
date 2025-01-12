@@ -1,9 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 26 11:02:20 2024
-        MODULE PRINT_FI_CONST__genmod
-          INTERFACE 
-            SUBROUTINE PRINT_FI_CONST(FI,G1)
-              REAL(KIND=8) :: FI
-              INTEGER(KIND=4) :: G1
-            END SUBROUTINE PRINT_FI_CONST
-          END INTERFACE 
-        END MODULE PRINT_FI_CONST__genmod

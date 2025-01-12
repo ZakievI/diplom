@@ -1,9 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Thu Sep 26 11:02:20 2024
-        MODULE DRAW__genmod
-          INTERFACE 
-            SUBROUTINE DRAW(G1,NUMBER_TASK)
-              INTEGER(KIND=4) :: G1
-              INTEGER(KIND=4) :: NUMBER_TASK
-            END SUBROUTINE DRAW
-          END INTERFACE 
-        END MODULE DRAW__genmod

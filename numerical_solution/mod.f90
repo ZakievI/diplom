@@ -15,6 +15,21 @@ module mod
     !type(areapart), target :: ap
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) st
-    integer, parameter:: N_arr = 3000
+    real(8) :: st                           = 10d0  
+    integer(4), parameter :: N_arr          = 1500
+    integer(4), parameter :: num_particle   = 50
+    real(8) :: cord_extreme_particles
+    integer(8) :: index_extreme_particles   = 0
+    type :: Curve
+        integer(4) :: n
+        real(8), allocatable :: x(:), y(:), t(:)
+        real(8), allocatable :: c(:)
+        real(8), allocatable :: s(:)
+    end type
+    type(Curve), allocatable :: Curves(:)
+contains
+    subroutine finalize(obj)
+        type(Curve), intent(inout) :: obj
+        deallocate(obj%x,obj%y)
+    end subroutine
 end
