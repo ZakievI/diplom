@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:33 2024
+        MODULE TEST_GS_TIME__genmod
+          INTERFACE 
+            FUNCTION TEST_GS_TIME
+              LOGICAL(KIND=4) :: TEST_GS_TIME
+            END FUNCTION TEST_GS_TIME
+          END INTERFACE 
+        END MODULE TEST_GS_TIME__genmod

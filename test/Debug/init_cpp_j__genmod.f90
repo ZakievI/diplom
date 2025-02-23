@@ -1,0 +1,7 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:32 2024
+        MODULE INIT_CPP_J__genmod
+          INTERFACE 
+            SUBROUTINE INIT_CPP_J
+            END SUBROUTINE INIT_CPP_J
+          END INTERFACE 
+        END MODULE INIT_CPP_J__genmod

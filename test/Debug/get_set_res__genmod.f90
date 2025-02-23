@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:33 2024
+        MODULE GET_SET_RES__genmod
+          INTERFACE 
+            SUBROUTINE GET_SET_RES(IS_GET)
+              LOGICAL(KIND=4) :: IS_GET
+            END SUBROUTINE GET_SET_RES
+          END INTERFACE 
+        END MODULE GET_SET_RES__genmod

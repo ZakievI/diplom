@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:33 2024
+        MODULE WRITE_BY_TIME__genmod
+          INTERFACE 
+            SUBROUTINE WRITE_BY_TIME(STR)
+              CHARACTER(*) :: STR
+            END SUBROUTINE WRITE_BY_TIME
+          END INTERFACE 
+        END MODULE WRITE_BY_TIME__genmod

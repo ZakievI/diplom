@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:36 2024
+        MODULE PG_INIT_CYLIDER_PARTICLE__genmod
+          INTERFACE 
+            SUBROUTINE PG_INIT_CYLIDER_PARTICLE(IBNDL,X0,Y0,R,GAM0,DIR, &
+     &TYPE_GA)
+              INTEGER(KIND=4) :: IBNDL
+              REAL(KIND=8) :: X0
+              REAL(KIND=8) :: Y0
+              REAL(KIND=8) :: R
+              REAL(KIND=8) :: GAM0
+              INTEGER(KIND=4) :: DIR
+              INTEGER(KIND=4) :: TYPE_GA
+            END SUBROUTINE PG_INIT_CYLIDER_PARTICLE
+          END INTERFACE 
+        END MODULE PG_INIT_CYLIDER_PARTICLE__genmod

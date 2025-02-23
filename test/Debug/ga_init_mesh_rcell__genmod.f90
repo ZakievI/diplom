@@ -1,0 +1,13 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:36:15 2024
+        MODULE GA_INIT_MESH_RCELL__genmod
+          INTERFACE 
+            SUBROUTINE GA_INIT_MESH_RCELL(RR,NX1,NY1,GG_LAST,USE_SYMMETR&
+     &)
+              INTEGER(KIND=4) :: NY1
+              INTEGER(KIND=4) :: NX1
+              REAL(KIND=8) :: RR(NX1)
+              REAL(KIND=8) :: GG_LAST(NY1)
+              LOGICAL(KIND=4) :: USE_SYMMETR
+            END SUBROUTINE GA_INIT_MESH_RCELL
+          END INTERFACE 
+        END MODULE GA_INIT_MESH_RCELL__genmod

@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:37 2024
+        MODULE PG_COPY_BOUND_DXDY__genmod
+          INTERFACE 
+            SUBROUTINE PG_COPY_BOUND_DXDY(IP2,IA2,IBND2,DX,DY)
+              INTEGER(KIND=4) :: IP2
+              INTEGER(KIND=4) :: IA2
+              INTEGER(KIND=4) :: IBND2
+              REAL(KIND=8) :: DX
+              REAL(KIND=8) :: DY
+            END SUBROUTINE PG_COPY_BOUND_DXDY
+          END INTERFACE 
+        END MODULE PG_COPY_BOUND_DXDY__genmod

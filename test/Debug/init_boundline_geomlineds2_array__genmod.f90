@@ -1,0 +1,19 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:36 2024
+        MODULE INIT_BOUNDLINE_GEOMLINEDS2_ARRAY__genmod
+          INTERFACE 
+            SUBROUTINE INIT_BOUNDLINE_GEOMLINEDS2_ARRAY(DS1,DS2,X1,Y1,X2&
+     &,Y2,VX,VY,NPANEL,MIN_NP)
+              USE PGMOD
+              REAL(KIND=8) :: DS1
+              REAL(KIND=8) :: DS2
+              REAL(KIND=8) :: X1
+              REAL(KIND=8) :: Y1
+              REAL(KIND=8) :: X2
+              REAL(KIND=8) :: Y2
+              TYPE (TAREAVALUE) ,TARGET :: VX
+              TYPE (TAREAVALUE) ,TARGET :: VY
+              INTEGER(KIND=4) :: NPANEL
+              INTEGER(KIND=4) :: MIN_NP
+            END SUBROUTINE INIT_BOUNDLINE_GEOMLINEDS2_ARRAY
+          END INTERFACE 
+        END MODULE INIT_BOUNDLINE_GEOMLINEDS2_ARRAY__genmod

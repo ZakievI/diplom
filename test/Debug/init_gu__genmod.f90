@@ -1,0 +1,7 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Mon Jan 13 10:54:09 2025
+        MODULE INIT_GU__genmod
+          INTERFACE 
+            SUBROUTINE INIT_GU
+            END SUBROUTINE INIT_GU
+          END INTERFACE 
+        END MODULE INIT_GU__genmod

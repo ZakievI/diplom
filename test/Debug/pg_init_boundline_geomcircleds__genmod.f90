@@ -1,0 +1,15 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:37 2024
+        MODULE PG_INIT_BOUNDLINE_GEOMCIRCLEDS__genmod
+          INTERFACE 
+            SUBROUTINE PG_INIT_BOUNDLINE_GEOMCIRCLEDS(IBNDL,DS,X0,Y0,R, &
+     &GAM1,GAM2)
+              INTEGER(KIND=4) :: IBNDL
+              REAL(KIND=8) :: DS
+              REAL(KIND=8) :: X0
+              REAL(KIND=8) :: Y0
+              REAL(KIND=8) :: R
+              REAL(KIND=8) :: GAM1
+              REAL(KIND=8) :: GAM2
+            END SUBROUTINE PG_INIT_BOUNDLINE_GEOMCIRCLEDS
+          END INTERFACE 
+        END MODULE PG_INIT_BOUNDLINE_GEOMCIRCLEDS__genmod

@@ -1,0 +1,13 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:16 2024
+        MODULE GET_BA_CASH_INTEGRAL__genmod
+          INTERFACE 
+            FUNCTION GET_BA_CASH_INTEGRAL(IA,KND,J,I,NF)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: KND
+              INTEGER(KIND=4) :: J
+              INTEGER(KIND=4) :: I
+              INTEGER(KIND=4) :: NF
+              REAL(KIND=8) :: GET_BA_CASH_INTEGRAL
+            END FUNCTION GET_BA_CASH_INTEGRAL
+          END INTERFACE 
+        END MODULE GET_BA_CASH_INTEGRAL__genmod

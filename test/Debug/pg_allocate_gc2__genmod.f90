@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:15 2024
+        MODULE PG_ALLOCATE_GC2__genmod
+          INTERFACE 
+            SUBROUTINE PG_ALLOCATE_GC2(IBNDL,IGC,N)
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: IGC
+              INTEGER(KIND=4) :: N
+            END SUBROUTINE PG_ALLOCATE_GC2
+          END INTERFACE 
+        END MODULE PG_ALLOCATE_GC2__genmod

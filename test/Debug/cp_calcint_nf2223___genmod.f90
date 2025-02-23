@@ -1,0 +1,13 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:21 2024
+        MODULE CP_CALCINT_NF2223___genmod
+          INTERFACE 
+            FUNCTION CP_CALCINT_NF2223_(ZTC,R,MODE,NF) RESULT(          &
+     &CP_CALCINT_NF2223)
+              COMPLEX(KIND=8) :: ZTC
+              REAL(KIND=8) :: R
+              INTEGER(KIND=4) :: MODE
+              INTEGER(KIND=4) :: NF
+              REAL(KIND=8) :: CP_CALCINT_NF2223
+            END FUNCTION CP_CALCINT_NF2223_
+          END INTERFACE 
+        END MODULE CP_CALCINT_NF2223___genmod

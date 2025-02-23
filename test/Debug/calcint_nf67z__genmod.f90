@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:27 2024
+        MODULE CALCINT_NF67Z__genmod
+          INTERFACE 
+            FUNCTION CALCINT_NF67Z(Z0,Z1,Z2)
+              COMPLEX(KIND=8) :: Z0
+              COMPLEX(KIND=8) :: Z1
+              COMPLEX(KIND=8) :: Z2
+              COMPLEX(KIND=8) :: CALCINT_NF67Z
+            END FUNCTION CALCINT_NF67Z
+          END INTERFACE 
+        END MODULE CALCINT_NF67Z__genmod

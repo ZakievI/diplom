@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "gfortran",
+            "args": [
+                "-g",
+                "-I${env:INCLUDE}/dll",
+                "-I${env:INCLUDE}/static",
+                "-L${env:LIB}",
+                "-limsl",
+                "-o",
+                "${fileDirname}/main.exe",
+                "${workspaceFolder}/mod.f90",
+                "${workspaceFolder}/lib/func_mod.f90",
+                "${workspaceFolder}/lib/gen_mod_new.f90",
+                "${workspaceFolder}/lib/pgmod.f90",
+                "${workspaceFolder}/lib/func.f90",
+                "${workspaceFolder}/lib/geom_add.f90",
+                "${workspaceFolder}/lib/intf_dxdy.f90",
+                "${workspaceFolder}/lib/pg_calc.f90",
+                "${workspaceFolder}/lib/pg_calcd.f90",
+                "${workspaceFolder}/lib/pg_clacc.f90",
+                "${workspaceFolder}/lib/pg_closing.f90",
+                "${workspaceFolder}/lib/pg_geom.f90",
+                "${workspaceFolder}/lib/pg_get.f90",
+                "${workspaceFolder}/lib/pg_get_fun.f90",
+                "${workspaceFolder}/lib/pg_gu.f90",
+                "${workspaceFolder}/lib/pg_matrix.f90",
+                "${workspaceFolder}/lib/slau.f90",
+                "${workspaceFolder}/lib/slau_block.f90",
+                "${workspaceFolder}/_Solver_.f90",
+                "${workspaceFolder}/build_geom.f90",
+                "${workspaceFolder}/build_mesh.f90",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Generated task by Modern Fortran extension."
+        }
+    ]
+}

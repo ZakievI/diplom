@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:44 2024
+        MODULE GET_PSIOML__genmod
+          INTERFACE 
+            SUBROUTINE GET_PSIOML(IA,KND)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: KND
+            END SUBROUTINE GET_PSIOML
+          END INTERFACE 
+        END MODULE GET_PSIOML__genmod

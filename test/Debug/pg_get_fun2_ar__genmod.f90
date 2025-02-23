@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:45 2024
+        MODULE PG_GET_FUN2_AR__genmod
+          INTERFACE 
+            FUNCTION PG_GET_FUN2_AR(J)
+              INTEGER(KIND=4) :: J
+              REAL(KIND=8) :: PG_GET_FUN2_AR
+            END FUNCTION PG_GET_FUN2_AR
+          END INTERFACE 
+        END MODULE PG_GET_FUN2_AR__genmod

@@ -1,0 +1,7 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:34 2024
+        MODULE PG_SOLVE__genmod
+          INTERFACE 
+            SUBROUTINE PG_SOLVE
+            END SUBROUTINE PG_SOLVE
+          END INTERFACE 
+        END MODULE PG_SOLVE__genmod

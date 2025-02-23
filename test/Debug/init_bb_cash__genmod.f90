@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:15 2024
+        MODULE INIT_BB_CASH__genmod
+          INTERFACE 
+            SUBROUTINE INIT_BB_CASH(IA,KND)
+              INTEGER(KIND=4) :: IA
+              INTEGER(KIND=4) :: KND
+            END SUBROUTINE INIT_BB_CASH
+          END INTERFACE 
+        END MODULE INIT_BB_CASH__genmod

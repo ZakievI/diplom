@@ -1,0 +1,8 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:33 2024
+        MODULE GET_IND_AREA__genmod
+          INTERFACE 
+            SUBROUTINE GET_IND_AREA(IA)
+              INTEGER(KIND=4) :: IA
+            END SUBROUTINE GET_IND_AREA
+          END INTERFACE 
+        END MODULE GET_IND_AREA__genmod

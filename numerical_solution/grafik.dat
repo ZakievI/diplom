@@ -1,4 +1,0 @@
- title = "traektorie"
- variables = "x", "y"
-ZONE T="area1", I=10, F=POINT
-    0.10000E+00     0.11376E-02

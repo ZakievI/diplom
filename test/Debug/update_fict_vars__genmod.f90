@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:33 2024
+        MODULE UPDATE_FICT_VARS__genmod
+          INTERFACE 
+            SUBROUTINE UPDATE_FICT_VARS(M_EQ,M_B,IA)
+              REAL(KIND=8) :: M_EQ(GS%M%NX_ALL)
+              REAL(KIND=8) :: M_B
+              INTEGER(KIND=4) :: IA
+            END SUBROUTINE UPDATE_FICT_VARS
+          END INTERFACE 
+        END MODULE UPDATE_FICT_VARS__genmod

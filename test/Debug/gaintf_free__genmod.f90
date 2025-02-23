@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:36:15 2024
+        MODULE GAINTF_FREE__genmod
+          INTERFACE 
+            SUBROUTINE GAINTF_FREE(IFS)
+              USE PGMOD
+              TYPE (INTF_STRUCT) :: IFS
+            END SUBROUTINE GAINTF_FREE
+          END INTERFACE 
+        END MODULE GAINTF_FREE__genmod

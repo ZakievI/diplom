@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:32 2024
+        MODULE CMNE0COUNT__genmod
+          INTERFACE 
+            FUNCTION CMNE0COUNT(I)
+              INTEGER(KIND=4) :: I
+              INTEGER(KIND=4) :: CMNE0COUNT
+            END FUNCTION CMNE0COUNT
+          END INTERFACE 
+        END MODULE CMNE0COUNT__genmod

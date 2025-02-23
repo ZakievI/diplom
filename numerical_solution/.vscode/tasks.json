@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "gfortran",
+            "args": [
+                "-g",
+                "-I${env:INCLUDE}/dll",
+                "-I${env:INCLUDE}/static",
+                "-L${env:LIB}",
+                "-limsl",
+                "-o",
+                "${fileDirname}/main.exe",
+                "${workspaceFolder}/mod.f90",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Generated task by Modern Fortran extension."
+        }
+    ]
+}

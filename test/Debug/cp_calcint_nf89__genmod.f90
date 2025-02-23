@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:21 2024
+        MODULE CP_CALCINT_NF89__genmod
+          INTERFACE 
+            FUNCTION CP_CALCINT_NF89(ZTC,R,MODE,NF)
+              COMPLEX(KIND=8) :: ZTC
+              REAL(KIND=8) :: R
+              INTEGER(KIND=4) :: MODE
+              INTEGER(KIND=4) :: NF
+              REAL(KIND=8) :: CP_CALCINT_NF89
+            END FUNCTION CP_CALCINT_NF89
+          END INTERFACE 
+        END MODULE CP_CALCINT_NF89__genmod

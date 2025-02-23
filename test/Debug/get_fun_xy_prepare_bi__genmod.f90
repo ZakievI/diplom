@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:45 2024
+        MODULE GET_FUN_XY_PREPARE_BI__genmod
+          INTERFACE 
+            SUBROUTINE GET_FUN_XY_PREPARE_BI(XX,YY,MODE,BI)
+              USE PGMOD
+              REAL(KIND=8) :: XX
+              REAL(KIND=8) :: YY
+              INTEGER(KIND=4) :: MODE
+              TYPE (TBOUND_INFO) :: BI
+            END SUBROUTINE GET_FUN_XY_PREPARE_BI
+          END INTERFACE 
+        END MODULE GET_FUN_XY_PREPARE_BI__genmod

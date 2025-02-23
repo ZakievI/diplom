@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:06 2024
+        MODULE BM_ILUP__genmod
+          INTERFACE 
+            SUBROUTINE BM_ILUP(BMILU)
+              USE SLAU_BLOCK
+              TYPE (MAIN_BLOCK_MATRIX) ,TARGET :: BMILU
+            END SUBROUTINE BM_ILUP
+          END INTERFACE 
+        END MODULE BM_ILUP__genmod

@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:15 2024
+        MODULE NULLGU__genmod
+          INTERFACE 
+            SUBROUTINE NULLGU(IBNDL,IGU,IS_ADD)
+              INTEGER(KIND=4) :: IBNDL
+              INTEGER(KIND=4) :: IGU
+              LOGICAL(KIND=4) :: IS_ADD
+            END SUBROUTINE NULLGU
+          END INTERFACE 
+        END MODULE NULLGU__genmod

@@ -1,0 +1,10 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:36:16 2024
+        MODULE GA_GET_FORCE_CIRCLE__genmod
+          INTERFACE 
+            SUBROUTINE GA_GET_FORCE_CIRCLE(IB,FX,FY)
+              INTEGER(KIND=4) :: IB
+              REAL(KIND=8) :: FX
+              REAL(KIND=8) :: FY
+            END SUBROUTINE GA_GET_FORCE_CIRCLE
+          END INTERFACE 
+        END MODULE GA_GET_FORCE_CIRCLE__genmod

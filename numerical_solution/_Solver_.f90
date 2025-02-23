@@ -20,8 +20,11 @@ subroutine solve !построение графика числа T = N_impact/N 
     dlt             = d0
     stocs           = -1d0
     allocate(y_out(num,2))
+    !$omp parallel do if (gs_use_parallel_build_grafic == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do while (stocs <= 2)
         st              = 10**(stocs)
+        !write(*,"('st=')")
+        print * ,'st=', stocs
         !st              = 1d0
         y_t(1)          = eps
         y_t(3)          = d1 + dlt + eps
@@ -67,7 +70,8 @@ subroutine solve !построение графика числа T = N_impact/N 
         write(1,"(E15.5, ' ', E15.5)") st, y_t(2)
         print *, stocs, ' ', y_t(2)
         stocs = stocs + d1/3
-    end do 
+    end do
+    !$OMP END PARALLEL DO
     deallocate(y_out)
     end subroutine solve
 subroutine build_bound() !постройка границы в области после цилиндра
@@ -242,7 +246,7 @@ function area_quadrilateral(z1, z2, z3, z4) !нахождение объема �
     ! area_quadrilateral = (dreal(p3-p1)*dimag(p4-2*p1+p2)+dimag(p3-p1)*dreal(p4-2*p1+p2))*d5
     area_quadrilateral = d5 * ABS(DIMAG(z1*CONJG(z2) + z2*CONJG(z3) + z3*CONJG(z4) + z4*CONJG(z1)))
     end function area_quadrilateral
-function search_for_extreme_particles() ! поиск критической частицы, после который частицы пролетаю мимо цилиндра
+function search_for_extreme_particles() ! поиск критической частицы, после которой след. частицы пролетаю мимо цилиндра
     use mod
     implicit none
     integer(4), parameter::n = 4
@@ -329,15 +333,18 @@ subroutine build_curve() !поиск кривых
     ido             = 1
     dlt             = d0
     allocate(Curves(num_particle))
-    allocate(Curve_tempr(N_arr,4))
-    cord_extreme_particles = search_for_extreme_particles()
+    ! cord_extreme_particles = search_for_extreme_particles()
+    
+    !$omp parallel do if (gs_use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
+        allocate(Curve_tempr(N_arr,4))
         write(*,"('I=',i0)") i
         n1                 = 1
         ido                = 1
         s                  = d0
         Curve_tempr(n1, 1) = -L1/2 
         if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
+            cord_extreme_particles = search_for_extreme_particles()
             Curve_tempr(n1, 2) = cord_extreme_particles
             index_extreme_particles = i
         else
@@ -390,21 +397,56 @@ subroutine build_curve() !поиск кривых
         Curves(i)%s(1:n1) = Curve_tempr(1:n1, 4)
         Curves(i)%n = n1
         call divprk(3, n, fcn_s_t, s, s+d_s, tol, param, y)
+        deallocate(Curve_tempr)
     end do 
+    !$OMP END PARALLEL DO
     call find_concentration()
     call draw_Curves()
+    !call build_mesh_1()
     end subroutine build_curve
 subroutine build_mesh_1
     use mod
-    integer(4) :: i
-    type(Mesh_1), allocatable :: mesh
-    allocate(mesh%x_y_(num_particle, num_of_partitions_by_x),mesh%t(num_particle, num_of_partitions_by_x),mesh%c(num_particle, num_of_partitions_by_x)&
-            mesh%v_x(num_particle, num_of_partitions_by_x),mesh%v_y(num_particle, num_of_partitions_by_x),mesh%s(num_particle, num_of_partitions_by_x))
-    do i = 1, num_particle
-        if i<index_extreme_particles then
-
-        else
-        end if 
+    integer(4) :: i, l
+    real(8), allocatable :: tempr_y_c(:), tempr_x_c(:)
+    integer(4) :: num_of_partitions_by_x
+    real(8) :: x_c
+    N_part_2 = index_extreme_particles
+    num_of_partitions_by_x = (N_part_1 + N_part_2 + N_part_3 + N_part_4)
+    ! allocate(mesh%x_y_(num_particle * num_of_partitions_by_x, 2),mesh%t(num_particle * num_of_partitions_by_x, 1),mesh%c(num_particle * num_of_partitions_by_x, 1)&
+    !         mesh%v(num_particle * num_of_partitions_by_x, 2),mesh%s(num_particle * num_of_partitions_by_x, 2))
+    allocate(mesh)
+    mesh%n_i = num_of_partitions_by_x
+    mesh%n_j = num_particle
+    allocate(mesh%x_y_(num_of_partitions_by_x * num_particle, 2))
+    ! область 1 - x меняеться от -L1 до -1, y - от 0 до H1
+    ! область 2 - x меняеться от -1 до 0, y - от Y_Last до H1
+    ! область 3 - x меняеться от 0 до 1, y - от Y_Last до H1
+    ! область 4 - x меняеться от 1 до L1, y - от 0 до H1
+    
+    ! область 1
+    do i = 1, 4
+        if (i == 1) then
+            do l = 1, N_part_1
+                x_c = -L1 + (L1 - d1)*(l-1)/(N_part_1-1)
+                mesh%x_y_(l, 1) = x_c
+            end do
+            allocate(tempr_y_c(N_part_1),tempr_x_c(N_part_1))
+            tempr_x_c = mesh%x_y_(1:N_part_1, 1)
+            do l = 1, num_particle
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, N_part_1, tempr_x_c, tempr_y_c )
+                mesh%x_y_(1+num_of_partitions_by_x * (l-1):N_part_1 + num_of_partitions_by_x * (l-1),2) = tempr_y_c
+                mesh%x_y_(1+num_of_partitions_by_x * (l-1):N_part_1 + num_of_partitions_by_x * (l-1),1) = mesh%x_y_(1:N_part_1, 1)
+            end do
+            deallocate(tempr_y_c,tempr_x_c)
+        elseif (i == 2)then
+            allocate(tempr_x_c(N_part_2 - 1))
+            do l = 2, N_part_2
+                tempr_x_c(l-1) = Curves(l)%x(Curves(l)%n)
+            end do
+        elseif (i == 3) then 
+        else 
+        end if
+        ! end do
     end do 
     end subroutine build_mesh_1
 subroutine find_concentration() !поиск концентрации
@@ -417,10 +459,10 @@ subroutine find_concentration() !поиск концентрации
     external area_quadrilateral
     V_0 = d1
     do i = 1, num_particle
-        if ((i == 1).or.(i == index_extreme_particles)) then
+        if ((i == 1).or.(i == index_extreme_particles + 1)) then
             Curve_tempr_top%n = Curves(i)%n
             allocate(Curve_tempr_top%x(Curves(i)%n), Curve_tempr_top%y(Curves(i)%n))
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%x)
+            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%x)!построение сплайна 
             call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%y)
             do j = 1, Curves(i)%n
                 if (j == 1) then
@@ -446,7 +488,7 @@ subroutine find_concentration() !поиск концентрации
             end do
             call finalize(Curve_tempr_top)
         ! else if (i == index_extreme_particles): 
-        else if (i == num_particle) then 
+        else if ((i == num_particle) .or. (i == index_extreme_particles)) then 
             Curve_tempr_bottom%n = Curves(i)%n
             allocate(Curve_tempr_bottom%x(Curves(i)%n), Curve_tempr_bottom%y(Curves(i)%n))
             call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%x)

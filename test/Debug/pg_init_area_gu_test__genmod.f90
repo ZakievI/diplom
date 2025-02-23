@@ -1,0 +1,12 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:17 2024
+        MODULE PG_INIT_AREA_GU_TEST__genmod
+          INTERFACE 
+            SUBROUTINE PG_INIT_AREA_GU_TEST(G,K,ERR,IERR,ERRE)
+              REAL(KIND=8) :: G(GSAREA%A%NTR)
+              INTEGER(KIND=4) :: K
+              REAL(KIND=8) :: ERR
+              INTEGER(KIND=4) :: IERR
+              REAL(KIND=8) :: ERRE
+            END SUBROUTINE PG_INIT_AREA_GU_TEST
+          END INTERFACE 
+        END MODULE PG_INIT_AREA_GU_TEST__genmod
