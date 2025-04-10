@@ -5,7 +5,7 @@ program main
 end
 subroutine main_1()
     use mod
-    H1=2*d1
+    H1=5*d1
     L1=10*d1
     nj=100
     ds=pi/nj
@@ -39,11 +39,11 @@ subroutine draw_square
   use mod
   integer(4) nr,ng,i,j,mode
   real(8) g,r,x,y,psi,Vx,Vy,om,pg_get_fun_xy,bndg(200),bndrv(200)
-  ng=60 !число ячеек по gamma
+  ng=60 !С‡РёСЃР»Рѕ СЏС‡РµРµРє РїРѕ gamma
   call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)
 
   OPEN (1,FILE='data.dat')
-  nr=20 !число ячеек по r
+  nr=20 !С‡РёСЃР»Рѕ СЏС‡РµРµРє РїРѕ r
 
   write(1,*) 'TITLE = "velosity"'
   write(1,*) 'VARIABLES = "X", "Y", "psi", "Vx", "Vy", "om"'

@@ -1,11 +1,11 @@
 module mod
     use pgmod
-    real(8) h
-    real(8) k
-    real(8),PARAMETER :: eps=1d-4
-    real(8),PARAMETER :: eps_zd3=1d-3
-    real(8) cof_a
-    real(8) R_2,R_1
+    !real(8) h
+    !real(8) k
+    real(8), PARAMETER :: eps=1d-5
+    real(8), PARAMETER :: eps_zd3=1d-3
+    !real(8) cof_a
+    !real(8) R_2,R_1
     logical newgu
     real(8) F_m
     real(8) H1, L1
@@ -14,29 +14,36 @@ module mod
     real(8) ds2 !������ ������ ��� �������� �������
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) :: st                           = 100d0  
-    integer(4), parameter :: N_arr          = 1500
-    integer(4), parameter :: num_particle   = 50
+    real(8) :: st                           = 1d0  
+    integer(4), parameter :: N_arr          = 2000
+    integer(4), parameter :: num_particle   = 100
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 0
     integer(4) :: N_part_1                  = 10
     integer(4) :: N_part_2                  
     integer(4) :: N_part_3                  = 10 ! = N_part_1 /(L1 - d1))
     integer(4) :: N_part_4                  = 10
-    integer(4) :: gs_use_parallel_build_cerves = 1
+    integer(4) :: gs_use_parallel_build_cerves = 0
     integer(4) :: gs_use_parallel_build_grafic = 0
     type :: Curve
         integer(4) :: n
         real(8), allocatable :: x(:), y(:), t(:)
         real(8), allocatable :: c(:)
+        real(8), allocatable :: du1dx1(:), du2dx1(:), du1dx2(:), du2dx2(:)
+        real(8), allocatable :: J_11(:), J_12(:), J_21(:), J_22(:), J(:)
         real(8), allocatable :: s(:)
+        real(8), allocatable :: discrepancy_du1dx1(:), discrepancy_du2dx1(:), discrepancy_du1dx2(:), discrepancy_du2dx2(:)
+        real(8), allocatable :: aprox_du1dx1(:), aprox_du2dx1(:), aprox_du1dx2(:), aprox_du2dx2(:)
     end type
     type :: Mesh_1
         integer(4) :: n_i, n_j
         real(8), allocatable :: x_y_(:,:), t(:,:), c(:,:), v_x(:,:), v_y(:,:), s(:,:)
     end type
-    type(Curve), allocatable :: Curves(:)
+    type(Curve), allocatable, target :: Curves(:)
+    type(Curve), pointer :: current_Curve
     type(Mesh_1), allocatable :: mesh
+    real(8) :: top_coordinat                = 1d0
+    real(8) :: bottom_coordinat             = d0
 contains
     subroutine finalize(obj)
         type(Curve), intent(inout) :: obj

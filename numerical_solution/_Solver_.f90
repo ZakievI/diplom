@@ -20,7 +20,6 @@ subroutine solve !построение графика числа T = N_impact/N 
     dlt             = d0
     stocs           = -1d0
     allocate(y_out(num,2))
-    !$omp parallel do if (gs_use_parallel_build_grafic == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do while (stocs <= 2)
         st              = 10**(stocs)
         !write(*,"('st=')")
@@ -71,7 +70,6 @@ subroutine solve !построение графика числа T = N_impact/N 
         print *, stocs, ' ', y_t(2)
         stocs = stocs + d1/3
     end do
-    !$OMP END PARALLEL DO
     deallocate(y_out)
     end subroutine solve
 subroutine build_bound() !постройка границы в области после цилиндра
@@ -304,23 +302,93 @@ subroutine draw_Curves() !вывод кривых
     integer(4) :: i, l
     open (1, file='traektorie.dat')
     write(1,*) 'title = "traektorie"'
-    write(1,*) 'variables = "x", "y", "t", "c"'
+    ! write(1,*) 'variables = "x", "y", "t", "c", "1/|J|", "J_11", "J_12", "J_21", "J_22", "Error"'
+    !write(1,*) 'variables = "x", "y", "t", "c", "1/|J|", "du1dx1", "du2dx1", "du1dx2", "du2dx2",&
+    !"disc_11", "disc_12", "disc_21", "disc_22", "Error"'
+    write(1,*) 'variables = "x", "y", "consetr", '
     do i = 1, size(Curves)
         write(1,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") i, Curves(i)%n
         do l = 1, Curves(i)%n
-            write(1,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") Curves(i)%x(l), Curves(i)%y(l), Curves(i)%t(l), Curves(i)%c(l)
+            ! write(1,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") &
+            ! Curves(i)%x(l), Curves(i)%y(l), Curves(i)%t(l), Curves(i)%c(l),&
+            ! d1/dabs(Curves(i)%J(l)), Curves(i)%J_11(l), Curves(i)%J_12(l), Curves(i)%J_21(l), Curves(i)%J_22(l), d1/dabs(Curves(i)%J(l)) - Curves(i)%c(l)
+            write(1,"(E15.5, ' ', E15.5, ' ', E15.5)") &
+            Curves(i)%x(l), Curves(i)%y(l), Curves(i)%c(l)
+            
+            ! Curves(i)%discrepancy_du1dx1(l), Curves(i)%discrepancy_du1dx2(l), Curves(i)%discrepancy_du2dx1(l), Curves(i)%discrepancy_du2dx2(l), d1/dabs(Curves(i)%J(l)) - Curves(i)%c(l)
+            !Curves(i)%aprox_du1dx1(l), Curves(i)%aprox_du1dx2(l), Curves(i)%aprox_du2dx1(l), Curves(i)%aprox_du2dx2(l)
         end do
     end do
     end subroutine
+subroutine build_time_isolines() !строим изолинии по времени
+    use mod
+    integer(4) :: i, j, nn
+    integer(4), allocatable :: index_curves(:), index_curves_temporary(:)
+    !complex(8), allocatable :: cord(:)
+    real(8) :: t_max, x, y, c
+    real(8), allocatable :: t_arr(:)
+    nn = 100
+    t_max = d0
+    allocate(index_curves(size(Curves)))
+    do i = 1, size(Curves)
+        if (t_max < Curves(i)%t(size(Curves(i)%t))) then
+            t_max = Curves(i)%t(size(Curves(i)%t))
+        end if 
+    end do 
+    allocate(t_arr(nn))
+    do i = 1, nn
+        t_arr(i) = (t_max - d0) * (i - 1) / (nn - 1) + d0
+    end do  
+    open (3, file='time_isolines.dat')
+    write(3,*) 'title = "time_isolines"'
+    write(3,*) 'variables = "x", "y", "t", "c"'
+    do i = 1, size(Curves)
+        index_curves(i) = i         
+    end do
+    do i = 1, nn
+        j = 1
+        do 
+            if (j > size(index_curves)) exit
+            if (t_arr(i) > Curves(index_curves(j))%t(size(Curves(index_curves(j))%t))) then
+                allocate(index_curves_temporary(size(index_curves) - 1))
+                if (j == 1) then
+                    index_curves_temporary(j:) = index_curves(j + 1:)
+                elseif (j == size(index_curves)) then
+                    index_curves_temporary(:j - 1) = index_curves(:j - 1)
+                else
+                    index_curves_temporary(:j - 1) = index_curves(:j - 1)
+                    index_curves_temporary(j:) = index_curves(j + 1:)
+                endif
+                deallocate(index_curves)
+                allocate(index_curves(size(index_curves_temporary)))
+                index_curves = index_curves_temporary
+                deallocate(index_curves_temporary)
+            end if
+            j = j + 1
+        end do
+        write(3,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") i, size(index_curves)
+        do j = 1, size(index_curves)
+            call dcsiez(size(Curves(index_curves(j))%t), Curves(index_curves(j))%t,Curves(index_curves(j))%x, 1, t_arr(i), x)
+            call dcsiez(size(Curves(index_curves(j))%t), Curves(index_curves(j))%t,Curves(index_curves(j))%y, 1, t_arr(i), y)
+            call dcsiez(size(Curves(index_curves(j))%t), Curves(index_curves(j))%t,Curves(index_curves(j))%c, 1, t_arr(i), c)
+            !if ((-L1/2 > x > L1/2) .and. (d0 > y > H1) .and. ((x**2 + y**2) > 1)) then
+            write(3,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") x, y, t_arr(i), c
+            !end if
+        end do
+    end do 
+    deallocate(index_curves, t_arr)
+    
+    end subroutine 
 subroutine build_curve() !поиск кривых
     use mod
     integer(4) :: i, n1, ido
     integer(4), parameter :: n = 5
-    real(8) area_quadrilateral, search_for_extreme_particles, S1
+    real(8) area_quadrilateral, search_for_extreme_particles
     integer(4), parameter :: mxparm = 50
     real(8) :: param(mxparm), d_s, s, y(n), dlt, tol, pg_get_fun_xy
     real(8), allocatable :: Curve_tempr(:,:)
-    complex(8) :: p1, p2, p3, p4
+    !real(8) :: S1
+    !complex(8) :: p1, p2, p3, p4
     external fcn_s_t, area_quadrilateral, fcn_s_t_top, fcn_s_t_bottom, search_for_extreme_particles
     !p1              = (1d0, 1d0)
     !p2              = (3d0, 1d0)
@@ -333,7 +401,7 @@ subroutine build_curve() !поиск кривых
     ido             = 1
     dlt             = d0
     allocate(Curves(num_particle))
-    ! cord_extreme_particles = search_for_extreme_particles()
+    !cord_extreme_particles = search_for_extreme_particles()
     
     !$omp parallel do if (gs_use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
@@ -343,22 +411,26 @@ subroutine build_curve() !поиск кривых
         ido                = 1
         s                  = d0
         Curve_tempr(n1, 1) = -L1/2 
-        if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
-            cord_extreme_particles = search_for_extreme_particles()
-            Curve_tempr(n1, 2) = cord_extreme_particles
-            index_extreme_particles = i
-        else
-            !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
-            Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
-        end if
+        ! if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
+        !     cord_extreme_particles = search_for_extreme_particles()
+        !     Curve_tempr(n1, 2) = cord_extreme_particles - eps
+        !     index_extreme_particles = i
+        ! else
+        !     !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
+        !     ! измененно !!!!!!!!!!
+        !     Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
+        !     ! Curve_tempr(n1, 2) = 0.5d0
+        ! end if
+        Curve_tempr(n1, 2) = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
+        
         Curve_tempr(n1, 3) = d0
         Curve_tempr(n1, 4) = s
         y(1)            = -L1/2
         y(2)            = Curve_tempr(n1, 2)
-        if (i == 1) then
+        if (dabs(Curve_tempr(n1, 2)) < eps) then
             y(3)            = pg_get_fun_xy(y(1),y(2) + eps,2,d0,d1,0)
             y(4)            = -pg_get_fun_xy(y(1),y(2) + eps,2,d1,d0,0)
-        else if(i == num_particle)then 
+        else if(dabs(Curve_tempr(n1, 2) - H1) < eps)then 
             y(3)            = pg_get_fun_xy(y(1),y(2) - eps,2,d0,d1,0)
             y(4)            = -pg_get_fun_xy(y(1),y(2) -  eps,2,d1,d0,0)
         else 
@@ -370,17 +442,17 @@ subroutine build_curve() !поиск кривых
         param(4)        = N_arr
         param(10)       = 1.0d0
         do while((sqrt(y(1)**2+y(2)**2)>d1+dlt).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(n1<N_arr))
-            n1 = n1 + 1
             !write(*,"('N=',i0)") n1
-            if (i == 1) then
+            if (dabs(Curve_tempr(n1, 2)) < eps) then
                 call divprk(ido, n, fcn_s_t_bottom, s, s+d_s, tol, param, y)
                 y(2) = d0
-            else if(i == num_particle)then 
+            else if(dabs(Curve_tempr(n1, 2) - H1) < eps)then 
                 call divprk(ido, n, fcn_s_t_top, s, s+d_s, tol, param, y)
                 y(2) = H1
             else
                 call divprk(ido, n, fcn_s_t, s, s+d_s, tol, param, y)
             end if 
+            n1 = n1 + 1
             Curve_tempr(n1, 1) = y(1)
             Curve_tempr(n1, 2) = y(2)
             Curve_tempr(n1, 3) = y(5)
@@ -388,7 +460,6 @@ subroutine build_curve() !поиск кривых
         end do
         allocate(Curves(i)%x(n1))
         allocate(Curves(i)%y(n1))
-        allocate(Curves(i)%c(n1))
         allocate(Curves(i)%t(n1))
         allocate(Curves(i)%s(n1))
         Curves(i)%x(1:n1) = Curve_tempr(1:n1, 1)
@@ -400,11 +471,59 @@ subroutine build_curve() !поиск кривых
         deallocate(Curve_tempr)
     end do 
     !$OMP END PARALLEL DO
-    call find_concentration()
+    call find_derivative()
+    call checking_derivatives()
+    !call find_concentration()
+    call find_Jacobian()
+    call find_concentration_by_Jacobian()
     call draw_Curves()
     !call build_mesh_1()
+    !call build_time_isolines()
     end subroutine build_curve
-subroutine build_mesh_1
+subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
+    use mod
+    integer(4) :: i, j
+    real(8) du1ds, du2ds, cosfi, sinfi
+    integer(4), parameter :: nn1 = 4
+    real(8) ::  a(nn1, nn1), b(nn1), xx(nn1)
+    real(8) pg_get_fun_xy
+    do i = 1, num_particle
+        allocate(Curves(i)%du1dx1(Curves(i)%n), Curves(i)%du2dx1(Curves(i)%n), Curves(i)%du1dx2(Curves(i)%n), Curves(i)%du2dx2(Curves(i)%n))
+        do j = 1, Curves(i)%n
+            if ((j > 1) .and.(j < Curves(i)%n)) then
+                cosfi = ((Curves(i)%x(j + 1) - Curves(i)%x(j - 1))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1)))
+                sinfi = ((Curves(i)%y(j + 1) - Curves(i)%y(j - 1))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1)))
+                du1ds =  (pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d0,d1,0) - pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d0,d1,0))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
+                du2ds =  (-pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d1,d0,0) + pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d1,d0,0))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
+            elseif (j == 1) then
+                cosfi = (3 * Curves(i)%x(j) - 4 * Curves(i)%x(j + 1) + Curves(i)%x(j + 2))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+                sinfi = (3 * Curves(i)%y(j) - 4 * Curves(i)%y(j + 1) + Curves(i)%y(j + 2))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+                du1ds = (3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d0,d1,0) - 4 * pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d0,d1,0)&
+                        + pg_get_fun_xy(Curves(i)%x(j + 2),Curves(i)%y(j + 2),2,d0,d1,0))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+                du2ds = (-3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d1,d0,0) + 4 * pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d1,d0,0)&
+                        - pg_get_fun_xy(Curves(i)%x(j + 2),Curves(i)%y(j + 2),2,d1,d0,0))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+            elseif (j == Curves(i)%n) then
+                cosfi = (3 * Curves(i)%x(j) - 4 * Curves(i)%x(j - 1) + Curves(i)%x(j - 2))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+                sinfi = (3 * Curves(i)%y(j) - 4 * Curves(i)%y(j - 1) + Curves(i)%y(j - 2))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+                du1ds = (3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d0,d1,0) - 4 * pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d0,d1,0)&
+                        + pg_get_fun_xy(Curves(i)%x(j - 2),Curves(i)%y(j - 2),2,d0,d1,0))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+                du2ds = (-3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d1,d0,0) + 4 * pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d1,d0,0)&
+                        - pg_get_fun_xy(Curves(i)%x(j - 2),Curves(i)%y(j - 2),2,d1,d0,0))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+            end if
+            a = reshape((/1d0, d0, d0, 1d0, &
+                          d0, -1d0, 1d0, d0, &
+                          cosfi, sinfi, d0, d0, &
+                          d0, d0, cosfi, sinfi /), (/ 4, 4 /))
+            b = [d0, -pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),3,d0,d0,2), du1ds, du2ds]
+            call DLSLRG(nn1, a, nn1, b, 2, xx)
+            Curves(i)%du1dx1(j) = xx(1)
+            Curves(i)%du1dx2(j) = xx(2)
+            Curves(i)%du2dx1(j) = xx(3)
+            Curves(i)%du2dx2(j) = xx(4)
+        end do
+    end do
+    end subroutine find_derivative
+subroutine build_mesh_1 !строим сетку 
     use mod
     integer(4) :: i, l
     real(8), allocatable :: tempr_y_c(:), tempr_x_c(:)
@@ -451,7 +570,7 @@ subroutine build_mesh_1
     end subroutine build_mesh_1
 subroutine find_concentration() !поиск концентрации
     use mod
-    integer(4) :: i, n1, j
+    integer(4) :: i, j
     real(8) V_0, area_quadrilateral 
     !real(8), allocatable :: value_(:), xvec(:), xdata(:), fdata(:)
     type(Curve) :: Curve_tempr_top, Curve_tempr_bottom
@@ -459,41 +578,42 @@ subroutine find_concentration() !поиск концентрации
     external area_quadrilateral
     V_0 = d1
     do i = 1, num_particle
+        current_Curve=>Curves(i)
         if ((i == 1).or.(i == index_extreme_particles + 1)) then
-            Curve_tempr_top%n = Curves(i)%n
-            allocate(Curve_tempr_top%x(Curves(i)%n), Curve_tempr_top%y(Curves(i)%n))
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%x)!построение сплайна 
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%y)
-            do j = 1, Curves(i)%n
+            Curve_tempr_top%n = current_Curve%n
+            allocate(Curve_tempr_top%x(current_Curve%n), Curve_tempr_top%y(current_Curve%n))
+            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%x)!построение сплайна 
+            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%y)
+            do j = 1, current_Curve%n
                 if (j == 1) then
-                    p1 = cmplx(Curves(i)%x(j),Curves(i)%y(j))
-                    p2 = cmplx(Curves(i)%x(j+1),Curves(i)%y(j+1))
+                    p1 = cmplx(current_Curve%x(j),current_Curve%y(j))
+                    p2 = cmplx(current_Curve%x(j+1),current_Curve%y(j+1))
                     p3 = cmplx(Curve_tempr_top%x(j+1),Curve_tempr_top%y(j+1))
                     p4 = cmplx(Curve_tempr_top%x(j),Curve_tempr_top%y(j))
                     V_0 = 4*area_quadrilateral(p1,p2,p3,p4)
-                    Curves(i)%c(j)=d1
-                elseif ( j == Curves(i)%n ) then
-                    p1 = cmplx(Curves(i)%x(j-1),Curves(i)%y(j-1))
-                    p2 = cmplx(Curves(i)%x(j),Curves(i)%y(j))
+                    current_Curve%c(j)=d1
+                elseif ( j == current_Curve%n ) then
+                    p1 = cmplx(current_Curve%x(j-1),current_Curve%y(j-1))
+                    p2 = cmplx(current_Curve%x(j),current_Curve%y(j))
                     p3 = cmplx(Curve_tempr_top%x(j),Curve_tempr_top%y(j))
                     p4 = cmplx(Curve_tempr_top%x(j-1),Curve_tempr_top%y(j-1))
-                    Curves(i)%c(j) = V_0/(4*area_quadrilateral(p1,p2,p3,p4))
+                    current_Curve%c(j) = V_0/(4*area_quadrilateral(p1,p2,p3,p4))
                 else
-                    p1 = cmplx(Curves(i)%x(j-1),Curves(i)%y(j-1))
-                    p2 = cmplx(Curves(i)%x(j+1),Curves(i)%y(j+1))
+                    p1 = cmplx(current_Curve%x(j-1),current_Curve%y(j-1))
+                    p2 = cmplx(current_Curve%x(j+1),current_Curve%y(j+1))
                     p3 = cmplx(Curve_tempr_top%x(j+1),Curve_tempr_top%y(j+1))
                     p4 = cmplx(Curve_tempr_top%x(j-1),Curve_tempr_top%y(j-1))
-                    Curves(i)%c(j) = V_0/(2*area_quadrilateral(p1,p2,p3,p4))
+                    current_Curve%c(j) = V_0/(2*area_quadrilateral(p1,p2,p3,p4))
                 end if
             end do
             call finalize(Curve_tempr_top)
         ! else if (i == index_extreme_particles): 
         else if ((i == num_particle) .or. (i == index_extreme_particles)) then 
-            Curve_tempr_bottom%n = Curves(i)%n
-            allocate(Curve_tempr_bottom%x(Curves(i)%n), Curve_tempr_bottom%y(Curves(i)%n))
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%x)
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%y)
-            do j = 1, Curves(i)%n
+            Curve_tempr_bottom%n = current_Curve%n
+            allocate(Curve_tempr_bottom%x(current_Curve%n), Curve_tempr_bottom%y(current_Curve%n))
+            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%x)
+            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%y)
+            do j = 1, current_Curve%n
                 if (j == 1) then
                     p1 = cmplx(Curve_tempr_bottom%x(j),Curve_tempr_bottom%y(j))
                     p2 = cmplx(Curve_tempr_bottom%x(j+1),Curve_tempr_bottom%y(j+1))
@@ -501,7 +621,7 @@ subroutine find_concentration() !поиск концентрации
                     p4 = cmplx(Curves(i)%x(j),Curves(i)%y(j))
                     V_0 = 4*area_quadrilateral(p1,p2,p3,p4)
                     Curves(i)%c(j)=d1
-                elseif ( j == Curves(i)%n ) then
+                elseif ( j == current_Curve%n ) then
                     p1 = cmplx(Curve_tempr_bottom%x(j-1),Curve_tempr_bottom%y(j-1))
                     p2 = cmplx(Curve_tempr_bottom%x(j),Curve_tempr_bottom%y(j))
                     p3 = cmplx(Curves(i)%x(j),Curves(i)%y(j))
@@ -589,3 +709,165 @@ subroutine fcn_s_t_bottom(n, t, y, yprime) !интегрирование по д
     yprime(4)   = d0
     yprime(5)   = 1/V
     end subroutine fcn_s_t_bottom
+subroutine find_Jacobian()
+    use mod 
+    integer(4) :: i, ido, j
+    integer(4), parameter :: n = 8
+    integer(4), parameter :: mxparm = 50
+    real(8) :: y(n), t, d_t, tol, param(mxparm)
+    external fcn_t_Jacobian
+    write(*,*) 'find Jacobian'
+    !!$omp parallel do private(i, t, y, param, current_Curve)
+    do i = 1, num_particle
+        write(*,"('I=',i0)") i
+        allocate(Curves(i)%J_11(Curves(i)%n))
+        allocate(Curves(i)%J_12(Curves(i)%n))
+        allocate(Curves(i)%J_21(Curves(i)%n))
+        allocate(Curves(i)%J_22(Curves(i)%n))
+        allocate(Curves(i)%J(Curves(i)%n))
+        current_Curve => Curves(i)
+        ido         = 1
+        j           = 1
+        tol         = 0.0001d0
+        t           = d0
+        y           = d0 ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
+        y(1)        = d1
+        y(4)        = d1
+        param       = d0
+        param(4)    = current_Curve%n
+        param(10)   = 1.0d0
+        current_Curve%J_11(j)   = y(1)
+        current_Curve%J_12(j)   = y(2)
+        current_Curve%J_21(j)   = y(3)
+        current_Curve%J_22(j)   = y(4)
+        current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
+        do while (j < current_Curve%n)
+            d_t = current_Curve%t(j + 1) - current_Curve%t(j)
+            call divprk(ido, n, fcn_t_Jacobian, t, t + d_t, tol, param, y)
+            j = j + 1
+            current_Curve%J_11(j)   = y(1)
+            current_Curve%J_12(j)   = y(2)
+            current_Curve%J_21(j)   = y(3)
+            current_Curve%J_22(j)   = y(4)
+            current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
+        end do
+        ! current_Curve%J_11(j)   = y(1)
+        ! current_Curve%J_12(j)   = y(2)
+        ! current_Curve%J_21(j)   = y(3)
+        ! current_Curve%J_22(j)   = y(4)
+        ! current_Curve%J(j)      = abs(y(1)*y(4) - y(2)*y(3))
+        call divprk(3, n, fcn_t_Jacobian, current_Curve%t(j - 1), current_Curve%t(j), tol, param, y)
+    end do
+    !!$OMP END PARALLEL DO
+    end subroutine find_Jacobian
+subroutine fcn_t_Jacobian(n, t, y, yprime)
+    use mod 
+    integer(4) :: n 
+    real(8) t, y(n), yprime(n), fcn_derivative_for_u_ij
+    external fcn_derivative_for_u_ij
+    ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
+    ! yprime = [d_J11, d_J12, d_J21, d_J22, d_w11, d_w12, d_w21, d_w22]
+    yprime(1) = y(5)
+    yprime(2) = y(6)
+    yprime(3) = y(7)
+    yprime(4) = y(8)
+    yprime(5) = (y(1)*fcn_derivative_for_u_ij(1, 1, t) + y(3)*fcn_derivative_for_u_ij(1, 2, t) - y(5))/st
+    yprime(6) = (y(2)*fcn_derivative_for_u_ij(1, 1, t) + y(4)*fcn_derivative_for_u_ij(1, 2, t) - y(6))/st
+    yprime(7) = (y(1)*fcn_derivative_for_u_ij(2, 1, t) + y(3)*fcn_derivative_for_u_ij(2, 2, t) - y(7))/st
+    yprime(8) = (y(2)*fcn_derivative_for_u_ij(2, 1, t) + y(4)*fcn_derivative_for_u_ij(2, 2, t) - y(8))/st
+    end subroutine fcn_t_Jacobian
+function fcn_derivative_for_u_ij(i, j, t)
+    use mod
+    integer(4) :: i, j
+    real(8) :: t, fcn_derivative_for_u_ij
+    integer(4) index_t
+    if ((t >= current_Curve%t(1)) .and. (t<= current_Curve%t(current_Curve%n))) then 
+        if (i == 1) then
+            if (j == 1) then
+                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du1dx1, 1, t, fcn_derivative_for_u_ij)
+            else
+                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du1dx2, 1, t, fcn_derivative_for_u_ij)
+            end if
+        else
+            if (j == 1) then
+                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du2dx1, 1, t, fcn_derivative_for_u_ij)
+            else
+                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du2dx2, 1, t, fcn_derivative_for_u_ij)
+            end if
+        end if 
+    else
+        write(*,*) 'ERROR: fcn_derivative_for_u_ij'
+    end if 
+    end function fcn_derivative_for_u_ij
+subroutine find_concentration_by_Jacobian()
+    use mod 
+    integer(4) :: i, k
+    do i = 1, size(Curves)
+        allocate(Curves(i)%c(Curves(i)%n))
+        do k = 1, Curves(i)%n
+            Curves(i)%c(k) = 1/Curves(i)%J(k)
+            if (Curves(i)%c(k) > 1) then
+                Curves(i)%c(k) = 2d0 - 1d0/Curves(i)%c(k)
+            end if 
+        end do 
+    end do
+    end subroutine find_concentration_by_Jacobian
+subroutine checking_derivatives() ! проверка производных du_i/dx_j при помощи апроксимации
+    use mod
+    integer(4) :: i, j
+    real(8) :: h, du1dx1, du1dx2, du2dx1, du2dx2
+    real(8) :: pg_get_fun_xy
+    h = 0.00001d0
+    do j = 1, num_particle
+        current_Curve=>Curves(j)
+        allocate(current_Curve%discrepancy_du1dx1(current_Curve%n))
+        allocate(current_Curve%discrepancy_du1dx2(current_Curve%n))
+        allocate(current_Curve%discrepancy_du2dx1(current_Curve%n))
+        allocate(current_Curve%discrepancy_du2dx2(current_Curve%n))
+        allocate(current_Curve%aprox_du1dx1(current_Curve%n))
+        allocate(current_Curve%aprox_du2dx1(current_Curve%n))
+        allocate(current_Curve%aprox_du1dx2(current_Curve%n))
+        allocate(current_Curve%aprox_du2dx2(current_Curve%n))
+        do i = 1, current_Curve%n
+            if (i == 1) then
+                du1dx1 = (pg_get_fun_xy(current_Curve%x(i) + h,current_Curve%y(i),2,d0,d1,0) - &
+                    4*pg_get_fun_xy(current_Curve%x(i) + h/2,current_Curve%y(i),2,d0,d1,0) + &
+                    3*pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d0,d1,0))/(h)
+                du2dx1 = (pg_get_fun_xy(current_Curve%x(i) + h,current_Curve%y(i),2,d1,d0,0) - &
+                    4*pg_get_fun_xy(current_Curve%x(i) + h/2,current_Curve%y(i),2,d1,d0,0) + &
+                    3*pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d1,d0,0))/(h)
+            elseif (i == current_Curve%n) then
+                du1dx1 = (3*pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d0,d1,0) - &
+                    4*pg_get_fun_xy(current_Curve%x(i) - h/2,current_Curve%y(i),2,d0,d1,0) + &
+                    pg_get_fun_xy(current_Curve%x(i) - h,current_Curve%y(i),2,d0,d1,0))/(h)
+                du2dx1 = (3*pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d1,d0,0) - &
+                    4*pg_get_fun_xy(current_Curve%x(i) - h/2,current_Curve%y(i),2,d1,d0,0) + &
+                    pg_get_fun_xy(current_Curve%x(i) - h,current_Curve%y(i),2,d1,d0,0))/(h)
+            else 
+                du1dx1 = (pg_get_fun_xy(current_Curve%x(i) + h/2,current_Curve%y(i),2,d0,d1,0) - &
+                    pg_get_fun_xy(current_Curve%x(i) - h/2,current_Curve%y(i),2,d0,d1,0))/(h)
+                du2dx1 = (-pg_get_fun_xy(current_Curve%x(i) + h/2,current_Curve%y(i),2,d1,d0,0) + &
+                    pg_get_fun_xy(current_Curve%x(i) - h/2,current_Curve%y(i),2,d1,d0,0))/(h)
+            end if
+            if (current_Curve%x(i)**2 + (current_Curve%y(i) + h/2)**2 < d1) then 
+                du1dx2 = (pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) + h/2,2,d0,d1,0) - &
+                    pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) - h/2,2,d0,d1,0))/h
+                du2dx2 = (-pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) + h/2,2,d1,d0,0) + &
+                    pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) - h/2,2,d1,d0,0))/h
+            else 
+                du1dx2 = (pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) + h/2,2,d0,d1,0) - &
+                    pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d0,d1,0))/(0.5d0*h)
+                du2dx2 = (-pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i) + h/2,2,d1,d0,0) + &
+                    pg_get_fun_xy(current_Curve%x(i),current_Curve%y(i),2,d1,d0,0))/(0.5d0*h)
+            end if 
+            current_Curve%discrepancy_du1dx1(i) = dabs(current_Curve%du1dx1(i) - du1dx1)
+            current_Curve%discrepancy_du2dx1(i) = dabs(current_Curve%du2dx1(i) - du2dx1)
+            current_Curve%discrepancy_du1dx2(i) = dabs(current_Curve%du1dx2(i) - du1dx2)
+            current_Curve%discrepancy_du2dx2(i) = dabs(current_Curve%du2dx2(i) - du2dx2)
+            current_Curve%aprox_du1dx1(i) = du1dx1
+            current_Curve%aprox_du1dx2(i) = du1dx2
+            current_Curve%aprox_du2dx1(i) = du2dx1
+            current_Curve%aprox_du2dx2(i) = du2dx2
+        end do
+    end do
+    end subroutine checking_derivatives  
