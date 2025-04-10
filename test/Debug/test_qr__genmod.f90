@@ -1,7 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Sat Dec 07 19:21:10 2024
-        MODULE TEST_QR__genmod
-          INTERFACE 
-            SUBROUTINE TEST_QR
-            END SUBROUTINE TEST_QR
-          END INTERFACE 
-        END MODULE TEST_QR__genmod

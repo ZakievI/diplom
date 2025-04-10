@@ -1,8 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Fri Apr 05 21:57:03 2024
-        MODULE GET_IND_AREA__genmod
-          INTERFACE 
-            SUBROUTINE GET_IND_AREA(IA)
-              INTEGER(KIND=4) :: IA
-            END SUBROUTINE GET_IND_AREA
-          END INTERFACE 
-        END MODULE GET_IND_AREA__genmod

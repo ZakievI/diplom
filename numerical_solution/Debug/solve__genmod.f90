@@ -1,7 +1,0 @@
-        !COMPILER-GENERATED INTERFACE MODULE: Wed Feb 05 10:16:35 2025
-        MODULE SOLVE__genmod
-          INTERFACE 
-            SUBROUTINE SOLVE
-            END SUBROUTINE SOLVE
-          END INTERFACE 
-        END MODULE SOLVE__genmod
