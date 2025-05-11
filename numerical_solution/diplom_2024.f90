@@ -67,7 +67,7 @@ subroutine init_gu
     call pg_bind_boundline(2)
     call pg_init_boundline_gu_val_const(1,3,d0)
 
-    call pg_bind_boundline(3)22222222222222222222222222222222
+    call pg_bind_boundline(3)
     call pg_init_boundline_gu_val_const(1,1,d0)
     call pg_init_boundline_gu_val_const(2,3,d0)
 

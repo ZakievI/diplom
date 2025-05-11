@@ -5,11 +5,12 @@ program main
 end
 subroutine main_1()
     use mod
-    H1=5*d1
-    L1=10*d1
-    nj=100
-    ds=pi/nj
-    ds2=ds
+    H1              =5d0
+    !top_coordinat   = H1
+    L1              =10*d1
+    nj              =100
+    ds              =pi/nj
+    ds2             =ds
     call pg_start
     call pg_allocate_problems(1)
     call pg_bind_problem(1)
@@ -27,10 +28,18 @@ subroutine main_1()
     call pg_get_matrix
     call pg_solve
     call pg_get_psioml
+    call draw_square
     !call build_bound()
     call build_curve()
+    call find_derivative()
+    !call checking_derivatives()
+    !call find_concentration()
+    call find_Jacobian()
+    call find_concentration_by_Jacobian()
+    call draw_Curves(1)
+    !call build_mesh_1()
+    !call build_time_isolines()
     !call solve
-    !call draw_square
     call pg_finish
     !call testing()
     

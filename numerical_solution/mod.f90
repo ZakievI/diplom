@@ -16,18 +16,18 @@ module mod
     logical, allocatable :: ffknow(:)
     real(8) :: st                           = 1d0  
     integer(4), parameter :: N_arr          = 2000
-    integer(4), parameter :: num_particle   = 100
+    integer(4), parameter :: num_particle   = 10
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 0
     integer(4) :: N_part_1                  = 10
     integer(4) :: N_part_2                  
     integer(4) :: N_part_3                  = 10 ! = N_part_1 /(L1 - d1))
     integer(4) :: N_part_4                  = 10
-    integer(4) :: gs_use_parallel_build_cerves = 0
+    integer(4) :: use_parallel_build_cerves = 1
     integer(4) :: gs_use_parallel_build_grafic = 0
     type :: Curve
         integer(4) :: n
-        real(8), allocatable :: x(:), y(:), t(:)
+        real(8), allocatable :: x(:), y(:), t(:), V_x(:), V_y(:)
         real(8), allocatable :: c(:)
         real(8), allocatable :: du1dx1(:), du2dx1(:), du1dx2(:), du2dx2(:)
         real(8), allocatable :: J_11(:), J_12(:), J_21(:), J_22(:), J(:)
@@ -42,8 +42,8 @@ module mod
     type(Curve), allocatable, target :: Curves(:)
     type(Curve), pointer :: current_Curve
     type(Mesh_1), allocatable :: mesh
-    real(8) :: top_coordinat                = 1d0
-    real(8) :: bottom_coordinat             = d0
+    real(8) :: top_coordinat                = 1.5d0
+    real(8) :: bottom_coordinat             = 0d0
 contains
     subroutine finalize(obj)
         type(Curve), intent(inout) :: obj

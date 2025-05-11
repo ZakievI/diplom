@@ -297,26 +297,37 @@ function search_for_extreme_particles() ! поиск критической ча
     search_for_extreme_particles = y_t(2)
     deallocate(bound_first_particle)
     end function
-subroutine draw_Curves() !вывод кривых
+subroutine draw_Curves(par) !вывод кривых
     use mod
+    !par=
+    !   1-вывод траектории с концертацией и с элементами якобиана
+    !   2-вывод траектории
     integer(4) :: i, l
+    integer(4) :: par
     open (1, file='traektorie.dat')
     write(1,*) 'title = "traektorie"'
-    ! write(1,*) 'variables = "x", "y", "t", "c", "1/|J|", "J_11", "J_12", "J_21", "J_22", "Error"'
-    !write(1,*) 'variables = "x", "y", "t", "c", "1/|J|", "du1dx1", "du2dx1", "du1dx2", "du2dx2",&
-    !"disc_11", "disc_12", "disc_21", "disc_22", "Error"'
-    write(1,*) 'variables = "x", "y", "consetr", '
+    select case (par)
+    case (1)
+        write(1,*) 'variables = "x", "y", "t", "consetr", "J_11", "J_12", "J_21", "J_22"'
+    case (2)
+        write(1,*) 'variables = "x", "y"'
+    case DEFAULT
+        write(1,*) 'variables = "x", "y", "t"'
+    end select
     do i = 1, size(Curves)
         write(1,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") i, Curves(i)%n
         do l = 1, Curves(i)%n
-            ! write(1,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") &
-            ! Curves(i)%x(l), Curves(i)%y(l), Curves(i)%t(l), Curves(i)%c(l),&
-            ! d1/dabs(Curves(i)%J(l)), Curves(i)%J_11(l), Curves(i)%J_12(l), Curves(i)%J_21(l), Curves(i)%J_22(l), d1/dabs(Curves(i)%J(l)) - Curves(i)%c(l)
-            write(1,"(E15.5, ' ', E15.5, ' ', E15.5)") &
-            Curves(i)%x(l), Curves(i)%y(l), Curves(i)%c(l)
-            
-            ! Curves(i)%discrepancy_du1dx1(l), Curves(i)%discrepancy_du1dx2(l), Curves(i)%discrepancy_du2dx1(l), Curves(i)%discrepancy_du2dx2(l), d1/dabs(Curves(i)%J(l)) - Curves(i)%c(l)
-            !Curves(i)%aprox_du1dx1(l), Curves(i)%aprox_du1dx2(l), Curves(i)%aprox_du2dx1(l), Curves(i)%aprox_du2dx2(l)
+            select case (par)
+            case (1)
+                write(1,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") &
+                Curves(i)%x(l), Curves(i)%y(l), Curves(i)%t(l), Curves(i)%c(l), Curves(i)%J_11(l), Curves(i)%J_12(l), Curves(i)%J_21(l), Curves(i)%J_22(l)
+            case (2)
+                write(1,"(E15.5, ' ', E15.5)") &
+                Curves(i)%x(l), Curves(i)%y(l)
+            case DEFAULT
+                write(1,"(E15.5, ' ', E15.5)") &
+                Curves(i)%x(l), Curves(i)%y(l)
+            end select
         end do
     end do
     end subroutine
@@ -387,14 +398,7 @@ subroutine build_curve() !поиск кривых
     integer(4), parameter :: mxparm = 50
     real(8) :: param(mxparm), d_s, s, y(n), dlt, tol, pg_get_fun_xy
     real(8), allocatable :: Curve_tempr(:,:)
-    !real(8) :: S1
-    !complex(8) :: p1, p2, p3, p4
     external fcn_s_t, area_quadrilateral, fcn_s_t_top, fcn_s_t_bottom, search_for_extreme_particles
-    !p1              = (1d0, 1d0)
-    !p2              = (3d0, 1d0)
-    !p3              = (3d0, 3d0)
-    !p4              = (1d0, 3d0)
-    !S1              = area_quadrilateral(p1, p2, p3, p4)
     tol             = 0.0001d0
     d_s             = 0.01d0
     s               = d0
@@ -403,9 +407,9 @@ subroutine build_curve() !поиск кривых
     allocate(Curves(num_particle))
     !cord_extreme_particles = search_for_extreme_particles()
     
-    !$omp parallel do if (gs_use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
+    !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
-        allocate(Curve_tempr(N_arr,4))
+        allocate(Curve_tempr(N_arr,6)) !Curve_tempr = [x, y, V_x, V_y, t, s]
         write(*,"('I=',i0)") i
         n1                 = 1
         ido                = 1
@@ -421,16 +425,14 @@ subroutine build_curve() !поиск кривых
         !     Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
         !     ! Curve_tempr(n1, 2) = 0.5d0
         ! end if
-        Curve_tempr(n1, 2) = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
+
         
-        Curve_tempr(n1, 3) = d0
-        Curve_tempr(n1, 4) = s
         y(1)            = -L1/2
-        y(2)            = Curve_tempr(n1, 2)
-        if (dabs(Curve_tempr(n1, 2)) < eps) then
+        y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**1
+        if (dabs(y(2)) < eps) then
             y(3)            = pg_get_fun_xy(y(1),y(2) + eps,2,d0,d1,0)
             y(4)            = -pg_get_fun_xy(y(1),y(2) + eps,2,d1,d0,0)
-        else if(dabs(Curve_tempr(n1, 2) - H1) < eps)then 
+        else if(dabs(y(2) - H1) < eps)then 
             y(3)            = pg_get_fun_xy(y(1),y(2) - eps,2,d0,d1,0)
             y(4)            = -pg_get_fun_xy(y(1),y(2) -  eps,2,d1,d0,0)
         else 
@@ -441,8 +443,14 @@ subroutine build_curve() !поиск кривых
         param           = d0
         param(4)        = N_arr
         param(10)       = 1.0d0
+        Curve_tempr(n1, 1) = y(1)
+        Curve_tempr(n1, 2) = y(2)
+        Curve_tempr(n1, 3) = y(3)
+        Curve_tempr(n1, 4) = y(4)
+        Curve_tempr(n1, 5) = y(5)
+        Curve_tempr(n1, 6) = s
         do while((sqrt(y(1)**2+y(2)**2)>d1+dlt).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(n1<N_arr))
-            !write(*,"('N=',i0)") n1
+            ! write(*,"('N=',i0)") n1
             if (dabs(Curve_tempr(n1, 2)) < eps) then
                 call divprk(ido, n, fcn_s_t_bottom, s, s+d_s, tol, param, y)
                 y(2) = d0
@@ -455,30 +463,28 @@ subroutine build_curve() !поиск кривых
             n1 = n1 + 1
             Curve_tempr(n1, 1) = y(1)
             Curve_tempr(n1, 2) = y(2)
-            Curve_tempr(n1, 3) = y(5)
-            Curve_tempr(n1, 4) = s
+            Curve_tempr(n1, 3) = y(3)
+            Curve_tempr(n1, 4) = y(4)
+            Curve_tempr(n1, 5) = y(5)
+            Curve_tempr(n1, 6) = s
         end do
         allocate(Curves(i)%x(n1))
         allocate(Curves(i)%y(n1))
         allocate(Curves(i)%t(n1))
+        allocate(Curves(i)%V_x(n1))
+        allocate(Curves(i)%V_y(n1))
         allocate(Curves(i)%s(n1))
         Curves(i)%x(1:n1) = Curve_tempr(1:n1, 1)
         Curves(i)%y(1:n1) = Curve_tempr(1:n1, 2)
-        Curves(i)%t(1:n1) = Curve_tempr(1:n1, 3)
-        Curves(i)%s(1:n1) = Curve_tempr(1:n1, 4)
+        Curves(i)%V_x(1:n1) = Curve_tempr(1:n1, 3)
+        Curves(i)%V_y(1:n1) = Curve_tempr(1:n1, 4)
+        Curves(i)%t(1:n1) = Curve_tempr(1:n1, 5)
+        Curves(i)%s(1:n1) = Curve_tempr(1:n1, 6)
         Curves(i)%n = n1
         call divprk(3, n, fcn_s_t, s, s+d_s, tol, param, y)
         deallocate(Curve_tempr)
     end do 
     !$OMP END PARALLEL DO
-    call find_derivative()
-    call checking_derivatives()
-    !call find_concentration()
-    call find_Jacobian()
-    call find_concentration_by_Jacobian()
-    call draw_Curves()
-    !call build_mesh_1()
-    !call build_time_isolines()
     end subroutine build_curve
 subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
     use mod
@@ -676,6 +682,14 @@ subroutine fcn_s_t(n, t, y, yprime) !интегрирование по длин�
     use mod
     integer(4) :: n
     real(8) t, y(n), yprime(n), u_x, u_y, pg_get_fun_xy, V
+    if (y(3) < eps) then
+        y(3)           = eps
+    end if
+    
+    if (y(4) < eps) then 
+        y(4)           = eps
+    end if 
+    
     V           = dsqrt(y(3)**2+y(4)**2)
     u_x         = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
     u_y         = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
@@ -689,6 +703,9 @@ subroutine fcn_s_t_top(n, t, y, yprime) !интегрирование по дл�
     use mod
     integer(4) :: n
     real(8) t, y(n), yprime(n), u_x, pg_get_fun_xy, V
+    if (y(3) < eps) then
+        y(3)           = eps
+    end if
     V           = abs(y(3))
     u_x         = pg_get_fun_xy(y(1),y(2)-eps,2,d0,d1,0)
     yprime(1)   = y(3)/V
@@ -701,6 +718,9 @@ subroutine fcn_s_t_bottom(n, t, y, yprime) !интегрирование по д
     use mod
     integer(4) :: n
     real(8) t, y(n), yprime(n), u_x, pg_get_fun_xy, V
+    if (y(3) < eps) then
+        y(3)           = eps
+    end if
     V           = abs(y(3))
     u_x         = pg_get_fun_xy(y(1),y(2)+eps,2,d0,d1,0)
     yprime(1)   = y(3)/V
@@ -714,7 +734,7 @@ subroutine find_Jacobian()
     integer(4) :: i, ido, j
     integer(4), parameter :: n = 8
     integer(4), parameter :: mxparm = 50
-    real(8) :: y(n), t, d_t, tol, param(mxparm)
+    real(8) :: y(n), s, d_s, tol, param(mxparm)
     external fcn_t_Jacobian
     write(*,*) 'find Jacobian'
     !!$omp parallel do private(i, t, y, param, current_Curve)
@@ -729,12 +749,13 @@ subroutine find_Jacobian()
         ido         = 1
         j           = 1
         tol         = 0.0001d0
-        t           = d0
+        s           = d0
         y           = d0 ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
         y(1)        = d1
         y(4)        = d1
         param       = d0
-        param(4)    = current_Curve%n
+        !param(4)    = current_Curve%n
+        param(4)    = N_arr
         param(10)   = 1.0d0
         current_Curve%J_11(j)   = y(1)
         current_Curve%J_12(j)   = y(2)
@@ -742,8 +763,9 @@ subroutine find_Jacobian()
         current_Curve%J_22(j)   = y(4)
         current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
         do while (j < current_Curve%n)
-            d_t = current_Curve%t(j + 1) - current_Curve%t(j)
-            call divprk(ido, n, fcn_t_Jacobian, t, t + d_t, tol, param, y)
+            !write(*,"('N=',i0)") j
+            d_s = current_Curve%s(j + 1) - current_Curve%s(j)
+            call divprk(ido, n, fcn_t_Jacobian, s, s + d_s, tol, param, y)
             j = j + 1
             current_Curve%J_11(j)   = y(1)
             current_Curve%J_12(j)   = y(2)
@@ -760,39 +782,46 @@ subroutine find_Jacobian()
     end do
     !!$OMP END PARALLEL DO
     end subroutine find_Jacobian
-subroutine fcn_t_Jacobian(n, t, y, yprime)
+subroutine fcn_t_Jacobian(n, s, y, yprime)
     use mod 
     integer(4) :: n 
-    real(8) t, y(n), yprime(n), fcn_derivative_for_u_ij
+    real(8) s, y(n), yprime(n), fcn_derivative_for_u_ij
+    real(8) :: V, V_x, V_y
     external fcn_derivative_for_u_ij
+    call dcsiez(current_Curve%n, current_Curve%s, current_Curve%V_x, 1, s, V_x)
+    call dcsiez(current_Curve%n, current_Curve%s, current_Curve%V_y, 1, s, V_y)
+    V = dsqrt(V_x**2+V_y**2)
+    if (V < eps) then
+        V           = eps
+    end if
     ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
     ! yprime = [d_J11, d_J12, d_J21, d_J22, d_w11, d_w12, d_w21, d_w22]
-    yprime(1) = y(5)
-    yprime(2) = y(6)
-    yprime(3) = y(7)
-    yprime(4) = y(8)
-    yprime(5) = (y(1)*fcn_derivative_for_u_ij(1, 1, t) + y(3)*fcn_derivative_for_u_ij(1, 2, t) - y(5))/st
-    yprime(6) = (y(2)*fcn_derivative_for_u_ij(1, 1, t) + y(4)*fcn_derivative_for_u_ij(1, 2, t) - y(6))/st
-    yprime(7) = (y(1)*fcn_derivative_for_u_ij(2, 1, t) + y(3)*fcn_derivative_for_u_ij(2, 2, t) - y(7))/st
-    yprime(8) = (y(2)*fcn_derivative_for_u_ij(2, 1, t) + y(4)*fcn_derivative_for_u_ij(2, 2, t) - y(8))/st
+    yprime(1) = y(5)/V
+    yprime(2) = y(6)/V
+    yprime(3) = y(7)/V
+    yprime(4) = y(8)/V
+    yprime(5) = (y(1)*fcn_derivative_for_u_ij(1, 1, s) + y(3)*fcn_derivative_for_u_ij(1, 2, s) - y(5))/st/V
+    yprime(6) = (y(2)*fcn_derivative_for_u_ij(1, 1, s) + y(4)*fcn_derivative_for_u_ij(1, 2, s) - y(6))/st/V
+    yprime(7) = (y(1)*fcn_derivative_for_u_ij(2, 1, s) + y(3)*fcn_derivative_for_u_ij(2, 2, s) - y(7))/st/V
+    yprime(8) = (y(2)*fcn_derivative_for_u_ij(2, 1, s) + y(4)*fcn_derivative_for_u_ij(2, 2, s) - y(8))/st/V
     end subroutine fcn_t_Jacobian
-function fcn_derivative_for_u_ij(i, j, t)
+function fcn_derivative_for_u_ij(i, j, s)
     use mod
     integer(4) :: i, j
-    real(8) :: t, fcn_derivative_for_u_ij
+    real(8) :: s, fcn_derivative_for_u_ij
     integer(4) index_t
-    if ((t >= current_Curve%t(1)) .and. (t<= current_Curve%t(current_Curve%n))) then 
+    if ((s >= current_Curve%s(1)) .and. (s<= current_Curve%s(current_Curve%n))) then 
         if (i == 1) then
             if (j == 1) then
-                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du1dx1, 1, t, fcn_derivative_for_u_ij)
+                call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du1dx1, 1, s, fcn_derivative_for_u_ij)
             else
-                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du1dx2, 1, t, fcn_derivative_for_u_ij)
+                call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du1dx2, 1, s, fcn_derivative_for_u_ij)
             end if
         else
             if (j == 1) then
-                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du2dx1, 1, t, fcn_derivative_for_u_ij)
+                call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du2dx1, 1, s, fcn_derivative_for_u_ij)
             else
-                call dcsiez(current_Curve%n, current_Curve%t, current_Curve%du2dx2, 1, t, fcn_derivative_for_u_ij)
+                call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du2dx2, 1, s, fcn_derivative_for_u_ij)
             end if
         end if 
     else
