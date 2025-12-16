@@ -308,11 +308,11 @@ subroutine draw_Curves(par) !вывод кривых
     write(1,*) 'title = "traektorie"'
     select case (par)
     case (1)
-        write(1,*) 'variables = "x", "y", "t", "consetr", "J_11", "J_12", "J_21", "J_22"'
+        write(1,*) 'variables = "x", "y", "s", "consetr", "J_11", "J_12", "J_21", "J_22"'
     case (2)
         write(1,*) 'variables = "x", "y"'
     case DEFAULT
-        write(1,*) 'variables = "x", "y", "t"'
+        write(1,*) 'variables = "x", "y"'
     end select
     do i = 1, size(Curves)
         write(1,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") i, Curves(i)%n
@@ -320,7 +320,7 @@ subroutine draw_Curves(par) !вывод кривых
             select case (par)
             case (1)
                 write(1,"(E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5, ' ', E15.5)") &
-                Curves(i)%x(l), Curves(i)%y(l), Curves(i)%t(l), Curves(i)%c(l), Curves(i)%J_11(l), Curves(i)%J_12(l), Curves(i)%J_21(l), Curves(i)%J_22(l)
+                Curves(i)%x(l), Curves(i)%y(l), Curves(i)%s(l), Curves(i)%c(l), Curves(i)%J_11(l), Curves(i)%J_12(l), Curves(i)%J_21(l), Curves(i)%J_22(l)
             case (2)
                 write(1,"(E15.5, ' ', E15.5)") &
                 Curves(i)%x(l), Curves(i)%y(l)
@@ -393,14 +393,14 @@ subroutine build_time_isolines() !строим изолинии по време�
 subroutine build_curve() !поиск кривых
     use mod
     integer(4) :: i, n1, ido
-    integer(4), parameter :: n = 5
-    real(8) area_quadrilateral, search_for_extreme_particles
+    integer(4), parameter :: n = 4
+    real(8) area_quadrilateral, search_for_extreme_particles, alfa
     integer(4), parameter :: mxparm = 50
     real(8) :: param(mxparm), d_s, s, y(n), dlt, tol, pg_get_fun_xy
     real(8), allocatable :: Curve_tempr(:,:)
-    external fcn_s_t, area_quadrilateral, fcn_s_t_top, fcn_s_t_bottom, search_for_extreme_particles
-    tol             = 0.0001d0
-    d_s             = 0.01d0
+    external fcn_s_1, area_quadrilateral, fcn_s_top_bottom, search_for_extreme_particles
+    tol             = 1d-5
+    d_s             = 1d-3
     s               = d0
     ido             = 1
     dlt             = d0
@@ -409,37 +409,37 @@ subroutine build_curve() !поиск кривых
     
     !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
-        allocate(Curve_tempr(N_arr,6)) !Curve_tempr = [x, y, V_x, V_y, t, s]
+        allocate(Curve_tempr(N_arr,5)) !Curve_tempr = [x, y, V_x, V_y, s]
         write(*,"('I=',i0)") i
         n1                 = 1
         ido                = 1
         s                  = d0
         Curve_tempr(n1, 1) = -L1/2 
-        ! if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
-        !     cord_extreme_particles = search_for_extreme_particles()
-        !     Curve_tempr(n1, 2) = cord_extreme_particles - eps
-        !     index_extreme_particles = i
-        ! else
-        !     !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
-        !     ! измененно !!!!!!!!!!
-        !     Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
-        !     ! Curve_tempr(n1, 2) = 0.5d0
-        ! end if
+        !if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
+        !    !cord_extreme_particles = search_for_extreme_particles()
+        !    Curve_tempr(n1, 2) = cord_extreme_particles - eps
+        !    index_extreme_particles = i
+        !else
+        !    !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
+        !    ! измененно !!!!!!!!!!
+        !    Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
+        !    ! Curve_tempr(n1, 2) = 0.5d0
+        !end if
 
-        
         y(1)            = -L1/2
         y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**1
-        if (dabs(y(2)) < eps) then
-            y(3)            = pg_get_fun_xy(y(1),y(2) + eps,2,d0,d1,0)
-            y(4)            = -pg_get_fun_xy(y(1),y(2) + eps,2,d1,d0,0)
-        else if(dabs(y(2) - H1) < eps)then 
-            y(3)            = pg_get_fun_xy(y(1),y(2) - eps,2,d0,d1,0)
-            y(4)            = -pg_get_fun_xy(y(1),y(2) -  eps,2,d1,d0,0)
-        else 
-            y(3)            = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
-            y(4)            = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-        end if
-        y(5)            = d0
+        call get_uxuy(y(1), y(2), y(3), y(4))
+        ! if (((dabs(y(2)) < eps) .or. (dabs(y(2) - H1) < eps)) .and. (-H1 - y(1) < eps) ) then
+        !     y(3)            = pg_get_fun_xy(y(1) + eps ,y(2),2,d0,d1,0)
+        !     y(4)            = -pg_get_fun_xy(y(1) + eps,y(2) ,2,d1,d0,0)
+        ! ! else if(((y(1) + 1d0) < eps) .and. (y2 < eps))then 
+        ! !     y(3)            = pg_get_fun_xy(y(1) - eps,y(2),2,d0,d1,0)
+        ! !     y(4)            = -pg_get_fun_xy(y(1) - eps,y(2),2,d1,d0,0)
+        ! else 
+        !     y(3)            = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
+        !     y(4)            = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
+        ! end if
+        !y(5)            = d0
         param           = d0
         param(4)        = N_arr
         param(10)       = 1.0d0
@@ -447,30 +447,36 @@ subroutine build_curve() !поиск кривых
         Curve_tempr(n1, 2) = y(2)
         Curve_tempr(n1, 3) = y(3)
         Curve_tempr(n1, 4) = y(4)
-        Curve_tempr(n1, 5) = y(5)
-        Curve_tempr(n1, 6) = s
-        do while((sqrt(y(1)**2+y(2)**2)>d1+dlt).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(n1<N_arr))
-            ! write(*,"('N=',i0)") n1
-            if (dabs(Curve_tempr(n1, 2)) < eps) then
-                call divprk(ido, n, fcn_s_t_bottom, s, s+d_s, tol, param, y)
+        !Curve_tempr(n1, 5) = y(5)
+        Curve_tempr(n1, 5) = s
+        do while((dsqrt(y(1)**2+y(2)**2)>d1+dlt+1d-10).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(n1<N_arr))
+            !write(*,"('N=',i0)") n1
+            if (dabs(Curve_tempr(n1, 2)) < eps)then
+                call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
                 y(2) = d0
-            else if(dabs(Curve_tempr(n1, 2) - H1) < eps)then 
-                call divprk(ido, n, fcn_s_t_top, s, s+d_s, tol, param, y)
+            elseif (dabs(Curve_tempr(n1, 2) - H1) < eps) then
+                call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
                 y(2) = H1
             else
-                call divprk(ido, n, fcn_s_t, s, s+d_s, tol, param, y)
+                call divprk(ido, n, fcn_s_1, s, s+d_s, tol, param, y)
             end if 
             n1 = n1 + 1
+            if (y(3) < 0) then
+                write(*,*) 'Error: negative value V_x'
+                alfa = datan(y(2)/y(1))
+                y(3) = d_s*dcos(alfa)
+                y(4) = d_s*dsin(alfa)
+            end if 
             Curve_tempr(n1, 1) = y(1)
             Curve_tempr(n1, 2) = y(2)
             Curve_tempr(n1, 3) = y(3)
             Curve_tempr(n1, 4) = y(4)
-            Curve_tempr(n1, 5) = y(5)
-            Curve_tempr(n1, 6) = s
+            !Curve_tempr(n1, 5) = y(5)
+            Curve_tempr(n1, 5) = s
         end do
         allocate(Curves(i)%x(n1))
         allocate(Curves(i)%y(n1))
-        allocate(Curves(i)%t(n1))
+        !allocate(Curves(i)%t(n1))
         allocate(Curves(i)%V_x(n1))
         allocate(Curves(i)%V_y(n1))
         allocate(Curves(i)%s(n1))
@@ -478,13 +484,19 @@ subroutine build_curve() !поиск кривых
         Curves(i)%y(1:n1) = Curve_tempr(1:n1, 2)
         Curves(i)%V_x(1:n1) = Curve_tempr(1:n1, 3)
         Curves(i)%V_y(1:n1) = Curve_tempr(1:n1, 4)
-        Curves(i)%t(1:n1) = Curve_tempr(1:n1, 5)
-        Curves(i)%s(1:n1) = Curve_tempr(1:n1, 6)
+        !Curves(i)%t(1:n1) = Curve_tempr(1:n1, 5)
+        Curves(i)%s(1:n1) = Curve_tempr(1:n1, 5)
         Curves(i)%n = n1
-        call divprk(3, n, fcn_s_t, s, s+d_s, tol, param, y)
+        call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
         deallocate(Curve_tempr)
     end do 
     !$OMP END PARALLEL DO
+    do i = 1, num_particle
+        if (Curves(i)%x(Curves(i)%n)>0) then
+            index_extreme_particles = i - 1
+            exit
+        end if
+    end do
     end subroutine build_curve
 subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
     use mod
@@ -493,28 +505,33 @@ subroutine find_derivative() !find the derivative du_i/dx_j of the curve
     integer(4), parameter :: nn1 = 4
     real(8) ::  a(nn1, nn1), b(nn1), xx(nn1)
     real(8) pg_get_fun_xy
+    real(8) :: u_x_1, u_x_2, u_y_1, u_y_2, u_x_0, u_y_0
     do i = 1, num_particle
         allocate(Curves(i)%du1dx1(Curves(i)%n), Curves(i)%du2dx1(Curves(i)%n), Curves(i)%du1dx2(Curves(i)%n), Curves(i)%du2dx2(Curves(i)%n))
         do j = 1, Curves(i)%n
             if ((j > 1) .and.(j < Curves(i)%n)) then
                 cosfi = ((Curves(i)%x(j + 1) - Curves(i)%x(j - 1))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1)))
                 sinfi = ((Curves(i)%y(j + 1) - Curves(i)%y(j - 1))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1)))
-                du1ds =  (pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d0,d1,0) - pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d0,d1,0))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
-                du2ds =  (-pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d1,d0,0) + pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d1,d0,0))/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
+                call get_uxuy(Curves(i)%x(j - 1), Curves(i)%y(j - 1), u_x_1, u_y_1)
+                call get_uxuy(Curves(i)%x(j + 1), Curves(i)%y(j + 1), u_x_2, u_y_2)
+                du1ds =  (u_x_2 - u_x_1)/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
+                du2ds =  (u_y_2 - u_y_1)/(Curves(i)%s(j + 1) - Curves(i)%s(j - 1))
             elseif (j == 1) then
                 cosfi = (3 * Curves(i)%x(j) - 4 * Curves(i)%x(j + 1) + Curves(i)%x(j + 2))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
                 sinfi = (3 * Curves(i)%y(j) - 4 * Curves(i)%y(j + 1) + Curves(i)%y(j + 2))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
-                du1ds = (3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d0,d1,0) - 4 * pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d0,d1,0)&
-                        + pg_get_fun_xy(Curves(i)%x(j + 2),Curves(i)%y(j + 2),2,d0,d1,0))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
-                du2ds = (-3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d1,d0,0) + 4 * pg_get_fun_xy(Curves(i)%x(j + 1),Curves(i)%y(j + 1),2,d1,d0,0)&
-                        - pg_get_fun_xy(Curves(i)%x(j + 2),Curves(i)%y(j + 2),2,d1,d0,0))/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+                call get_uxuy(Curves(i)%x(j + 1), Curves(i)%y(j + 1), u_x_1, u_y_1)
+                call get_uxuy(Curves(i)%x(j + 2), Curves(i)%y(j + 2), u_x_2, u_y_2)
+                call get_uxuy(Curves(i)%x(j), Curves(i)%y(j), u_x_0, u_y_0)
+                du1ds = (3 * u_x_0 - 4 * u_x_1 + u_x_2)/(Curves(i)%s(j + 2) - Curves(i)%s(j))
+                du2ds = (3 * u_y_0 - 4 * u_y_1 + u_y_2)/(Curves(i)%s(j + 2) - Curves(i)%s(j))
             elseif (j == Curves(i)%n) then
                 cosfi = (3 * Curves(i)%x(j) - 4 * Curves(i)%x(j - 1) + Curves(i)%x(j - 2))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
                 sinfi = (3 * Curves(i)%y(j) - 4 * Curves(i)%y(j - 1) + Curves(i)%y(j - 2))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
-                du1ds = (3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d0,d1,0) - 4 * pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d0,d1,0)&
-                        + pg_get_fun_xy(Curves(i)%x(j - 2),Curves(i)%y(j - 2),2,d0,d1,0))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
-                du2ds = (-3 * pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),2,d1,d0,0) + 4 * pg_get_fun_xy(Curves(i)%x(j - 1),Curves(i)%y(j - 1),2,d1,d0,0)&
-                        - pg_get_fun_xy(Curves(i)%x(j - 2),Curves(i)%y(j - 2),2,d1,d0,0))/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+                call get_uxuy(Curves(i)%x(j - 1), Curves(i)%y(j - 1), u_x_1, u_y_1)
+                call get_uxuy(Curves(i)%x(j), Curves(i)%y(j), u_x_2, u_y_2)
+                call get_uxuy(Curves(i)%x(j - 2), Curves(i)%y(j - 2), u_x_0, u_y_0)
+                du1ds = (3 * u_x_2 - 4 * u_x_1 + u_x_0)/(Curves(i)%s(j) - Curves(i)%s(j - 2))
+                du2ds = (3 * u_y_2 - 4 * u_y_1 + u_y_0)/(Curves(i)%s(j) - Curves(i)%s(j - 2))
             end if
             a = reshape((/1d0, d0, d0, 1d0, &
                           d0, -1d0, 1d0, d0, &
@@ -531,10 +548,13 @@ subroutine find_derivative() !find the derivative du_i/dx_j of the curve
     end subroutine find_derivative
 subroutine build_mesh_1 !строим сетку 
     use mod
-    integer(4) :: i, l
-    real(8), allocatable :: tempr_y_c(:), tempr_x_c(:)
+    integer(4) :: i, l, k
+    real(8), allocatable :: tempr_y_c(:), tempr_x_c(:), tempr_c(:)
+    integer(4) :: index_point_rigth_bound_array_area_1(num_particle), index_point_rigth_bound_array_area_2(num_particle - index_extreme_particles)
+    !complex(8), allocatable :: z_m(:)
     integer(4) :: num_of_partitions_by_x
-    real(8) :: x_c
+    real(8) :: x_c, y_c
+    integer(4) :: begin_index_z_m, begin_index_trm
     N_part_2 = index_extreme_particles
     num_of_partitions_by_x = (N_part_1 + N_part_2 + N_part_3 + N_part_4)
     ! allocate(mesh%x_y_(num_particle * num_of_partitions_by_x, 2),mesh%t(num_particle * num_of_partitions_by_x, 1),mesh%c(num_particle * num_of_partitions_by_x, 1)&
@@ -542,38 +562,173 @@ subroutine build_mesh_1 !строим сетку
     allocate(mesh)
     mesh%n_i = num_of_partitions_by_x
     mesh%n_j = num_particle
-    allocate(mesh%x_y_(num_of_partitions_by_x * num_particle, 2))
+    !allocate(mesh%x_y_(num_of_partitions_by_x * num_particle, 2))
     ! область 1 - x меняеться от -L1 до -1, y - от 0 до H1
     ! область 2 - x меняеться от -1 до 0, y - от Y_Last до H1
     ! область 3 - x меняеться от 0 до 1, y - от Y_Last до H1
     ! область 4 - x меняеться от 1 до L1, y - от 0 до H1
+    allocate(mesh%z_m((N_part_1 + N_part_2 + N_part_3 + N_part_4) * num_particle))
+    allocate(mesh%c((N_part_1 + N_part_2 + N_part_3 + N_part_4) * num_particle))
+    allocate(mesh%trm(4,(N_part_1 + N_part_2 + N_part_3 + N_part_4 - 4) * (num_particle - 1)))
+    !allocate(index_point_rigth_bound_array_area_1(num_particle))
     
-    ! область 1
-    do i = 1, 4
+    do i = 1, 4        
         if (i == 1) then
+            ! область 1
+            begin_index_z_m = 1
+            begin_index_trm = 1
+            allocate(tempr_y_c(N_part_1),tempr_x_c(N_part_1), tempr_c(N_part_1))
             do l = 1, N_part_1
-                x_c = -L1 + (L1 - d1)*(l-1)/(N_part_1-1)
-                mesh%x_y_(l, 1) = x_c
+                x_c = -L1/2 + (L1/2 - d1)*(l-1)/(N_part_1-1)
+                tempr_x_c(l) = x_c
             end do
-            allocate(tempr_y_c(N_part_1),tempr_x_c(N_part_1))
-            tempr_x_c = mesh%x_y_(1:N_part_1, 1)
-            do l = 1, num_particle
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, N_part_1, tempr_x_c, tempr_y_c )
-                mesh%x_y_(1+num_of_partitions_by_x * (l-1):N_part_1 + num_of_partitions_by_x * (l-1),2) = tempr_y_c
-                mesh%x_y_(1+num_of_partitions_by_x * (l-1):N_part_1 + num_of_partitions_by_x * (l-1),1) = mesh%x_y_(1:N_part_1, 1)
+            do k = 1, num_particle
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_1, tempr_x_c, tempr_y_c)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_1, tempr_x_c, tempr_c)
+                mesh%z_m(1 + (k-1)*N_part_1: k * N_part_1) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%c(1 + (k-1)*N_part_1: k * N_part_1) = tempr_c
+                index_point_rigth_bound_array_area_1(k) = k * N_part_1
             end do
-            deallocate(tempr_y_c,tempr_x_c)
+            do l = 1, num_particle - 1
+                do k = 1, N_part_1 - 1
+                    mesh%trm(1, k + (N_part_1 - 1) * (l-1)) = k + (N_part_1) * (l - 1)     
+                    mesh%trm(2, k + (N_part_1 - 1) * (l-1)) = k + 1 + (N_part_1) * (l - 1)
+                    mesh%trm(3, k + (N_part_1 - 1) * (l-1)) = k + 1 + (N_part_1) * (l)
+                    mesh%trm(4, k + (N_part_1 - 1) * (l-1)) = k + (N_part_1) * (l) 
+                end do 
+            end do
+            deallocate(tempr_y_c,tempr_x_c,tempr_c)
         elseif (i == 2)then
-            allocate(tempr_x_c(N_part_2 - 1))
-            do l = 2, N_part_2
-                tempr_x_c(l-1) = Curves(l)%x(Curves(l)%n)
+            ! область 2
+            begin_index_z_m = num_particle * N_part_1 + 1
+            begin_index_trm = (num_particle - 1) * (N_part_1 - 1) + 1
+            allocate(tempr_y_c(N_part_2 + 1),tempr_x_c(N_part_2 + 1),tempr_c(N_part_2 + 1))
+            do l = 1, N_part_2
+                tempr_x_c(l) = Curves(l)%x(Curves(l)%n)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, l, tempr_x_c(1:l), tempr_y_c)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%c, l, tempr_x_c(1:l), tempr_c)
+                mesh%z_m(begin_index_z_m : begin_index_z_m + l - 1) = cmplx(tempr_x_c(1 : l),tempr_y_c(1 : l))
+                mesh%c(begin_index_z_m : begin_index_z_m + l - 1) = tempr_c
+                begin_index_z_m = begin_index_z_m + l
             end do
-        elseif (i == 3) then 
-        else 
+            tempr_x_c(N_part_2 + 1) = d0
+            do k = N_part_2 + 1, num_particle
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_2 + 1, tempr_x_c, tempr_y_c)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_2 + 1, tempr_x_c, tempr_c)
+                mesh%z_m(begin_index_z_m: begin_index_z_m + N_part_2) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%c(begin_index_z_m: begin_index_z_m + N_part_2) = tempr_c
+                begin_index_z_m = begin_index_z_m + N_part_2 + 1
+                index_point_rigth_bound_array_area_2(k - N_part_2) = begin_index_z_m - 1
+            end do 
+            begin_index_z_m = num_particle * N_part_1 + 1
+            do l = 1, N_part_2
+                if (l == num_particle) then 
+                    exit
+                end if
+                do k = 1, l + 1
+                    if (k == 1) then
+                        mesh%trm(1, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l)
+                        mesh%trm(4, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l + 1)
+                    else
+                        mesh%trm(1, begin_index_trm + k - 1) = begin_index_z_m + k - 2
+                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + l
+                    end if
+                    
+                    if (k == l + 1) then
+                        mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
+                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
+                    else
+                        mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1
+                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
+                    end if
+                end do
+                begin_index_trm = begin_index_trm + l + 1
+                begin_index_z_m = begin_index_z_m + l
+            end do
+            do l = N_part_2 + 1, num_particle - 1
+                do k = 1, N_part_2 + 1
+                    if (k == 1) then
+                        mesh%trm(1, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l)
+                        mesh%trm(4, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l + 1)
+                    else 
+                        mesh%trm(1, begin_index_trm + k - 1) = begin_index_z_m + k - 2
+                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + N_part_2 + 1
+                    end if 
+                    mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1
+                    mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + N_part_2 + 1
+                end do 
+                begin_index_trm = begin_index_trm + N_part_2 + 1
+                begin_index_z_m = begin_index_z_m + N_part_2 + 1
+                index_point_rigth_bound_array_area_2(l - N_part_2) = begin_index_z_m - 1
+            end do
+            begin_index_z_m = begin_index_z_m + N_part_2 + 1
+            index_point_rigth_bound_array_area_2(num_particle - index_extreme_particles) = begin_index_z_m - 1
+            deallocate(tempr_y_c,tempr_x_c,tempr_c)
+        elseif (i == 3) then
+            allocate(tempr_y_c(N_part_3 - 1),tempr_x_c(N_part_3 - 1), tempr_c(N_part_3 - 1))
+            do l = 2, N_part_3
+                x_c = (L1/2)*(l-1)/(N_part_3-1)
+                tempr_x_c(l - 1) = x_c
+            end do
+            do l = 1, num_particle - index_extreme_particles
+                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%y, N_part_3 - 1, tempr_x_c, tempr_y_c)
+                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%c, N_part_3 - 1, tempr_x_c, tempr_c)
+                mesh%z_m(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%c(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = tempr_c
+                if (l /= num_particle - index_extreme_particles) then
+                    do k = 1, N_part_3 - 1
+                        if (k == 1) then 
+                            mesh%trm(1, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_2(l)
+                            mesh%trm(4, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_2(l + 1)
+                        else 
+                            mesh%trm(1, begin_index_trm + k - 1) = begin_index_z_m + k - 2
+                            mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + N_part_3 - 1
+                        end if 
+                        mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1
+                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + N_part_3 - 1
+                    end do
+                    begin_index_trm = begin_index_trm + N_part_3 - 1
+                end if 
+                begin_index_z_m = begin_index_z_m + N_part_3 - 1
+            end do
+            deallocate(tempr_y_c,tempr_x_c,tempr_c)
         end if
+        mesh%ntr = begin_index_trm - 1
+        mesh%n = begin_index_z_m - 1
         ! end do
+        
     end do 
     end subroutine build_mesh_1
+subroutine draw_mesh(par)
+    use mod
+    !par=
+    !   1-вывод сетки с концертацией
+    !   2-вывод сетки
+    integer(4) i,k,par
+    character(200) formatstr
+    OPEN (1,FILE='tr_mesh.dat')
+    write(1,*) 'TITLE = "Triangle Mesh"'
+    select case (par)
+    case (1)
+        write(1,*) 'VARIABLES = "X", "Y", "C"'
+        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
+        write(1,trim(formatstr)) mesh%n, mesh%ntr
+        do i = 1, mesh%n
+            write(1,"(F9.5, ' ', F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i)), mesh%c(i)
+        end do
+    case(2)
+        write(1,*) 'VARIABLES = "X", "Y"'
+        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
+        write(1,trim(formatstr)) mesh%n, mesh%ntr
+        do i = 1, mesh%n
+            write(1,"(F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i))
+        end do
+    end select
+    do i = 1, mesh%ntr
+        WRITE(1,"(4(' ',i0))") (mesh%trm(k,i),k=1,mesh%npe)
+    end do 
+    close(1) 
+    end subroutine
 subroutine find_concentration() !поиск концентрации
     use mod
     integer(4) :: i, j
@@ -678,57 +833,41 @@ subroutine find_concentration() !поиск концентрации
             end if
         end do
     end subroutine
-subroutine fcn_s_t(n, t, y, yprime) !интегрирование по длине дуги s с поиском времени
+subroutine fcn_s_1(n, s, y, yprime) !интегрирование по длине дуги s
     use mod
     integer(4) :: n
-    real(8) t, y(n), yprime(n), u_x, u_y, pg_get_fun_xy, V
-    if (y(3) < eps) then
-        y(3)           = eps
-    end if
-    
-    if (y(4) < eps) then 
-        y(4)           = eps
-    end if 
-    
+    real(8) s, y(n), yprime(n), u_x, u_y, V
     V           = dsqrt(y(3)**2+y(4)**2)
-    u_x         = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
-    u_y         = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
+    call get_uxuy(y(1), y(2), u_x, u_y)
     yprime(1)   = y(3)/V
     yprime(2)   = y(4)/V
     yprime(3)   = (u_x-y(3))/(st*V)
     yprime(4)   = (u_y-y(4))/(st*V)
-    yprime(5)   = 1/V
-    end subroutine fcn_s_t
-subroutine fcn_s_t_top(n, t, y, yprime) !интегрирование по длине дуги s с поиском времени для верхней границы
+    end subroutine fcn_s_1
+subroutine fcn_s_top_bottom(n, s, y, yprime) !интегрирование по длине дуги s для нижней и верхней границы
     use mod
     integer(4) :: n
-    real(8) t, y(n), yprime(n), u_x, pg_get_fun_xy, V
-    if (y(3) < eps) then
-        y(3)           = eps
+    real(8) s, y(n), yprime(n), u_x, u_y, V, r_eps
+    !real(8), parameter :: r_eps = 1d-3
+    
+    if (y(3) < d0) then
+        ! alfa = datan2(y(2), y(1))
+        y(3)    = 1d-4
     end if
-    V           = abs(y(3))
-    u_x         = pg_get_fun_xy(y(1),y(2)-eps,2,d0,d1,0)
-    yprime(1)   = y(3)/V
+    
+    V           = y(3)
+    r_eps       = 0.5d0
+    call get_uxuy(y(1), y(2), u_x, u_y)
+    if ((V<u_x).and.(y(1)>-d1-r_eps))then 
+       V       = u_x
+       y(3)    = u_x
+    end if 
+
+    yprime(1)   = d1
     yprime(2)   = d0
-    yprime(3)   = (u_x-y(3))/(st*V)
+    yprime(3)   = (u_x-V)/(st*V)
     yprime(4)   = d0
-    yprime(5)   = 1/V
-    end subroutine fcn_s_t_top
-subroutine fcn_s_t_bottom(n, t, y, yprime) !интегрирование по длине дуги s с поиском времени для нижней границы
-    use mod
-    integer(4) :: n
-    real(8) t, y(n), yprime(n), u_x, pg_get_fun_xy, V
-    if (y(3) < eps) then
-        y(3)           = eps
-    end if
-    V           = abs(y(3))
-    u_x         = pg_get_fun_xy(y(1),y(2)+eps,2,d0,d1,0)
-    yprime(1)   = y(3)/V
-    yprime(2)   = d0
-    yprime(3)   = (u_x-y(3))/(st*V)
-    yprime(4)   = d0
-    yprime(5)   = 1/V
-    end subroutine fcn_s_t_bottom
+    end subroutine fcn_s_top_bottom
 subroutine find_Jacobian()
     use mod 
     integer(4) :: i, ido, j
@@ -748,13 +887,13 @@ subroutine find_Jacobian()
         current_Curve => Curves(i)
         ido         = 1
         j           = 1
-        tol         = 0.0001d0
+        tol         = 1d-3
         s           = d0
         y           = d0 ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
         y(1)        = d1
         y(4)        = d1
         param       = d0
-        !param(4)    = current_Curve%n
+        !param(4)    = current_Curve%n+10
         param(4)    = N_arr
         param(10)   = 1.0d0
         current_Curve%J_11(j)   = y(1)
@@ -773,12 +912,7 @@ subroutine find_Jacobian()
             current_Curve%J_22(j)   = y(4)
             current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
         end do
-        ! current_Curve%J_11(j)   = y(1)
-        ! current_Curve%J_12(j)   = y(2)
-        ! current_Curve%J_21(j)   = y(3)
-        ! current_Curve%J_22(j)   = y(4)
-        ! current_Curve%J(j)      = abs(y(1)*y(4) - y(2)*y(3))
-        call divprk(3, n, fcn_t_Jacobian, current_Curve%t(j - 1), current_Curve%t(j), tol, param, y)
+        call divprk(3, n, fcn_t_Jacobian, current_Curve%s(j - 1), current_Curve%s(j), tol, param, y)
     end do
     !!$OMP END PARALLEL DO
     end subroutine find_Jacobian
@@ -791,9 +925,6 @@ subroutine fcn_t_Jacobian(n, s, y, yprime)
     call dcsiez(current_Curve%n, current_Curve%s, current_Curve%V_x, 1, s, V_x)
     call dcsiez(current_Curve%n, current_Curve%s, current_Curve%V_y, 1, s, V_y)
     V = dsqrt(V_x**2+V_y**2)
-    if (V < eps) then
-        V           = eps
-    end if
     ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
     ! yprime = [d_J11, d_J12, d_J21, d_J22, d_w11, d_w12, d_w21, d_w22]
     yprime(1) = y(5)/V
@@ -809,7 +940,6 @@ function fcn_derivative_for_u_ij(i, j, s)
     use mod
     integer(4) :: i, j
     real(8) :: s, fcn_derivative_for_u_ij
-    integer(4) index_t
     if ((s >= current_Curve%s(1)) .and. (s<= current_Curve%s(current_Curve%n))) then 
         if (i == 1) then
             if (j == 1) then
@@ -900,3 +1030,90 @@ subroutine checking_derivatives() ! проверка производных du_i
         end do
     end do
     end subroutine checking_derivatives  
+
+subroutine get_uxuy(x,y,ux,uy)
+    use mod 
+    real(8) rr,tt,ux,uy,x,y,ff1(2),vr,vt
+    complex(8) z1,z2,z3,z4,z5,z6,z
+    logical solved
+    !заплатка на вычисление скорости вблизи угла на цилиндре
+    rr=d1+d_zapl
+    solved=.false.
+    z1=dcmplx(-d1,d0)
+    z2=dcmplx(d1,d0)
+    z3=dcmplx(-L1/2,d0)
+    z4=dcmplx(-L1/2,H1)
+    z5=dcmplx(L1/2,d0)
+    z6=dcmplx(L1/2,H1)
+    z=dcmplx(x,y)
+    if (cdabs(z-z1)<d_zapl .or. cdabs(z-z2)<d_zapl) then
+        call rr_tt(x,y,rr,tt)
+        vr=(cc1_zapl*(rr-d1/rr)**2+dd1_zapl*d5*(-d1+d1/rr**2+d2*dlog(rr)))*dcos(tt)
+        vt=(cc1_zapl*(d2+d1/rr**2-3*rr**2)-dd1_zapl*d5*(d1-d1/rr**2+d2*dlog(rr)))*dsin(tt)
+        if (zaplat==3) then
+            vr=vr+(cc2_zapl*(d1/rr**4-4*rr**2+3*rr**4)-dd2_zapl*(d2/rr**4-3/rr**2+rr**2))*dcos(3*tt)
+            vt=vt+(cc2_zapl*(d1/rr**4+4*rr**2-5*rr**4)+dd2_zapl*(-d2/rr**4+d1/rr**2+rr**2))*dsin(3*tt)
+        endif
+        call uvrt_to_xy(tt,vr,vt,ux,uy)
+    elseif (cdabs(z-z3)<ds_pg .or. cdabs(z-z4)<ds_pg .or. cdabs(z-z5)<ds_pg .or. cdabs(z-z6)<ds_pg) then 
+        ux = d1
+        uy = d0
+    else
+        call pg_get_fun_xy_gradient(x,y,5,0,ff1)
+        ux=ff1(2)
+        uy=-ff1(1)
+    endif
+    end
+
+subroutine init_zaplat
+    use mod
+    real(8) rr,pg_get_fun_xy,ux,uy,tt,x,y,ff1(2)
+    real(8) m2(4,4),b2(4),res2(4)
+    d_zapl=3*ds_pg
+    rr=d1+d_zapl
+    tt=pi
+    !vr
+    m2(1,1)=(rr-d1/rr)**2*dcos(tt)
+    m2(1,2)=d5*(-d1+d1/rr**2+d2*dlog(rr))*dcos(tt)
+    m2(1,3)=(d1/rr**4-4*rr**2+3*rr**4)*dcos(3*tt)
+    m2(1,4)=-(d2/rr**4-3/rr**2+rr**2)*dcos(3*tt)
+    b2(1)=-pg_get_fun_xy(-rr,d0,2,d0,d1,0)
+    !!dvr/dr
+    x=-d1-d_zapl*dcos(pi/4)
+    y=d_zapl*dsin(pi/4)
+    call rr_tt(x,y,rr,tt)
+    !om
+    m2(2,1)=-8*rr*dsin(tt)
+    m2(2,2)=-2/rr*dsin(tt)
+    m2(2,3)=-16*rr**3*dsin(3*tt)
+    m2(2,4)=8/rr**3*dsin(3*tt)
+    b2(2)=-pg_get_fun_xy(x,y,3,d0,d0,0)
+    !vr
+    m2(3,1)=(rr-d1/rr)**2*dcos(tt)
+    m2(3,2)=d5*(-d1+d1/rr**2+d2*dlog(rr))*dcos(tt)
+    m2(3,3)=(d1/rr**4-4*rr**2+3*rr**4)*dcos(3*tt)
+    m2(3,4)=-(d2/rr**4-3/rr**2+rr**2)*dcos(3*tt)
+    !vt
+    m2(4,1)=(d2+d1/rr**2-3*rr**2)*dsin(tt)
+    m2(4,2)=-d5*(d1-d1/rr**2+d2*dlog(rr))*dsin(tt)
+    m2(4,3)=(d1/rr**4+4*rr**2-5*rr**4)*dsin(3*tt)
+    m2(4,4)=(-d2/rr**4+d1/rr**2+rr**2)*dsin(3*tt)
+    call pg_get_fun_xy_gradient(x,y,5,0,ff1)
+    ux=ff1(2)
+    uy=-ff1(1)
+    b2(3)=ux*dcos(tt)+uy*dsin(tt) !vr
+    b2(4)=-ux*dsin(tt)+uy*dcos(tt) !vt
+    call DLSLRG(4,m2,4,b2,1,res2)
+    cc1_zapl=res2(1)
+    dd1_zapl=res2(2)
+    cc2_zapl=res2(3)
+    dd2_zapl=res2(4)
+    end
+
+subroutine uvrt_to_xy(tt,vr,vtt,u,v)
+    !перевод скоростей из полярной в декартову
+    use mod
+    real(8) tt,vr,vtt,u,v
+    u=vr*dcos(tt)-vtt*dsin(tt)
+    v=vr*dsin(tt)+vtt*dcos(tt)
+    end

@@ -6,11 +6,11 @@ end
 subroutine main_1()
     use mod
     H1              =5d0
-    !top_coordinat   = H1
     L1              =10*d1
     nj              =100
     ds              =pi/nj
     ds2             =ds
+    ds_pg           =ds
     call pg_start
     call pg_allocate_problems(1)
     call pg_bind_problem(1)
@@ -29,6 +29,8 @@ subroutine main_1()
     call pg_solve
     call pg_get_psioml
     call draw_square
+    gs_test_point_near_bound = .false.
+    call init_zaplat
     !call build_bound()
     call build_curve()
     call find_derivative()
@@ -36,14 +38,17 @@ subroutine main_1()
     !call find_concentration()
     call find_Jacobian()
     call find_concentration_by_Jacobian()
-    call draw_Curves(1)
-    !call build_mesh_1()
+    call build_mesh_1()
+    call draw_mesh(1)
+    ! call draw_Curves(1)
+    
     !call build_time_isolines()
     !call solve
     call pg_finish
     !call testing()
     
 end
+
 subroutine draw_square
   use mod
   integer(4) nr,ng,i,j,mode
@@ -89,4 +94,5 @@ subroutine draw_square
   enddo
   enddo
   close(1)
-  end
+end
+

@@ -7,6 +7,9 @@ module mod
     !real(8) cof_a
     !real(8) R_2,R_1
     logical newgu
+    logical zaplat
+    real(8) ds_pg
+    real(8) d_zapl, cc1_zapl, dd1_zapl, cc2_zapl, dd2_zapl
     real(8) F_m
     real(8) H1, L1
     integer(4) nj ! ����������� ��������� ������� �� ������ 
@@ -14,15 +17,15 @@ module mod
     real(8) ds2 !������ ������ ��� �������� �������
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) :: st                           = 1d0  
-    integer(4), parameter :: N_arr          = 2000
-    integer(4), parameter :: num_particle   = 10
+    real(8) :: st                           = 2d0  
+    integer(4), parameter :: N_arr          = 10000
+    integer(4), parameter :: num_particle   = 50
     real(8) :: cord_extreme_particles
-    integer(4) :: index_extreme_particles   = 0
-    integer(4) :: N_part_1                  = 10
+    integer(4) :: index_extreme_particles   = 1
+    integer(4) :: N_part_1                  = 50
     integer(4) :: N_part_2                  
-    integer(4) :: N_part_3                  = 10 ! = N_part_1 /(L1 - d1))
-    integer(4) :: N_part_4                  = 10
+    integer(4) :: N_part_3                  = 100 ! = N_part_1 /(L1 - d1))
+    integer(4) :: N_part_4                  = 100
     integer(4) :: use_parallel_build_cerves = 1
     integer(4) :: gs_use_parallel_build_grafic = 0
     type :: Curve
@@ -37,12 +40,17 @@ module mod
     end type
     type :: Mesh_1
         integer(4) :: n_i, n_j
-        real(8), allocatable :: x_y_(:,:), t(:,:), c(:,:), v_x(:,:), v_y(:,:), s(:,:)
+        real(8), allocatable :: t(:), c(:), v_x(:), v_y(:), s(:)
+        complex(8), allocatable :: z_m(:) !координаты узлов сетки в области
+        integer(4) :: npe = 4 !число углов в элементе (3,4) - для выделения памяти
+        integer(4) n !число узлов
+        integer(4) ntr !количество ячеек в сетке
+        integer(4), allocatable :: trm(:,:) !(npe,ntr) !индексы вершин треугольной сетки
     end type
     type(Curve), allocatable, target :: Curves(:)
     type(Curve), pointer :: current_Curve
     type(Mesh_1), allocatable :: mesh
-    real(8) :: top_coordinat                = 1.5d0
+    real(8) :: top_coordinat                = 1d0
     real(8) :: bottom_coordinat             = 0d0
 contains
     subroutine finalize(obj)
