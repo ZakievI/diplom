@@ -17,17 +17,19 @@ module mod
     real(8) ds2 !������ ������ ��� �������� �������
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) :: st                           = 2d0  
+    real(8) :: st                           = 10d0
+    real(8) :: mu                           = 1 
     integer(4), parameter :: N_arr          = 10000
-    integer(4), parameter :: num_particle   = 50
+    integer(4), parameter :: num_particle   = 20
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
-    integer(4) :: N_part_1                  = 50
+    integer(4) :: N_part_1                  = 20
     integer(4) :: N_part_2                  
-    integer(4) :: N_part_3                  = 100 ! = N_part_1 /(L1 - d1))
-    integer(4) :: N_part_4                  = 100
+    integer(4) :: N_part_3                  = 40 ! = N_part_1 /(L1 - d1))
+    integer(4) :: N_part_4                  = 20
     integer(4) :: use_parallel_build_cerves = 1
     integer(4) :: gs_use_parallel_build_grafic = 0
+    real(8)    :: dlt
     type :: Curve
         integer(4) :: n
         real(8), allocatable :: x(:), y(:), t(:), V_x(:), V_y(:)
@@ -42,15 +44,18 @@ module mod
         integer(4) :: n_i, n_j
         real(8), allocatable :: t(:), c(:), v_x(:), v_y(:), s(:)
         complex(8), allocatable :: z_m(:) !координаты узлов сетки в области
+        complex(8), allocatable :: v_m(:) !скорость частицы
+        complex(8), allocatable :: f_m(:) !плотность масс сил
         integer(4) :: npe = 4 !число углов в элементе (3,4) - для выделения памяти
         integer(4) n !число узлов
         integer(4) ntr !количество ячеек в сетке
         integer(4), allocatable :: trm(:,:) !(npe,ntr) !индексы вершин треугольной сетки
+        real(4), allocatable :: F_trm(:) ! значение rot(f) в ячейке
     end type
     type(Curve), allocatable, target :: Curves(:)
     type(Curve), pointer :: current_Curve
     type(Mesh_1), allocatable :: mesh
-    real(8) :: top_coordinat                = 1d0
+    real(8) :: top_coordinat                = 3d0
     real(8) :: bottom_coordinat             = 0d0
 contains
     subroutine finalize(obj)

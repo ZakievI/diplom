@@ -5,7 +5,7 @@ subroutine solve !построение графика числа T = N_impact/N 
     integer(4):: i, num, f_t(3)
     integer(4) function_impact_testing
     real(8), allocatable :: y_out(:,:) 
-    real(8):: y(n), dlt, stocs, y_t(3)
+    real(8):: y(n), stocs, y_t(3)
     real(8):: pg_get_fun_xy
     external fcn, fcn_s, function_impact_testing
     !open (1, file='traektorie.dat')
@@ -80,7 +80,7 @@ subroutine build_bound() !постройка границы в области п
     integer(4) function_impact_testing, size_arr
     real(8), allocatable :: bound_first_particle(:,:)
     real(8), allocatable :: new_arr(:,:)
-    real(8):: y(n), dlt, stocs, y_t(3)
+    real(8):: y(n), stocs, y_t(3)
     real(8):: pg_get_fun_xy
     external fcn, fcn_s, function_impact_testing
     num             = 5000
@@ -164,27 +164,27 @@ subroutine fcn_s(n, t, y, yprime) !интегрирование по длине 
     yprime(3)   = (u_x-y(3))/(st*V)
     yprime(4)   = (u_y-y(4))/(st*V)
     end subroutine fcn_s
-function function_impact_testing(n, y, dlt)  !индикаторная функция
+function function_impact_testing(n, y, dlt1)  !индикаторная функция
     use mod
     integer(4)::n
-    real(8) y(n), dlt, tol
+    real(8) y(n), tol, dlt1
     integer(4) function_impact_testing
     function_impact_testing = 2
     tol = 0.001d0
-    if (y(2)<d1+dlt-tol) then
+    if (y(2)<d1+dlt1-tol) then
         function_impact_testing = 1
-    else if ((y(2)>= d1+dlt-tol).and.(y(2)<= d1+dlt+tol)) then
+    else if ((y(2)>= d1+dlt-tol).and.(y(2)<= d1+dlt1+tol)) then
         function_impact_testing = 0
-    else if (y(2)> d1+dlt+tol) then
+    else if (y(2)> d1+dlt1+tol) then
         function_impact_testing = -1
     end if
     end function function_impact_testing
-subroutine impact_test(n, y , y_out, num, dlt) !проверка на ударение чатcицы
+subroutine impact_test(n, y , y_out, num, dlt1) !проверка на ударение чатcицы
     use mod
     integer(4) :: n, num, k1, ido
     integer(4), parameter::mxparm = 100
     real(8) :: y_out(num,2)
-    real(8) :: y(n), s, d_s, tol, param(mxparm), dlt
+    real(8) :: y(n), s, d_s, tol, param(mxparm), dlt1
     external fcn, fcn_s
     s           = d0                !��������� ������� ��� �������������� �� ����
     tol         = 0.001d0           !���������� ������
@@ -194,7 +194,7 @@ subroutine impact_test(n, y , y_out, num, dlt) !проверка на ударе
     d_s         = 0.05d0            !��� �� ����
     k1          = 2
     ido = 1
-    do while ((sqrt(y(1)**2+y(2)**2)>d1+dlt).and.(-L1/2<=y(1)).and.(y(1)<d0).and.(y(2)<H1).and.(d0<y(2)).and.(k1<=num))
+    do while ((sqrt(y(1)**2+y(2)**2)>d1+dlt1).and.(-L1/2<=y(1)).and.(y(1)<d0).and.(y(2)<H1).and.(d0<y(2)).and.(k1<=num))
         call divprk(ido, n, fcn_s, s, s+d_s, tol, param, y)
         !print '(i6, 6f12.3)', k1, t, y
         !y_out(k1,1)=y(1)
@@ -203,12 +203,12 @@ subroutine impact_test(n, y , y_out, num, dlt) !проверка на ударе
     end do
     call divprk(3, n, fcn_s, s, s+d_s, tol, param, y)
     end subroutine impact_test
-subroutine coordinate_first_particle(n, y, arr_bound, num, dlt, size_arr) !координаты экстремальной частицы, прошедшей мимо цилиндрва  
+subroutine coordinate_first_particle(n, y, arr_bound, num, dlt1, size_arr) !координаты экстремальной частицы, прошедшей мимо цилиндрва  
     use mod 
     integer(4) :: n, num, k1, ido, size_arr
     integer(4), parameter::mxparm = 100
     real(8) :: arr_bound(num,2)
-    real(8) :: y(n), s, d_s, tol, param(mxparm), dlt
+    real(8) :: y(n), s, d_s, tol, param(mxparm), dlt1
     external fcn, fcn_s
     s           = d0                !��������� ������� ��� �������������� �� ����
     tol         = 0.001d0           !���������� ������
@@ -251,7 +251,7 @@ function search_for_extreme_particles() ! поиск критической ча
     integer(4) :: i, num, f_t(3)
     integer(4) function_impact_testing
     real(8), allocatable :: bound_first_particle(:,:)
-    real(8) :: y(n), dlt, y_t(3)
+    real(8) :: y(n), y_t(3)
     real(8) :: pg_get_fun_xy
     real(8) :: search_for_extreme_particles
     external fcn_s, function_impact_testing
@@ -396,11 +396,11 @@ subroutine build_curve() !поиск кривых
     integer(4), parameter :: n = 4
     real(8) area_quadrilateral, search_for_extreme_particles, alfa
     integer(4), parameter :: mxparm = 50
-    real(8) :: param(mxparm), d_s, s, y(n), dlt, tol, pg_get_fun_xy
+    real(8) :: param(mxparm), d_s, s, y(n), tol, pg_get_fun_xy
     real(8), allocatable :: Curve_tempr(:,:)
     external fcn_s_1, area_quadrilateral, fcn_s_top_bottom, search_for_extreme_particles
-    tol             = 1d-5
-    d_s             = 1d-3
+    tol             = 1d-4
+    d_s             = 1d-2
     s               = d0
     ido             = 1
     dlt             = d0
@@ -427,7 +427,7 @@ subroutine build_curve() !поиск кривых
         !end if
 
         y(1)            = -L1/2
-        y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**1
+        y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**2
         call get_uxuy(y(1), y(2), y(3), y(4))
         ! if (((dabs(y(2)) < eps) .or. (dabs(y(2) - H1) < eps)) .and. (-H1 - y(1) < eps) ) then
         !     y(3)            = pg_get_fun_xy(y(1) + eps ,y(2),2,d0,d1,0)
@@ -492,10 +492,11 @@ subroutine build_curve() !поиск кривых
     end do 
     !$OMP END PARALLEL DO
     do i = 1, num_particle
-        if (Curves(i)%x(Curves(i)%n)>0) then
+        if (Curves(i)%x(Curves(i)%n)>d0) then
             index_extreme_particles = i - 1
             exit
         end if
+        index_extreme_particles = num_particle
     end do
     end subroutine build_curve
 subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
@@ -549,12 +550,12 @@ subroutine find_derivative() !find the derivative du_i/dx_j of the curve
 subroutine build_mesh_1 !строим сетку 
     use mod
     integer(4) :: i, l, k
-    real(8), allocatable :: tempr_y_c(:), tempr_x_c(:), tempr_c(:)
+    real(8), allocatable :: tempr_y_c(:), tempr_x_c(:), tempr_c(:), tempr_v_x(:), tempr_v_y(:)
     integer(4) :: index_point_rigth_bound_array_area_1(num_particle), index_point_rigth_bound_array_area_2(num_particle - index_extreme_particles)
-    !complex(8), allocatable :: z_m(:)
     integer(4) :: num_of_partitions_by_x
     real(8) :: x_c, y_c
     integer(4) :: begin_index_z_m, begin_index_trm
+    integer(4) :: start_index_2st_area
     N_part_2 = index_extreme_particles
     num_of_partitions_by_x = (N_part_1 + N_part_2 + N_part_3 + N_part_4)
     ! allocate(mesh%x_y_(num_particle * num_of_partitions_by_x, 2),mesh%t(num_particle * num_of_partitions_by_x, 1),mesh%c(num_particle * num_of_partitions_by_x, 1)&
@@ -570,14 +571,15 @@ subroutine build_mesh_1 !строим сетку
     allocate(mesh%z_m((N_part_1 + N_part_2 + N_part_3 + N_part_4) * num_particle))
     allocate(mesh%c((N_part_1 + N_part_2 + N_part_3 + N_part_4) * num_particle))
     allocate(mesh%trm(4,(N_part_1 + N_part_2 + N_part_3 + N_part_4 - 4) * (num_particle - 1)))
+    allocate(mesh%v_m((N_part_1 + N_part_2 + N_part_3 + N_part_4) * num_particle))
     !allocate(index_point_rigth_bound_array_area_1(num_particle))
     
-    do i = 1, 4        
+    do i = 1, 3        
         if (i == 1) then
             ! область 1
             begin_index_z_m = 1
             begin_index_trm = 1
-            allocate(tempr_y_c(N_part_1),tempr_x_c(N_part_1), tempr_c(N_part_1))
+            allocate(tempr_y_c(N_part_1),tempr_x_c(N_part_1), tempr_c(N_part_1), tempr_v_x(N_part_1), tempr_v_y(N_part_1))
             do l = 1, N_part_1
                 x_c = -L1/2 + (L1/2 - d1)*(l-1)/(N_part_1-1)
                 tempr_x_c(l) = x_c
@@ -585,7 +587,10 @@ subroutine build_mesh_1 !строим сетку
             do k = 1, num_particle
                 call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_1, tempr_x_c, tempr_y_c)
                 call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_1, tempr_x_c, tempr_c)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_1, tempr_x_c, tempr_v_x)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_1, tempr_x_c, tempr_v_y)
                 mesh%z_m(1 + (k-1)*N_part_1: k * N_part_1) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%v_m(1 + (k-1)*N_part_1: k * N_part_1) = cmplx(tempr_v_x,tempr_v_y)
                 mesh%c(1 + (k-1)*N_part_1: k * N_part_1) = tempr_c
                 index_point_rigth_bound_array_area_1(k) = k * N_part_1
             end do
@@ -597,27 +602,43 @@ subroutine build_mesh_1 !строим сетку
                     mesh%trm(4, k + (N_part_1 - 1) * (l-1)) = k + (N_part_1) * (l) 
                 end do 
             end do
-            deallocate(tempr_y_c,tempr_x_c,tempr_c)
         elseif (i == 2)then
             ! область 2
             begin_index_z_m = num_particle * N_part_1 + 1
             begin_index_trm = (num_particle - 1) * (N_part_1 - 1) + 1
-            allocate(tempr_y_c(N_part_2 + 1),tempr_x_c(N_part_2 + 1),tempr_c(N_part_2 + 1))
-            do l = 1, N_part_2
-                tempr_x_c(l) = Curves(l)%x(Curves(l)%n)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, l, tempr_x_c(1:l), tempr_y_c)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%c, l, tempr_x_c(1:l), tempr_c)
-                mesh%z_m(begin_index_z_m : begin_index_z_m + l - 1) = cmplx(tempr_x_c(1 : l),tempr_y_c(1 : l))
-                mesh%c(begin_index_z_m : begin_index_z_m + l - 1) = tempr_c
-                begin_index_z_m = begin_index_z_m + l
+
+            if (Curves(1)%y(Curves(1)%n) == d0) then 
+                start_index_2st_area = 2
+            else 
+                start_index_2st_area = 1
+            end if
+            
+            allocate(tempr_y_c(N_part_2 + 1 - start_index_2st_area + 1),&
+                    tempr_x_c(N_part_2 + 1 - start_index_2st_area + 1),&
+                    tempr_c(N_part_2 + 1 - start_index_2st_area + 1),&
+                    tempr_v_x(N_part_2 + 1 - start_index_2st_area + 1),&
+                    tempr_v_y(N_part_2 + 1 - start_index_2st_area + 1))
+            do l = start_index_2st_area, N_part_2
+                tempr_x_c(l - start_index_2st_area + 1) = Curves(l)%x(Curves(l)%n)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_y_c)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%c, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_c)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%V_x, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_x)
+                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%V_y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_y)
+                mesh%z_m(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = cmplx(tempr_x_c(1 : l - start_index_2st_area + 1),tempr_y_c(1 : l - start_index_2st_area + 1))
+                mesh%v_m(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = cmplx(tempr_v_x(1 : l - start_index_2st_area + 1),tempr_v_y(1 : l - start_index_2st_area + 1))
+                mesh%c(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = tempr_c
+                begin_index_z_m = begin_index_z_m + l - start_index_2st_area + 1
             end do
-            tempr_x_c(N_part_2 + 1) = d0
+            tempr_x_c(N_part_2 + 1 - start_index_2st_area + 1) = d0
             do k = N_part_2 + 1, num_particle
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_2 + 1, tempr_x_c, tempr_y_c)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_2 + 1, tempr_x_c, tempr_c)
-                mesh%z_m(begin_index_z_m: begin_index_z_m + N_part_2) = cmplx(tempr_x_c,tempr_y_c)
-                mesh%c(begin_index_z_m: begin_index_z_m + N_part_2) = tempr_c
-                begin_index_z_m = begin_index_z_m + N_part_2 + 1
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_y_c)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_c)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_x)
+                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_y)
+                mesh%z_m(begin_index_z_m : begin_index_z_m + N_part_2 - start_index_2st_area + 1) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%v_m(begin_index_z_m : begin_index_z_m + N_part_2 - start_index_2st_area + 1) = cmplx(tempr_v_x,tempr_v_y)
+                mesh%c(begin_index_z_m: begin_index_z_m + N_part_2 - start_index_2st_area + 1) = tempr_c
+                begin_index_z_m = begin_index_z_m + N_part_2 + 1 - start_index_2st_area + 1
                 index_point_rigth_bound_array_area_2(k - N_part_2) = begin_index_z_m - 1
             end do 
             begin_index_z_m = num_particle * N_part_1 + 1
@@ -625,47 +646,46 @@ subroutine build_mesh_1 !строим сетку
                 if (l == num_particle) then 
                     exit
                 end if
-                do k = 1, l + 1
+                do k = 1, l + 1 - start_index_2st_area + 1
                     if (k == 1) then
                         mesh%trm(1, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l)
                         mesh%trm(4, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l + 1)
                     else
                         mesh%trm(1, begin_index_trm + k - 1) = begin_index_z_m + k - 2
-                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + l
+                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + l - start_index_2st_area + 1
                     end if
                     
-                    if (k == l + 1) then
-                        mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
-                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
+                    if (k == l + 1 - start_index_2st_area + 1) then
+                        mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l - start_index_2st_area + 1
+                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l - start_index_2st_area + 1
                     else
                         mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1
-                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l
+                        mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + l - start_index_2st_area + 1
                     end if
                 end do
-                begin_index_trm = begin_index_trm + l + 1
-                begin_index_z_m = begin_index_z_m + l
+                begin_index_trm = begin_index_trm + l + 1 - start_index_2st_area + 1
+                begin_index_z_m = begin_index_z_m + l - start_index_2st_area + 1
             end do
             do l = N_part_2 + 1, num_particle - 1
-                do k = 1, N_part_2 + 1
+                do k = 1, N_part_2 + 1 - start_index_2st_area + 1
                     if (k == 1) then
                         mesh%trm(1, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l)
                         mesh%trm(4, begin_index_trm + k - 1) = index_point_rigth_bound_array_area_1(l + 1)
                     else 
                         mesh%trm(1, begin_index_trm + k - 1) = begin_index_z_m + k - 2
-                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + N_part_2 + 1
+                        mesh%trm(4, begin_index_trm + k - 1) = begin_index_z_m + k - 2 + N_part_2 + 1 - start_index_2st_area + 1
                     end if 
                     mesh%trm(2, begin_index_trm + k - 1) = begin_index_z_m + k - 1
-                    mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + N_part_2 + 1
+                    mesh%trm(3, begin_index_trm + k - 1) = begin_index_z_m + k - 1 + N_part_2 + 1 - start_index_2st_area + 1
                 end do 
-                begin_index_trm = begin_index_trm + N_part_2 + 1
-                begin_index_z_m = begin_index_z_m + N_part_2 + 1
+                begin_index_trm = begin_index_trm + N_part_2 + 1 - start_index_2st_area + 1
+                begin_index_z_m = begin_index_z_m + N_part_2 + 1 - start_index_2st_area + 1
                 index_point_rigth_bound_array_area_2(l - N_part_2) = begin_index_z_m - 1
             end do
-            begin_index_z_m = begin_index_z_m + N_part_2 + 1
+            begin_index_z_m = begin_index_z_m + N_part_2 + 1 - start_index_2st_area + 1
             index_point_rigth_bound_array_area_2(num_particle - index_extreme_particles) = begin_index_z_m - 1
-            deallocate(tempr_y_c,tempr_x_c,tempr_c)
         elseif (i == 3) then
-            allocate(tempr_y_c(N_part_3 - 1),tempr_x_c(N_part_3 - 1), tempr_c(N_part_3 - 1))
+            allocate(tempr_y_c(N_part_3 - 1),tempr_x_c(N_part_3 - 1), tempr_c(N_part_3 - 1), tempr_v_x(N_part_3 - 1), tempr_v_y(N_part_3 - 1))
             do l = 2, N_part_3
                 x_c = (L1/2)*(l-1)/(N_part_3-1)
                 tempr_x_c(l - 1) = x_c
@@ -673,7 +693,10 @@ subroutine build_mesh_1 !строим сетку
             do l = 1, num_particle - index_extreme_particles
                 call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%y, N_part_3 - 1, tempr_x_c, tempr_y_c)
                 call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%c, N_part_3 - 1, tempr_x_c, tempr_c)
+                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_x, N_part_3 - 1, tempr_x_c, tempr_v_x)
+                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_y, N_part_3 - 1, tempr_x_c, tempr_v_y)
                 mesh%z_m(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = cmplx(tempr_x_c,tempr_y_c)
+                mesh%V_m(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = cmplx(tempr_v_x,tempr_v_y)
                 mesh%c(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = tempr_c
                 if (l /= num_particle - index_extreme_particles) then
                     do k = 1, N_part_3 - 1
@@ -691,19 +714,20 @@ subroutine build_mesh_1 !строим сетку
                 end if 
                 begin_index_z_m = begin_index_z_m + N_part_3 - 1
             end do
-            deallocate(tempr_y_c,tempr_x_c,tempr_c)
         end if
         mesh%ntr = begin_index_trm - 1
         mesh%n = begin_index_z_m - 1
         ! end do
+        deallocate(tempr_y_c,tempr_x_c,tempr_c, tempr_v_x, tempr_v_y)
         
     end do 
     end subroutine build_mesh_1
-subroutine draw_mesh(par)
+subroutine draw_mesh(par) !вывод сетки
     use mod
     !par=
     !   1-вывод сетки с концертацией
     !   2-вывод сетки
+    !   3-вывод сетки с силой f в узлах
     integer(4) i,k,par
     character(200) formatstr
     OPEN (1,FILE='tr_mesh.dat')
@@ -723,11 +747,78 @@ subroutine draw_mesh(par)
         do i = 1, mesh%n
             write(1,"(F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i))
         end do
+    case(3)
+        write(1,*) 'VARIABLES = "X", "Y", "F_x", "F_y"'
+        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
+        write(1,trim(formatstr)) mesh%n, mesh%ntr
+        do i = 1, mesh%n
+            write(1,"(F9.5, ' ', F9.5, ' ', F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i)), dreal(mesh%f_m(i)), dimag(mesh%f_m(i))
+        end do
     end select
     do i = 1, mesh%ntr
         WRITE(1,"(4(' ',i0))") (mesh%trm(k,i),k=1,mesh%npe)
     end do 
     close(1) 
+    end subroutine
+subroutine draw_mesh_with_cell(par)
+    use mod
+    !par=
+    !   1-вывод сетки с F
+    integer(4) i,k,par
+    character(200) formatstr
+    OPEN (1,FILE='mesh_data.txt')
+    write(1,*) 'NODES CELLS NODES_PER_CELL'
+    write(1,"(I, ' ', I, ' ', I)") mesh%n, mesh%ntr, mesh%npe
+
+    select case (par)
+    case (1)
+        write(1,*) 'NODE_COORDINATES'
+        
+        do i = 1, mesh%n
+            write(1,"(F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i))
+        end do
+        
+        write(1,*) 'CONNECTIVITY'
+        
+        do i = 1, mesh%ntr
+            write(1,"(I, ' ', I, ' ', I, ' ', I)") mesh%trm(1, i), mesh%trm(2, i), mesh%trm(3, i), mesh%trm(4, i)
+        end do
+        
+        write(1,*) 'CELL_VALUES'
+        
+        do i = 1, mesh%ntr
+            write(1,"(F9.5)") mesh%F_trm(i)
+        end do
+    end select
+    close(1) 
+    end subroutine
+subroutine filling_in_the_cells()
+    use mod
+    integer(4) i, k
+    real(8) u_x, u_y, fi1, fi2, tetta, sum_integral, l, area_quadrilateral, S_area
+    external area_quadrilateral
+    dlt             = 0.01d0
+    allocate(mesh%f_m(mesh%n), mesh%F_trm(mesh%ntr))
+    do i=1,mesh%n
+        call get_uxuy(REAL(mesh%z_m(i)), AIMAG(mesh%z_m(i)), u_x, u_y)
+        mesh%f_m(i) = 3 * pi * mu * cmplx(u_x - REAL(mesh%v_m(i)), u_y - AIMAG(mesh%v_m(i))) * dlt * mesh%c(i)
+    end do
+    do i=1, mesh%ntr
+        sum_integral = d0
+        do k=1, 4
+            if (mesh%trm(k, i) == mesh%trm(MODULO(k, 4) + 1, i)) exit
+            fi1 = datan2(REAL(mesh%z_m(mesh%trm(k, i))),AIMAG(mesh%z_m(mesh%trm(k, i))))
+            fi2 = datan2(REAL(mesh%z_m(mesh%trm(MODULO(k, 4) + 1, i))),AIMAG(mesh%z_m(mesh%trm(MODULO(k, 4) + 1, i))))
+            tetta = datan2(REAL(mesh%z_m(mesh%trm(MODULO(k, 4) + 1, i)) - mesh%z_m(mesh%trm(k , i))), AIMAG(mesh%z_m(mesh%trm(MODULO(k, 4) + 1, i)) - mesh%z_m(mesh%trm(k , i))))
+            l = abs(mesh%z_m(mesh%trm(MODULO(k, 4) + 1, i)) - mesh%z_m(mesh%trm(k, i)))
+            sum_integral = sum_integral + (mesh%f_m(mesh%trm(k, i))*dcos(fi1 - tetta) + mesh%f_m(mesh%trm(MODULO(k, 4) + 1, i))*dcos(fi2 - tetta))*l/2
+        end do
+        S_area = area_quadrilateral(mesh%z_m(mesh%trm(1, i)), mesh%z_m(mesh%trm(2, i)),mesh%z_m(mesh%trm(3, i)),mesh%z_m(mesh%trm(4, i)))
+        if (S_area < 1d-5) then 
+            S_area = 1d-5
+        end if
+        mesh%F_trm(i) = sum_integral / S_area
+    end do
     end subroutine
 subroutine find_concentration() !поиск концентрации
     use mod
@@ -965,9 +1056,9 @@ subroutine find_concentration_by_Jacobian()
         allocate(Curves(i)%c(Curves(i)%n))
         do k = 1, Curves(i)%n
             Curves(i)%c(k) = 1/Curves(i)%J(k)
-            if (Curves(i)%c(k) > 1) then
-                Curves(i)%c(k) = 2d0 - 1d0/Curves(i)%c(k)
-            end if 
+            !if (Curves(i)%c(k) > 1) then
+            !    Curves(i)%c(k) = 2d0 - 1d0/Curves(i)%c(k)
+            !end if 
         end do 
     end do
     end subroutine find_concentration_by_Jacobian

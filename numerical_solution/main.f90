@@ -11,6 +11,7 @@ subroutine main_1()
     ds              =pi/nj
     ds2             =ds
     ds_pg           =ds
+    dlt             = 0.01d0
     call pg_start
     call pg_allocate_problems(1)
     call pg_bind_problem(1)
@@ -36,11 +37,14 @@ subroutine main_1()
     call find_derivative()
     !call checking_derivatives()
     !call find_concentration()
+    
     call find_Jacobian()
     call find_concentration_by_Jacobian()
     call build_mesh_1()
-    call draw_mesh(1)
-    ! call draw_Curves(1)
+    call filling_in_the_cells()
+    !call draw_mesh(3)
+    !call draw_Curves(2)
+    call draw_mesh_with_cell(1)
     
     !call build_time_isolines()
     !call solve
