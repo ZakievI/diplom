@@ -406,7 +406,7 @@ subroutine build_curve() !поиск кривых
     dlt             = d0
     if (allocated(Curves)) deallocate(Curves)
     allocate(Curves(num_particle))
-    !cord_extreme_particles = search_for_extreme_particles()
+    cord_extreme_particles = search_for_extreme_particles()
     
     !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
@@ -415,20 +415,20 @@ subroutine build_curve() !поиск кривых
         n1                 = 1
         ido                = 1
         s                  = d0
-        Curve_tempr(n1, 1) = -L1/2 
-        !if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-d1)/(num_particle-d1))**3)) then
-        !    !cord_extreme_particles = search_for_extreme_particles()
-        !    Curve_tempr(n1, 2) = cord_extreme_particles - eps
-        !    index_extreme_particles = i
-        !else
-        !    !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
-        !    ! измененно !!!!!!!!!!
-        !    Curve_tempr(n1, 2) = H1*((i-d1)/(num_particle-d1))**3
-        !    ! Curve_tempr(n1, 2) = 0.5d0
-        !end if
+        !Curve_tempr(n1, 1) = -L1/2 
+        if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-1)/(num_particle-d1))**3)) then
+            !cord_extreme_particles = search_for_extreme_particles()
+            y(2) = cord_extreme_particles
+            !index_extreme_particles = i
+        else
+            !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
+            ! измененно !!!!!!!!!!
+            y(2) = H1*((i-d1)/(num_particle-d1))**3
+            ! Curve_tempr(n1, 2) = 0.5d0
+        end if
 
         y(1)            = -L1/2
-        y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
+        !y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
         call get_uxuy(y(1), y(2), y(3), y(4))
         param           = d0
         param(4)        = N_arr

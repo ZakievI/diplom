@@ -77,13 +77,16 @@ subroutine run_iteration(max_delta)
       
       call ga_drw_trmesh(2)
     
-      call build_mesh()
+      !call build_mesh()
+      call pg_bind_domain(2)
+      call pg_bind_bound(1)
+      call build_mesh_for_several_areas()
       call pg_areageom_postprocessor
       call pg_bind_domain(2)
       call pg_allocate_area_gu
       call init_Meshval()
-      call pg_bind_domain(2)
-      call pg_bind_bound(1)
+      !call pg_bind_domain(2)
+      !call pg_bind_bound(1)
     end if
     
     call ga_drw_trmesh(0)

@@ -2,7 +2,7 @@ module mod
     use pgmod
     !real(8) h
     !real(8) k
-    real(8), PARAMETER :: eps=1d-5
+    real(8), PARAMETER :: eps=1d-4
     real(8), PARAMETER :: eps_zd3=1d-3
     !real(8) cof_a
     !real(8) R_2,R_1
@@ -11,7 +11,7 @@ module mod
     real(8) ds_pg
     real(8) d_zapl, cc1_zapl, dd1_zapl, cc2_zapl, dd2_zapl
     real(8) F_m
-    real(8), PARAMETER :: n0 = 1d-15
+    real(8), PARAMETER :: n0 = 1d0
     real(8) H1, L1
     integer(4) iteration
     integer(4) nj ! ����������� ��������� ������� �� ������ 
@@ -22,15 +22,15 @@ module mod
     real(8) :: st                           = 5d0
     real(8) :: mu                           = 1 
     integer(4), parameter :: N_arr          = 10000
-    integer(4), parameter :: num_particle   = 50
+    integer(4), parameter :: num_particle   = 30
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
     integer(4) :: N_part_1                  = 30
     integer(4) :: N_part_2                  
     integer(4) :: N_part_3                  = 70 ! = N_part_1 /(L1 - d1))
     integer(4) :: N_part_4                  = 20
-    integer(4) :: use_parallel_build_cerves = 1
-    integer(4) :: use_parallel_build_cerves_J = 0
+    integer(4) :: use_parallel_build_cerves = 0
+    integer(4) :: use_parallel_build_cerves_J = 1
     integer(4) :: gs_use_parallel_build_grafic = 0
     real(8)    :: dlt
     complex(8), allocatable :: boundary_section(:) 
@@ -67,7 +67,7 @@ module mod
     type(Curve), pointer :: current_Curve => null()
     !$omp threadprivate(current_Curve)
     type(Mesh_1), allocatable :: mesh
-    real(8) :: top_coordinat                = 4.8d0
+    real(8) :: top_coordinat                = 5d0
     real(8) :: bottom_coordinat             = 0d0
 contains
 function body_force(x,y) result(fm)

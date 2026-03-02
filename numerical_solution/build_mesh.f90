@@ -15,3 +15,11 @@ subroutine build_mesh()
     call ga_mesh_square(d1,H1,ng,bndrv,bndg)
     !gsareapart%zm=gsareapart%zm+H1
 end
+subroutine build_mesh_for_several_areas()
+    use mod 
+    call pg_allocate_area(1)
+    call pg_bind_areapart(1)
+    call pg_allocate_areapart_geom(mesh%n, mesh%ntr, mesh%npe) 
+    call pg_init_areapart_geom_xy(dreal(mesh%z_m),dimag(mesh%z_m))
+    call pg_init_areapart_geom_tr(mesh%trm)
+end subroutine 
