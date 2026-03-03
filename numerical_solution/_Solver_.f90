@@ -996,7 +996,7 @@ subroutine fcn_s_top_bottom(n, s, y, yprime) !интегрирование по 
     V           = y(3)
     r_eps       = 0.5d0
     call get_uxuy(y(1), y(2), u_x, u_y)
-    if ((V<u_x).and.(y(1)>-d1-r_eps))then 
+    if ((V<u_x).and.(y(1)>-d1-r_eps).and.(y(2)<r_eps))then 
        V       = u_x
        y(3)    = u_x
     end if 

@@ -7,6 +7,7 @@ subroutine main_1()
     use mod
     integer(4) :: max_iter
     real(8) :: max_delta, tol
+    real(8), allocatable :: prev_force(:)
     H1              = 5d0
     L1              = 16*d1
     nj              = 100
@@ -20,22 +21,22 @@ subroutine main_1()
     iteration       = 0
     do while (iteration < max_iter .and. max_delta > tol)
         write(*,"('Iteration=',i0)") iteration
-        call run_iteration(max_delta)
+        call run_iteration(prev_force, max_delta)
         write(*,"('Error=',ES12.5)") max_delta
         iteration = iteration + 1
     end do
   end
 
-subroutine run_iteration(max_delta)
+subroutine run_iteration(prev_force, max_delta)
     use mod
     real(8), intent(out) :: max_delta
     real(8), allocatable :: prev_force(:)
     integer(4) :: n_
     real(8), allocatable :: x_(:), y_(:)
-    if (allocated(mesh) .and. allocated(mesh%F_trm)) then
-        allocate(prev_force(size(mesh%F_trm)))
-        prev_force = mesh%F_trm
-    end if
+    ! if (allocated(mesh) .and. allocated(mesh%F_trm)) then
+    !     allocate(prev_force(size(mesh%F_trm)))
+    !     prev_force = mesh%F_trm
+    ! end if
     call pg_start
     call pg_allocate_problems(1)
     call pg_bind_problem(1)
@@ -118,7 +119,7 @@ subroutine run_iteration(max_delta)
     call pg_finish
     !call testing()
         
-    if (allocated(prev_force)) deallocate(prev_force)
+    
     if (allocated(x_)) deallocate(x_)
     if (allocated(y_)) deallocate(y_)
 
@@ -138,24 +139,37 @@ subroutine init_Meshval()
   deallocate (g,x,y)
  end
 
-subroutine compute_force_delta(prev_force, max_delta)
+subroutine compute_force_delta(prev_force, delta)
     use mod
-    real(8), allocatable, intent(in) :: prev_force(:)
-    real(8), intent(out) :: max_delta
+    real(8), allocatable :: prev_force(:)
+    real(8), intent(out) :: delta
+    integer(4) :: nr = 30
+    integer(4) :: ng = 60
+    integer(4) :: i, j
+    real(8) bndg(200),bndrv(200), value_, x, y, g, r
+    delta = 0d0
+    call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)    
     if (.not.allocated(prev_force)) then
-        max_delta = huge(d1)
-        return
+        allocate(prev_force((nr + 1)*(ng + 1)))
+        delta = huge(d1)
     end if
     if (.not.allocated(mesh) .or. .not.allocated(mesh%F_trm)) then
-        max_delta = huge(d1)
+        delta = huge(d1)
         return
     end if
-    if (size(prev_force) /= size(mesh%F_trm)) then
-        max_delta = huge(d1)
-        return
-    end if
-    max_delta = maxval(dabs(mesh%F_trm - prev_force))
-    
+    do i=1,ng+1
+        g=bndg(i)
+        do j=1,nr+1
+            r=d1+(j-d1)*(bndrv(i)-d1)/nr
+            x=r*dcos(g)
+            y=r*dsin(g)
+            value_ = force_from_mesh(x,y)
+            if (iteration /= 0) then
+                delta  = delta + abs(value_ - prev_force((i-1)*(nr+1)+j))
+            end if
+            prev_force((i-1)*(nr+1)+j) = value_
+        end do
+    end do
   end
 
 subroutine draw_square
