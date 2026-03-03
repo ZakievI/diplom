@@ -17,7 +17,7 @@ subroutine main_1()
     tol             = 1e-8
     max_iter        = 20
     max_delta       = tol + d1
-    iteration            = 0
+    iteration       = 0
     do while (iteration < max_iter .and. max_delta > tol)
         write(*,"('Iteration=',i0)") iteration
         call run_iteration(max_delta)
@@ -162,10 +162,12 @@ subroutine draw_square
   use mod
   integer(4) nr,ng,i,j,mode
   real(8) g,r,x,y,psi,Vx,Vy,om,pg_get_fun_xy,bndg(200),bndrv(200), yy
+  CHARACTER(LEN=30) :: filename
   ng=60 !число ячеек по gamma
   call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)
 
-  OPEN (1,FILE='data.dat')
+  WRITE(filename, '(A, I0, A)') 'data/data_fluid_', iteration, '.dat'
+  OPEN (1,FILE=filename, STATUS='unknown')
   nr=20 !число ячеек по r
 
   write(1,*) 'TITLE = "velosity"'
@@ -258,6 +260,7 @@ subroutine extract_curve_positive_x_fast(x_out, y_out, n_out, step)
     end if
 
     n_out = (n - start_index) / step + 1
+
     if (allocated(x_out)) deallocate(x_out)
     if (allocated(y_out)) deallocate(y_out)
     if (allocated(boundary_section)) deallocate(boundary_section)

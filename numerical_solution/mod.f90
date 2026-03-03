@@ -1,7 +1,5 @@
 module mod
     use pgmod
-    !real(8) h
-    !real(8) k
     real(8), PARAMETER :: eps=1d-4
     real(8), PARAMETER :: eps_zd3=1d-3
     !real(8) cof_a

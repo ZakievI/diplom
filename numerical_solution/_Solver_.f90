@@ -303,7 +303,9 @@ subroutine draw_Curves(par) !вывод кривых
     !   2-вывод траектории
     integer(4) :: i, l
     integer(4) :: par
-    open (1, file='traektorie.dat')
+    CHARACTER(LEN=30) :: filename
+    WRITE(filename, '(A, I0, A)') 'data/traektorie_', iteration, '.dat'
+    open (1, file=filename, STATUS='unknown')
     write(1,*) 'title = "traektorie"'
     select case (par)
     case (1)
@@ -737,7 +739,9 @@ subroutine draw_mesh(par) !вывод сетки
     !   3-вывод сетки с силой f в узлах
     integer(4) i,k,par
     character(200) formatstr
-    OPEN (1,FILE='data\tr_mesh.dat')
+    CHARACTER(LEN=30) :: filename
+    WRITE(filename, '(A, I0, A)') 'data/tr_mesh_', iteration, '.dat'
+    OPEN (1,FILE=filename, STATUS='unknown')
     write(1,*) 'TITLE = "Triangle Mesh"'
     select case (par)
     case (1)
@@ -772,8 +776,9 @@ subroutine draw_mesh_with_cell(par)
     !par=
     !   1-вывод сетки с F
     integer(4) i,k,par
-    character(200) formatstr
-    OPEN (1,FILE='mesh_data.txt')
+    CHARACTER(LEN=30) :: filename
+    WRITE(filename, '(A, I0, A)') 'data/mesh_data_', iteration, '.txt'
+    OPEN (1,FILE=filename, STATUS='unknown')
     write(1,*) 'NODES CELLS NODES_PER_CELL'
     write(1,"(I, ' ', I, ' ', I)") mesh%n, mesh%ntr, mesh%npe
 
