@@ -393,22 +393,69 @@ subroutine build_time_isolines() !строим изолинии по време�
     end subroutine 
 subroutine build_curve() !поиск кривых
     use mod
+
+    implicit none
+    integer, parameter :: dp = selected_real_kind(15, 307)
+
     integer(4) :: i, n1, ido
     integer(4), parameter :: n = 4
     real(8) area_quadrilateral, search_for_extreme_particles, alfa
     integer(4), parameter :: mxparm = 50
     real(8) :: param(mxparm), d_s, s, y(n), tol
     real(8), allocatable :: Curve_tempr(:,:)
+    real(8) :: p_left, p_right
+    integer(4) :: N_left, N_right
+    real(8), allocatable :: s_left(:), s_right(:)
+    real(8), allocatable :: x_left(:), x_right(:), x(:)
     real(8) :: u_x, u_y
     external fcn_s_1, area_quadrilateral, fcn_s_top_bottom, search_for_extreme_particles
+    
     tol             = tol_compute_curves
     d_s             = ds_compute_curves
     s               = d0
     ido             = 1
     dlt             = d0
+
+
     if (allocated(Curves)) deallocate(Curves)
     allocate(Curves(num_particle))
     cord_extreme_particles = search_for_extreme_particles()
+    ! сгущение точек вблизи экстремальной частицы
+    
+    p_left = 2.0d0 ! степень сгущения точек слева от экстремальной частицы
+    p_right = 3.0d0 ! степень сгущения точек справа от экстремальной частицы
+    N_left = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat)/(top_coordinat - bottom_coordinat)) ! количество точек слева от экстремальной частицы
+    N_right = num_particle - N_left ! количество точек справа от экстремальной частицы
+    allocate(s_left(N_left), s_right(N_right))
+    allocate(x(num_particle))
+    
+    if (N_left == 1) then
+        s_left(1) = 0.0d0
+    else
+        do i = 1, N_left
+            s_left(i) = real(i-1, dp) / real(N_left-1, dp)
+        end do
+    end if
+
+    if (N_right == 1) then
+        s_right(1) = 0.0d0
+    else
+        do i = 1, N_right
+            s_right(i) = real(i-1, dp) / real(N_right-1, dp)
+        end do
+    end if
+
+    ! x_left  = xc - (xc - xmin) * s_left**p_left
+    do i = 1, N_left
+        x(i) = cord_extreme_particles - (cord_extreme_particles - bottom_coordinat) * (s_left(N_left - i + 1)**p_left)
+    end do
+
+    ! x_right = xc + (xmax - xc) * s_right**p_right
+    do i = 1, N_right
+        x(i + N_left) = cord_extreme_particles + (top_coordinat - cord_extreme_particles) * (s_right(i)**p_right)
+    end do
+
+     
     
     !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
@@ -417,20 +464,25 @@ subroutine build_curve() !поиск кривых
         n1                 = 1
         ido                = 1
         s                  = d0
-        !Curve_tempr(n1, 1) = -L1/2 
-        if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-1)/(num_particle-d1))**3)) then
-            !cord_extreme_particles = search_for_extreme_particles()
-            y(2) = cord_extreme_particles
-            !index_extreme_particles = i
-        else
-            !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
-            ! измененно !!!!!!!!!!
-            y(2) = H1*((i-d1)/(num_particle-d1))**3
-            ! Curve_tempr(n1, 2) = 0.5d0
-        end if
 
         y(1)            = -L1/2
         !y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
+        y(2)            = x(i)
+        !Curve_tempr(n1, 1) = -L1/2 
+        ! if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-1)/(num_particle-d1))**3)) then
+        !     !cord_extreme_particles = search_for_extreme_particles()
+        !     y(2) = cord_extreme_particles
+        !     !index_extreme_particles = i
+        ! else
+        !     !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
+        !     ! измененно !!!!!!!!!!
+        !     y(2) = H1*((i-d1)/(num_particle-d1))**3
+        !     ! Curve_tempr(n1, 2) = 0.5d0
+        ! end if
+
+        
+
+        
         call get_uxuy(y(1), y(2), y(3), y(4))
         param           = d0
         param(4)        = N_arr
@@ -501,6 +553,8 @@ subroutine build_curve() !поиск кривых
         call get_uxuy(Curves(index_extreme_particles + 1)%x(i), Curves(index_extreme_particles + 1)%y(i), u_x, u_y)
         Curves(index_extreme_particles + 1)%u_m(i) = cmplx(u_x, u_y)
     end do
+
+    deallocate(s_left, s_right, x)
     end subroutine build_curve
 subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
     use mod
