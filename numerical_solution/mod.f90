@@ -17,10 +17,10 @@ module mod
     real(8) ds2 !������ ������ ��� �������� �������
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) :: st                           = 5d0
+    real(8) :: st                           = 10d0
     real(8) :: mu                           = 1 
     integer(4), parameter :: N_arr          = 10000
-    integer(4), parameter :: num_particle   = 30
+    integer(4), parameter :: num_particle   = 40
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
     integer(4) :: N_part_1                  = 30

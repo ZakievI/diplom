@@ -422,7 +422,7 @@ subroutine build_curve() !поиск кривых
     cord_extreme_particles = search_for_extreme_particles()
     ! сгущение точек вблизи экстремальной частицы
     
-    p_left = 2.0d0 ! степень сгущения точек слева от экстремальной частицы
+    p_left = 3.0d0 ! степень сгущения точек слева от экстремальной частицы
     p_right = 3.0d0 ! степень сгущения точек справа от экстремальной частицы
     N_left = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat)/(top_coordinat - bottom_coordinat)) ! количество точек слева от экстремальной частицы
     N_right = num_particle - N_left ! количество точек справа от экстремальной частицы
@@ -455,8 +455,6 @@ subroutine build_curve() !поиск кривых
         x(i + N_left) = cord_extreme_particles + (top_coordinat - cord_extreme_particles) * (s_right(i)**p_right)
     end do
 
-     
-    
     !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
         allocate(Curve_tempr(N_arr,5)) !Curve_tempr = [x, y, V_x, V_y, s]
@@ -479,8 +477,6 @@ subroutine build_curve() !поиск кривых
         !     y(2) = H1*((i-d1)/(num_particle-d1))**3
         !     ! Curve_tempr(n1, 2) = 0.5d0
         ! end if
-
-        
 
         
         call get_uxuy(y(1), y(2), y(3), y(4))
@@ -648,10 +644,10 @@ subroutine build_mesh_1 !строим сетку
                 tempr_x_c(l) = x_c
             end do
             do k = 1, num_particle
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_1, tempr_x_c, tempr_y_c)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_1, tempr_x_c, tempr_c)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_1, tempr_x_c, tempr_v_x)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_1, tempr_x_c, tempr_v_y)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_1, tempr_x_c, tempr_y_c)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_1, tempr_x_c, tempr_c)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_1, tempr_x_c, tempr_v_x)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_1, tempr_x_c, tempr_v_y)
                 mesh%z_m(1 + (k-1)*N_part_1: k * N_part_1) = cmplx(tempr_x_c,tempr_y_c)
                 mesh%v_m(1 + (k-1)*N_part_1: k * N_part_1) = cmplx(tempr_v_x,tempr_v_y)
                 mesh%c(1 + (k-1)*N_part_1: k * N_part_1) = tempr_c
@@ -683,10 +679,10 @@ subroutine build_mesh_1 !строим сетку
                     tempr_v_y(N_part_2 + 1 - start_index_2st_area + 1))
             do l = start_index_2st_area, N_part_2
                 tempr_x_c(l - start_index_2st_area + 1) = Curves(l)%x(Curves(l)%n)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_y_c)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%c, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_c)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%V_x, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_x)
-                call dcsiez(Curves(l)%n, Curves(l)%x, Curves(l)%V_y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_y)
+                call dcsiez_checked(Curves(l)%n, Curves(l)%x, Curves(l)%y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_y_c)
+                call dcsiez_checked(Curves(l)%n, Curves(l)%x, Curves(l)%c, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_c)
+                call dcsiez_checked(Curves(l)%n, Curves(l)%x, Curves(l)%V_x, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_x)
+                call dcsiez_checked(Curves(l)%n, Curves(l)%x, Curves(l)%V_y, l - start_index_2st_area + 1, tempr_x_c(1:l - start_index_2st_area + 1), tempr_v_y)
                 mesh%z_m(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = cmplx(tempr_x_c(1 : l - start_index_2st_area + 1),tempr_y_c(1 : l - start_index_2st_area + 1))
                 mesh%v_m(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = cmplx(tempr_v_x(1 : l - start_index_2st_area + 1),tempr_v_y(1 : l - start_index_2st_area + 1))
                 mesh%c(begin_index_z_m : begin_index_z_m + l - start_index_2st_area + 1 - 1) = tempr_c
@@ -694,10 +690,10 @@ subroutine build_mesh_1 !строим сетку
             end do
             tempr_x_c(N_part_2 + 1 - start_index_2st_area + 1) = d0
             do k = N_part_2 + 1, num_particle
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_y_c)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_c)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_x)
-                call dcsiez(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_y)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_y_c)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%c, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_c)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%V_x, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_x)
+                call dcsiez_checked(Curves(k)%n, Curves(k)%x, Curves(k)%V_y, N_part_2 + 1 - start_index_2st_area + 1, tempr_x_c, tempr_v_y)
                 mesh%z_m(begin_index_z_m : begin_index_z_m + N_part_2 - start_index_2st_area + 1) = cmplx(tempr_x_c,tempr_y_c)
                 mesh%v_m(begin_index_z_m : begin_index_z_m + N_part_2 - start_index_2st_area + 1) = cmplx(tempr_v_x,tempr_v_y)
                 mesh%c(begin_index_z_m: begin_index_z_m + N_part_2 - start_index_2st_area + 1) = tempr_c
@@ -754,10 +750,10 @@ subroutine build_mesh_1 !строим сетку
                 tempr_x_c(l - 1) = x_c
             end do
             do l = 1, num_particle - index_extreme_particles
-                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%y, N_part_3 - 1, tempr_x_c, tempr_y_c)
-                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%c, N_part_3 - 1, tempr_x_c, tempr_c)
-                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_x, N_part_3 - 1, tempr_x_c, tempr_v_x)
-                call dcsiez(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_y, N_part_3 - 1, tempr_x_c, tempr_v_y)
+                call dcsiez_checked(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%y, N_part_3 - 1, tempr_x_c, tempr_y_c)
+                call dcsiez_checked(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%c, N_part_3 - 1, tempr_x_c, tempr_c)
+                call dcsiez_checked(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_x, N_part_3 - 1, tempr_x_c, tempr_v_x)
+                call dcsiez_checked(Curves(index_extreme_particles + l)%n, Curves(index_extreme_particles + l)%x, Curves(index_extreme_particles + l)%V_y, N_part_3 - 1, tempr_x_c, tempr_v_y)
                 mesh%z_m(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = cmplx(tempr_x_c,tempr_y_c)
                 mesh%V_m(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = cmplx(tempr_v_x,tempr_v_y)
                 mesh%c(begin_index_z_m: begin_index_z_m + N_part_3 - 2) = tempr_c
@@ -935,8 +931,8 @@ subroutine find_concentration() !поиск концентрации
         if ((i == 1).or.(i == index_extreme_particles + 1)) then
             Curve_tempr_top%n = current_Curve%n
             allocate(Curve_tempr_top%x(current_Curve%n), Curve_tempr_top%y(current_Curve%n))
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%x)!построение сплайна 
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%y)
+            call dcsiez_checked(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%x)!построение сплайна 
+            call dcsiez_checked(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, current_Curve%t, Curve_tempr_top%y)
             do j = 1, current_Curve%n
                 if (j == 1) then
                     p1 = cmplx(current_Curve%x(j),current_Curve%y(j))
@@ -964,8 +960,8 @@ subroutine find_concentration() !поиск концентрации
         else if ((i == num_particle) .or. (i == index_extreme_particles)) then 
             Curve_tempr_bottom%n = current_Curve%n
             allocate(Curve_tempr_bottom%x(current_Curve%n), Curve_tempr_bottom%y(current_Curve%n))
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%x)
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%y)
+            call dcsiez_checked(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%x)
+            call dcsiez_checked(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, current_Curve%t, Curve_tempr_bottom%y)
             do j = 1, current_Curve%n
                 if (j == 1) then
                     p1 = cmplx(Curve_tempr_bottom%x(j),Curve_tempr_bottom%y(j))
@@ -994,10 +990,10 @@ subroutine find_concentration() !поиск концентрации
             Curve_tempr_bottom%n = Curves(i)%n
             allocate(Curve_tempr_top%x(Curves(i)%n), Curve_tempr_top%y(Curves(i)%n))
             allocate(Curve_tempr_bottom%x(Curves(i)%n), Curve_tempr_bottom%y(Curves(i)%n))
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%x)
-            call dcsiez(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%y)
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%x)
-            call dcsiez(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%y)
+            call dcsiez_checked(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%x, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%x)
+            call dcsiez_checked(Curves(i+1)%n, Curves(i+1)%t, Curves(i+1)%y, Curve_tempr_top%n, Curves(i)%t, Curve_tempr_top%y)
+            call dcsiez_checked(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%x, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%x)
+            call dcsiez_checked(Curves(i-1)%n, Curves(i-1)%t, Curves(i-1)%y, Curve_tempr_bottom%n, Curves(i)%t, Curve_tempr_bottom%y)
             do j = 1, Curves(i)%n
                 if (j == 1) then
                     p1 = cmplx(Curve_tempr_bottom%x(j),Curve_tempr_bottom%y(j))
@@ -1297,6 +1293,45 @@ subroutine get_uxuy(x,y,ux,uy) ! получение скорости газа в
     endif
 
     end subroutine get_uxuy
+subroutine dcsiez_checked(n, x_data, y_data, m, x_query, y_out)
+    implicit none
+    integer(4) :: n, m
+    integer(4) :: i, j, k, m_unique
+    real(8) :: x_data(*), y_data(*), x_query(*), y_out(*)
+    real(8), parameter :: eps_dup = 1d-12
+    integer(4) :: map_idx(m)
+    logical :: found
+    real(8) :: x_unique(m), y_unique(m)
+
+    if (m <= 0) return
+    if (m == 1) then
+        call dcsiez(n, x_data, y_data, m, x_query, y_out)
+        return
+    end if
+
+    m_unique = 0
+    do i = 1, m
+        found = .false.
+        do j = 1, m_unique
+            if (dabs(x_query(i) - x_unique(j)) <= eps_dup) then
+                map_idx(i) = j
+                found = .true.
+                exit
+            end if
+        end do
+        if (.not. found) then
+            m_unique = m_unique + 1
+            x_unique(m_unique) = x_query(i)
+            map_idx(i) = m_unique
+        end if
+    end do
+
+    call dcsiez(n, x_data, y_data, m_unique, x_unique, y_unique)
+
+    do k = 1, m
+        y_out(k) = y_unique(map_idx(k))
+    end do
+end subroutine dcsiez_checked
 subroutine init_zaplat
     use mod
     real(8) rr,pg_get_fun_xy,ux,uy,tt,x,y,ff1(2)
@@ -1349,3 +1384,5 @@ subroutine uvrt_to_xy(tt,vr,vtt,u,v)
     u=vr*dcos(tt)-vtt*dsin(tt)
     v=vr*dsin(tt)+vtt*dcos(tt)
     end
+
+
