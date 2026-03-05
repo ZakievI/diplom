@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{C7A5D90B-D786-4CFA-BA9F-37056BFF9CF7}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" OpenMP="OpenMPParallelCode" WarnDeclarations="true" WarnUnusedVariables="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug" UseMkl="mklParallel"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd">
+		<File RelativePath=".\src\func_mod.f90"/>
+		<File RelativePath=".\src\gen_mod_new.f90"/>
+		<File RelativePath=".\mod.f90"/>
+		<File RelativePath=".\src\pgmod.f90"/></Filter>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath=".\_Solver_.f90"/>
+		<File RelativePath=".\build_geom.f90"/>
+		<File RelativePath=".\build_mesh.f90"/>
+		<File RelativePath=".\src\func.f90"/>
+		<File RelativePath=".\src\geom_add.f90"/>
+		<File RelativePath=".\src\intf_dxdy.f90"/>
+		<File RelativePath=".\main.f90"/>
+		<File RelativePath=".\src\pg_calc.f90"/>
+		<File RelativePath=".\src\pg_calcd.f90"/>
+		<File RelativePath=".\src\pg_clacc.f90"/>
+		<File RelativePath=".\src\pg_closing.f90"/>
+		<File RelativePath=".\src\pg_geom.f90"/>
+		<File RelativePath=".\src\pg_get.f90"/>
+		<File RelativePath=".\src\pg_get_fun.f90"/>
+		<File RelativePath=".\src\pg_gu.f90"/>
+		<File RelativePath=".\src\pg_matrix.f90"/>
+		<File RelativePath=".\src\slau.f90"/>
+		<File RelativePath=".\src\slau_block.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>
