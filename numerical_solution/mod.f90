@@ -17,7 +17,7 @@ module mod
     real(8) ds2 !������ ������ ��� �������� �������
     real(8), allocatable :: ff(:),err(:)
     logical, allocatable :: ffknow(:)
-    real(8) :: st                           = 10d0
+    real(8) :: st                           = 5d0
     real(8) :: mu                           = 1 
     integer(4), parameter :: N_arr          = 10000
     integer(4), parameter :: num_particle   = 40
@@ -44,10 +44,14 @@ module mod
         real(8), allocatable :: s(:)
         real(8), allocatable :: discrepancy_du1dx1(:), discrepancy_du2dx1(:), discrepancy_du1dx2(:), discrepancy_du2dx2(:)
         real(8), allocatable :: aprox_du1dx1(:), aprox_du2dx1(:), aprox_du1dx2(:), aprox_du2dx2(:)
-    end type
+        end type
     
     real(8) :: ds_compute_curves            = 1d-2
     real(8) :: tol_compute_curves           = 1d-4
+
+    !
+    real(8) :: x_touchdown
+    !
     
     type :: Mesh_1
         integer(4) :: n_i, n_j

@@ -452,7 +452,7 @@ subroutine build_curve() !поиск кривых
 
     ! x_right = xc + (xmax - xc) * s_right**p_right
     do i = 1, N_right
-        x(i + N_left) = cord_extreme_particles + (top_coordinat - cord_extreme_particles) * (s_right(i)**p_right)
+        x(i + N_left) = cord_extreme_particles + eps + (top_coordinat - cord_extreme_particles - eps) * (s_right(i)**p_right)
     end do
 
     !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
@@ -500,6 +500,12 @@ subroutine build_curve() !поиск кривых
             else
                 call divprk(ido, n, fcn_s_1, s, s+d_s, tol, param, y)
             end if 
+            if ((y(2) < d0) .and. (y(1) > d0))then
+                y(2) = d0
+                y(4) = d0
+            elseif ((dabs(y(2)) < eps) .and. (y(1) > d0)) then
+                y(2) = d0
+            end if
             n1 = n1 + 1
             if (y(3) < 0) then
                 write(*,*) 'Error: negative value V_x, particle number = ', i, ' n1 = ', n1, ' x = ', y(1), ' y = ', y(2)
@@ -530,7 +536,7 @@ subroutine build_curve() !поиск кривых
         call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
         deallocate(Curve_tempr)
     end do 
-    !$OMP END PARALLEL DO
+    !$omp end parallel do
 
     ! поиск экстремальной частицы, после которой все частицы пролетают мимо цилиндра
     ! (реализовано так из-за того что при параллельной сборке кривых индексы путаються между собой)
@@ -666,7 +672,7 @@ subroutine build_mesh_1 !строим сетку
             begin_index_z_m = num_particle * N_part_1 + 1
             begin_index_trm = (num_particle - 1) * (N_part_1 - 1) + 1
 
-            if (Curves(1)%y(Curves(1)%n) == d0) then 
+            if (dabs(Curves(1)%y(Curves(1)%n)) <= eps) then 
                 start_index_2st_area = 2
             else 
                 start_index_2st_area = 1
@@ -1056,7 +1062,7 @@ subroutine fcn_s_top_bottom(n, s, y, yprime) !интегрирование по 
     yprime(3)   = (u_x-V)/(st*V)
     yprime(4)   = d0
     end subroutine fcn_s_top_bottom
-subroutine find_Jacobian()
+subroutine find_Jacobian() ! поиск компонентов Якобиана для каждой кривой
     use mod 
     integer(4) :: i, ido, j
     integer(4), parameter :: n = 8
@@ -1112,7 +1118,7 @@ subroutine find_Jacobian()
     end do
     !$OMP END PARALLEL DO
     end subroutine find_Jacobian
-subroutine fcn_s_Jacobian(n, s, y, yprime)
+subroutine fcn_s_Jacobian(n, s, y, yprime) ! интегрирование по длине дуги s для поиска Якобиана
     use mod 
     integer(4) :: n 
     real(8) s, y(n), yprime(n), fcn_derivative_for_u_ij
@@ -1133,7 +1139,7 @@ subroutine fcn_s_Jacobian(n, s, y, yprime)
     yprime(7) = (y(1)*fcn_derivative_for_u_ij(2, 1, s) + y(3)*fcn_derivative_for_u_ij(2, 2, s) - y(7))/st/V
     yprime(8) = (y(2)*fcn_derivative_for_u_ij(2, 1, s) + y(4)*fcn_derivative_for_u_ij(2, 2, s) - y(8))/st/V
     end subroutine fcn_s_Jacobian
-function fcn_derivative_for_u_ij(i, j, s)
+function fcn_derivative_for_u_ij(i, j, s) ! поиск производных du_i/dx_j для каждой кривой
     use mod
     integer(4) :: i, j
     real(8) :: s, fcn_derivative_for_u_ij
@@ -1155,7 +1161,7 @@ function fcn_derivative_for_u_ij(i, j, s)
         write(*,*) 'ERROR: fcn_derivative_for_u_ij'
     end if 
     end function fcn_derivative_for_u_ij
-subroutine find_concentration_by_Jacobian()
+subroutine find_concentration_by_Jacobian() ! поиск концентрации по Якобиану для каждой кривой
     use mod 
     integer(4) :: i, k
     do i = 1, size(Curves)
@@ -1331,8 +1337,8 @@ subroutine dcsiez_checked(n, x_data, y_data, m, x_query, y_out)
     do k = 1, m
         y_out(k) = y_unique(map_idx(k))
     end do
-end subroutine dcsiez_checked
-subroutine init_zaplat
+    end subroutine dcsiez_checked
+subroutine init_zaplat ! инициализация компонентов заплатки для вычисления скорости вблизи угла на цилиндре
     use mod
     real(8) rr,pg_get_fun_xy,ux,uy,tt,x,y,ff1(2)
     real(8) m2(4,4),b2(4),res2(4)
@@ -1384,5 +1390,39 @@ subroutine uvrt_to_xy(tt,vr,vtt,u,v)
     u=vr*dcos(tt)-vtt*dsin(tt)
     v=vr*dsin(tt)+vtt*dcos(tt)
     end
+function get_psi(x,y) ! получение функции тока в точке (x,y)
+    use mod
+    real(8) x,y
+    real(8) get_psi, pg_get_fun_xy
+    if (allocated(boundary_section)) then 
+        call pg_bind_domain(2)
+        call pg_bind_bound(1)
+        if (x >= 0d0) then
+            call dcsiez(size(boundary_section), dreal(boundary_section), dimag(boundary_section), 1, x, y)
+            if (y < y) then
+                call pg_bind_domain(1)
+                call pg_bind_bound(1)
+            end if
+        end if
+    end if
+    get_psi = pg_get_fun_xy(x,y,1,d0,d0,0)
+    end function get_psi
+function get_omega(x, y) ! получение вихря в точке (x,y)
+    use mod
+    real(8) x,y, yy_temp
+    real(8) get_omega, pg_get_fun_xy
+    if (allocated(boundary_section)) then 
+        call pg_bind_domain(2)
+        call pg_bind_bound(1)
+        if (x >= 0d0) then
+            call dcsiez(size(boundary_section), dreal(boundary_section), dimag(boundary_section), 1, x, yy_temp)
+            if (y < yy_temp) then
+                call pg_bind_domain(1)
+                call pg_bind_bound(1)
+            end if
+        end if
+    end if
+    get_omega = -pg_get_fun_xy(x,y,3,d0,d0,0)
+    end function get_omega
 
 
