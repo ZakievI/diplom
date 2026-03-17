@@ -8,15 +8,12 @@ subroutine solve !построение графика числа T = N_impact/N 
     real(8):: y(n), stocs, y_t(3)
     real(8):: pg_get_fun_xy
     external fcn, fcn_s, function_impact_testing
-    !open (1, file='traektorie.dat')
-    !write(1,*) 'title = "traektorie"'
-    !write(1,*) 'variables = "x", "y"'
     open (1, file='grafik.dat')
     write(1,*) 'title = "traektorie"'
     write(1,*) 'variables = "x", "y"'
     write(1,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") 1, 10
     print "(4x, 'istep' , 5x, 'time', 9x, 'x', 11x, 'y')"
-    num             = 5000
+    num             = 50000
     dlt             = d0
     stocs           = -1d0
     allocate(y_out(num,2))
@@ -33,7 +30,7 @@ subroutine solve !построение графика числа T = N_impact/N 
             y(2)        = y_t(i)
             y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
             y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-            call impact_test(n, y , y_out, num, dlt)
+            call impact_test(n, y, dlt)
             f_t(i) = function_impact_testing(n, y, dlt)
         end do
         do while(f_t(2) /= 0)
@@ -42,12 +39,13 @@ subroutine solve !построение графика числа T = N_impact/N 
             y(2)        = y_t(2)
             y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
             y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-            call impact_test(n, y , y_out, num, dlt)
+            call impact_test(n, y, dlt)
             f_t(2) = function_impact_testing(n, y, dlt)
             !print * , f_t
             !print * , y_t
             if ((f_t(1)*f_t(3)) < 0) then
                 if (f_t(2) == 0) then
+                    y_t(3) = y_t(2)
                     !print * , f_t
                     !print * , y_t
                     exit
@@ -65,9 +63,9 @@ subroutine solve !построение графика числа T = N_impact/N 
                 exit
             end if
         end do
-        print *, y_t(2)
-        write(1,"(E15.5, ' ', E15.5)") st, y_t(2)
-        print *, stocs, ' ', y_t(2)
+        print *, y_t(3)
+        write(1,"(E15.5, ' ', E15.5)") st, y_t(3)
+        print *, stocs, ' ', y_t(3)
         stocs = stocs + d1/3
     end do
     deallocate(y_out)
@@ -96,7 +94,7 @@ subroutine build_bound() !постройка границы в области п
         y(2)        = y_t(i)
         y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
         y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-        call impact_test(n, y , bound_first_particle, num, dlt)
+        call impact_test(n, y, dlt)
         f_t(i) = function_impact_testing(n, y, dlt)
     end do
     do while(f_t(2) /= 0)
@@ -105,10 +103,11 @@ subroutine build_bound() !постройка границы в области п
         y(2)        = y_t(2)
         y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
         y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-        call impact_test(n, y , bound_first_particle, num, dlt)
+        call impact_test(n, y, dlt)
         f_t(2) = function_impact_testing(n, y, dlt)
         if ((f_t(1)*f_t(3)) < 0) then
             if (f_t(2) == 0) then
+                y_t(3) = y_t(2)
                 exit
             else if (f_t(2) == -1) then
                 y_t(3) = y_t(2)
@@ -179,31 +178,30 @@ function function_impact_testing(n, y, dlt1)  !индикаторная функ
         function_impact_testing = -1
     end if
     end function function_impact_testing
-subroutine impact_test(n, y , y_out, num, dlt1) !проверка на ударение чатcицы
+subroutine impact_test(n, y , dlt1) !проверка на ударение чаcтицы
     use mod
-    integer(4) :: n, num, k1, ido
+    integer(4) :: n, k1, ido
     integer(4), parameter::mxparm = 100
-    real(8) :: y_out(num,2)
     real(8) :: y(n), s, d_s, tol, param(mxparm), dlt1
-    external fcn, fcn_s
-    s           = d0                !��������� ������� ��� �������������� �� ����
-    tol         = 0.001d0           !���������� ������
-    param       = d0                !��������� �� ���������
-    param(4)    = num               !������������ ���-�� ��������
-    param(10)   = 1.0d0             !������������ ���������� �������
-    d_s         = 0.05d0            !��� �� ����
+    external fcn, fcn_s_1
+
+    s           = d0               ! начальное значение длины дуги 
+    tol         = 0.001d0          ! точность интегрирования
+    param       = d0               ! 
+    param(4)    = N_arr            ! количество точек для интегрирования по дуге 
+    param(10)   = 1.0d0            ! 
+    param(8)    = 1.0d0            ! выход после интегрирования 
+    d_s         = 0.05d0            
     k1          = 2
     ido = 1
-    y_out(1,1)=y(1)
-    y_out(1,2)=y(2)
-    do while ((sqrt(y(1)**2+y(2)**2)>d1+dlt1).and.(-L1/2<=y(1)).and.(y(1)<d0).and.(y(2)<H1).and.(d0<y(2)).and.(k1<=num))
-        call divprk(ido, n, fcn_s, s, s+d_s, tol, param, y)
-        !print '(i6, 6f12.3)', k1, t, y
-        !y_out(k1,1)=y(1)
-        !y_out(k1,2)=y(2)
+    do while ((sqrt(y(1)**2+y(2)**2)>d1+dlt1).and.(-L1/2<=y(1)).and.(y(1)<d0).and.(y(2)<H1).and.(d0<y(2)).and.(k1<=N_arr))
+        call divprk(ido, n, fcn_s_1, s, s+d_s, tol, param, y)
+        if (ido == 6) then
+            ido = 2
+        end if
         k1 = k1 + 1
     end do
-    call divprk(3, n, fcn_s, s, s+d_s, tol, param, y)
+    call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
     end subroutine impact_test
 subroutine coordinate_first_particle(n, y, arr_bound, num, dlt1, size_arr) !координаты экстремальной частицы, прошедшей мимо цилиндрва  
     use mod 
@@ -247,16 +245,13 @@ function search_for_extreme_particles() ! поиск критической ча
     use mod
     implicit none
     integer(4), parameter::n = 4
-    integer(4) :: i, num, f_t(3)
+    integer(4) :: i, f_t(3)
     integer(4) function_impact_testing
-    real(8), allocatable :: bound_first_particle(:,:)
     real(8) :: y(n), y_t(3)
     real(8) :: pg_get_fun_xy
     real(8) :: search_for_extreme_particles
     external fcn_s, function_impact_testing
-    num             = 5000
     dlt             = d0
-    allocate(bound_first_particle(num,2))
     y_t(1)          = eps
     y_t(3)          = d1 + dlt + eps
     f_t(2)          = 1
@@ -265,7 +260,7 @@ function search_for_extreme_particles() ! поиск критической ча
         y(2)        = y_t(i)
         y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
         y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-        call impact_test(n, y , bound_first_particle, num, dlt)
+        call impact_test(n, y, dlt)
         f_t(i) = function_impact_testing(n, y, dlt)
     end do
     do while(f_t(2) /= 0)
@@ -274,10 +269,11 @@ function search_for_extreme_particles() ! поиск критической ча
         y(2)        = y_t(2)
         y(3)        = pg_get_fun_xy(y(1),y(2),2,d0,d1,0)
         y(4)        = -pg_get_fun_xy(y(1),y(2),2,d1,d0,0)
-        call impact_test(n, y , bound_first_particle, num, dlt)
+        call impact_test(n, y, dlt)
         f_t(2) = function_impact_testing(n, y, dlt)
         if ((f_t(1)*f_t(3)) < 0) then
             if (f_t(2) == 0) then
+                y_t(3) = y_t(2)
                 exit
             else if (f_t(2) == -1) then
                 y_t(3) = y_t(2)
@@ -293,8 +289,7 @@ function search_for_extreme_particles() ! поиск критической ча
             exit
         end if
     end do
-    search_for_extreme_particles = y_t(2)
-    deallocate(bound_first_particle)
+    search_for_extreme_particles = y_t(3)
     end function
 subroutine draw_Curves(par) !вывод кривых
     use mod
@@ -397,7 +392,7 @@ subroutine build_curve() !поиск кривых
     implicit none
     integer, parameter :: dp = selected_real_kind(15, 307)
 
-    integer(4) :: i, n1, ido
+    integer(4) :: i, n__, ido, k__
     integer(4), parameter :: n = 4
     real(8) area_quadrilateral, search_for_extreme_particles, alfa
     integer(4), parameter :: mxparm = 50
@@ -422,9 +417,10 @@ subroutine build_curve() !поиск кривых
     cord_extreme_particles = search_for_extreme_particles()
     ! сгущение точек вблизи экстремальной частицы
     
-    p_left = 3.0d0 ! степень сгущения точек слева от экстремальной частицы
-    p_right = 3.0d0 ! степень сгущения точек справа от экстремальной частицы
-    N_left = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat)/(top_coordinat - bottom_coordinat)) ! количество точек слева от экстремальной частицы
+    p_left = 2.0d0 ! степень сгущения точек слева от экстремальной частицы
+    p_right = 4.0d0 ! степень сгущения точек справа от экстремальной частицы
+    !N_left = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat)/(top_coordinat - bottom_coordinat)) ! количество точек слева от экстремальной частицы
+    N_left = 20
     N_right = num_particle - N_left ! количество точек справа от экстремальной частицы
     allocate(s_left(N_left), s_right(N_right))
     allocate(x(num_particle))
@@ -446,55 +442,60 @@ subroutine build_curve() !поиск кривых
     end if
 
     ! x_left  = xc - (xc - xmin) * s_left**p_left
-    do i = 1, N_left
+    do i = 2, N_left
         x(i) = cord_extreme_particles - (cord_extreme_particles - bottom_coordinat) * (s_left(N_left - i + 1)**p_left)
     end do
 
     ! x_right = xc + (xmax - xc) * s_right**p_right
-    do i = 1, N_right
+    do i = 1, N_right - 1
         x(i + N_left) = cord_extreme_particles + eps + (top_coordinat - cord_extreme_particles - eps) * (s_right(i)**p_right)
     end do
+    
+    x(1) = bottom_coordinat
+    x(N_right + N_left) = top_coordinat
 
-    !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n1, ido, s, y, Curve_tempr, param)
+    !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n__, k__, ido, s, y, Curve_tempr, param)
     do i = 1, num_particle
         allocate(Curve_tempr(N_arr,5)) !Curve_tempr = [x, y, V_x, V_y, s]
         write(*,"('I=',i0)") i
-        n1                 = 1
-        ido                = 1
-        s                  = d0
+        n__                 = 1
+        k__                 = 1
+        ido                 = 1
+        s                   = d0
 
-        y(1)            = -L1/2
-        !y(2)            = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
-        y(2)            = x(i)
-        !Curve_tempr(n1, 1) = -L1/2 
+        y(1)                = -L1/2
+        !y(2)               = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
+        y(2)                = x(i)
+        !Curve_tempr(n__, 1) = -L1/2 
         ! if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-1)/(num_particle-d1))**3)) then
         !     !cord_extreme_particles = search_for_extreme_particles()
         !     y(2) = cord_extreme_particles
         !     !index_extreme_particles = i
         ! else
-        !     !Curve_tempr(n1, 2) = H1*(i - d1)/(num_particle - d1)
+        !     !Curve_tempr(n__, 2) = H1*(i - d1)/(num_particle - d1)
         !     ! измененно !!!!!!!!!!
         !     y(2) = H1*((i-d1)/(num_particle-d1))**3
-        !     ! Curve_tempr(n1, 2) = 0.5d0
+        !     ! Curve_tempr(n__, 2) = 0.5d0
         ! end if
 
         
         call get_uxuy(y(1), y(2), y(3), y(4))
-        param           = d0
-        param(4)        = N_arr
-        param(10)       = 1.0d0
-        Curve_tempr(n1, 1) = y(1)
-        Curve_tempr(n1, 2) = y(2)
-        Curve_tempr(n1, 3) = y(3)
-        Curve_tempr(n1, 4) = y(4)
-        !Curve_tempr(n1, 5) = y(5)
-        Curve_tempr(n1, 5) = s
-        do while((dsqrt(y(1)**2+y(2)**2)>d1+dlt+1d-10).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(n1<N_arr))
-            !write(*,"('N=',i0)") n1
-            if (dabs(Curve_tempr(n1, 2)) < eps) then
+        param               = d0
+        param(4)            = N_arr
+        param(10)           = 1.0d0
+        param(8)            = 1.0d0
+        Curve_tempr(n__, 1) = y(1)
+        Curve_tempr(n__, 2) = y(2)
+        Curve_tempr(n__, 3) = y(3)
+        Curve_tempr(n__, 4) = y(4)
+        !Curve_tempr(n__, 5) = y(5)
+        Curve_tempr(n__, 5) = s
+        do while((dsqrt(y(1)**2+y(2)**2)>d1+dlt+1d-10).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(k__<N_arr))
+            !write(*,"('N=',i0)") n__
+            if (dabs(Curve_tempr(n__, 2)) == 0.0d0) then
                 call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
                 y(2) = d0
-            elseif (dabs(Curve_tempr(n1, 2) - H1) < eps) then
+            elseif (dabs(Curve_tempr(n__, 2) - H1) == 0.0d0) then
                 call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
                 y(2) = H1
             else
@@ -506,34 +507,42 @@ subroutine build_curve() !поиск кривых
             elseif ((dabs(y(2)) < eps) .and. (y(1) > d0)) then
                 y(2) = d0
             end if
-            n1 = n1 + 1
             if (y(3) < 0) then
-                write(*,*) 'Error: negative value V_x, particle number = ', i, ' n1 = ', n1, ' x = ', y(1), ' y = ', y(2)
-                alfa = datan(y(2)/y(1))
-                y(3) = d_s*dcos(alfa)
-                y(4) = d_s*dsin(alfa)
-            end if 
-            Curve_tempr(n1, 1) = y(1)
-            Curve_tempr(n1, 2) = y(2)
-            Curve_tempr(n1, 3) = y(3)
-            Curve_tempr(n1, 4) = y(4)
-            !Curve_tempr(n1, 5) = y(5)
-            Curve_tempr(n1, 5) = s
+                write(*,*) 'Error: negative value V_x, particle number = ', i, ' n__ = ', n__, ' x = ', y(1), ' y = ', y(2)
+                exit ! в случае если скорость по x стала отрицательной, что не должно происходить, то выводим ошибку и останавливаем программу
+                ! alfa = datan(y(2)/y(1))
+                ! y(3) = d_s*dcos(alfa)
+                ! y(4) = d_s*dsin(alfa)
+            end if
+            if (ido == 6) then 
+                ido = 2
+            else if ((ido == 2) .or. (ido == 5)) then
+              if (Curve_tempr(n__, 5) /= s) then 
+                  n__ = n__ + 1
+                  Curve_tempr(n__, 1) = y(1)
+                  Curve_tempr(n__, 2) = y(2)
+                  Curve_tempr(n__, 3) = y(3)
+                  Curve_tempr(n__, 4) = y(4)
+                  !Curve_tempr(n__, 5) = y(5)
+                  Curve_tempr(n__, 5) = s
+              end if
+            end if
+            k__ = k__ + 1
         end do
-        allocate(Curves(i)%x(n1))
-        allocate(Curves(i)%y(n1))
-        !allocate(Curves(i)%t(n1))
-        allocate(Curves(i)%V_x(n1))
-        allocate(Curves(i)%V_y(n1))
-        allocate(Curves(i)%s(n1))
-        Curves(i)%x(1:n1) = Curve_tempr(1:n1, 1)
-        Curves(i)%y(1:n1) = Curve_tempr(1:n1, 2)
-        Curves(i)%V_x(1:n1) = Curve_tempr(1:n1, 3)
-        Curves(i)%V_y(1:n1) = Curve_tempr(1:n1, 4)
-        !Curves(i)%t(1:n1) = Curve_tempr(1:n1, 5)
-        Curves(i)%s(1:n1) = Curve_tempr(1:n1, 5)
-        Curves(i)%n = n1
-        call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
+        allocate(Curves(i)%x(n__))
+        allocate(Curves(i)%y(n__))
+        !allocate(Curves(i)%t(n__))
+        allocate(Curves(i)%V_x(n__))
+        allocate(Curves(i)%V_y(n__))
+        allocate(Curves(i)%s(n__))
+        Curves(i)%x(1:n__) = Curve_tempr(1:n__, 1)
+        Curves(i)%y(1:n__) = Curve_tempr(1:n__, 2)
+        Curves(i)%V_x(1:n__) = Curve_tempr(1:n__, 3)
+        Curves(i)%V_y(1:n__) = Curve_tempr(1:n__, 4)
+        !Curves(i)%t(1:n__) = Curve_tempr(1:n__, 5)
+        Curves(i)%s(1:n__) = Curve_tempr(1:n__, 5)
+        Curves(i)%n = n__
+        if (ido /= 1) call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
         deallocate(Curve_tempr)
     end do 
     !$omp end parallel do
@@ -615,6 +624,7 @@ subroutine build_mesh_1 !строим сетку
     real(8) :: x_c, y_c
     integer(4) :: begin_index_z_m, begin_index_trm
     integer(4) :: start_index_2st_area
+    integer(4) :: num_trm_area_1, num_trm_area_2, num_trm_area_3, total_num_trm
     N_part_2 = index_extreme_particles
     num_of_partitions_by_x = (N_part_1 + N_part_2 + N_part_3)
     ! allocate(mesh%x_y_(num_particle * num_of_partitions_by_x, 2),mesh%t(num_particle * num_of_partitions_by_x, 1),mesh%c(num_particle * num_of_partitions_by_x, 1)&
@@ -625,6 +635,24 @@ subroutine build_mesh_1 !строим сетку
     !if (allocated(mesh%trm)) deallocate(mesh%trm)
     !if (allocated(mesh%v_m)) deallocate(mesh%v_m)
     
+    if (dabs(Curves(1)%y(Curves(1)%n)) <= eps) then
+        start_index_2st_area = 2
+    else
+        start_index_2st_area = 1
+    end if
+
+    num_trm_area_1 = max(0, (N_part_1 - 1) * (num_particle - 1))
+    num_trm_area_2 = 0
+    do l = 1, N_part_2
+        if (l == num_particle) exit
+        num_trm_area_2 = num_trm_area_2 + l + 1 - start_index_2st_area + 1
+    end do
+    do l = N_part_2 + 1, num_particle - 1
+        num_trm_area_2 = num_trm_area_2 + N_part_2 + 1 - start_index_2st_area + 1
+    end do
+    num_trm_area_3 = max(0, (num_particle - index_extreme_particles - 1) * (N_part_3 - 1))
+    total_num_trm = num_trm_area_1 + num_trm_area_2 + num_trm_area_3
+
     allocate(mesh)
     mesh%n_i = num_of_partitions_by_x
     mesh%n_j = num_particle
@@ -635,7 +663,7 @@ subroutine build_mesh_1 !строим сетку
     
     allocate(mesh%z_m((N_part_1 + N_part_2 + N_part_3) * num_particle))
     allocate(mesh%c((N_part_1 + N_part_2 + N_part_3) * num_particle))
-    allocate(mesh%trm(4,(N_part_1 + N_part_2 + N_part_3 - 4) * (num_particle - 1)))
+    allocate(mesh%trm(4,total_num_trm))
     allocate(mesh%v_m((N_part_1 + N_part_2 + N_part_3) * num_particle))
     !allocate(index_point_rigth_bound_array_area_1(num_particle))
     
@@ -672,12 +700,6 @@ subroutine build_mesh_1 !строим сетку
             begin_index_z_m = num_particle * N_part_1 + 1
             begin_index_trm = (num_particle - 1) * (N_part_1 - 1) + 1
 
-            if (dabs(Curves(1)%y(Curves(1)%n)) <= eps) then 
-                start_index_2st_area = 2
-            else 
-                start_index_2st_area = 1
-            end if
-            
             allocate(tempr_y_c(N_part_2 + 1 - start_index_2st_area + 1),&
                     tempr_x_c(N_part_2 + 1 - start_index_2st_area + 1),&
                     tempr_c(N_part_2 + 1 - start_index_2st_area + 1),&
@@ -1064,7 +1086,7 @@ subroutine fcn_s_top_bottom(n, s, y, yprime) !интегрирование по 
     end subroutine fcn_s_top_bottom
 subroutine find_Jacobian() ! поиск компонентов Якобиана для каждой кривой
     use mod 
-    integer(4) :: i, ido, j
+    integer(4) :: i, ido, j, k__
     integer(4), parameter :: n = 8
     integer(4), parameter :: mxparm = 50
     real(8) :: y(n), s, d_s, tol, param(mxparm)
@@ -1073,7 +1095,7 @@ subroutine find_Jacobian() ! поиск компонентов Якобиана 
     !$omp parallel do default(none) &
     !$omp shared(Curves, st) &
     !$omp if (use_parallel_build_cerves_J == 1) &
-    !$omp private(i, ido, j, y, s, d_s, tol, param)
+    !$omp private(i, k__, ido, j, y, s, d_s, tol, param)
     do i = 1, num_particle
         write(*,"('I=',i0)") i
         if (allocated(Curves(i)%J_11)) deallocate(Curves(i)%J_11)
@@ -1087,32 +1109,46 @@ subroutine find_Jacobian() ! поиск компонентов Якобиана 
         allocate(Curves(i)%J_22(Curves(i)%n))
         allocate(Curves(i)%J(Curves(i)%n))
         current_Curve => Curves(i)
-        ido         = 1
-        j           = 1
-        tol         = 1d-3
-        s           = d0
-        y           = d0 ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
-        y(1)        = d1
-        y(4)        = d1
-        param       = d0
-        !param(4)    = current_Curve%n+10
-        param(4)    = N_arr
-        param(10)   = 1.0d0
+        ido                     = 1
+        j                       = 1
+        tol                     = 1d-3
+        k__                     = 1
+        s                       = d0
+        y                       = d0 ! y = [J11, J12, J21, J22, w11, w12, w21, w22]
+        y(1)                    = d1
+        y(4)                    = d1
+        param                   = d0
+        param(4)                = N_arr
+        param(10)               = 1.0d0
+        param(8)                = 1.0d0
         current_Curve%J_11(j)   = y(1)
         current_Curve%J_12(j)   = y(2)
         current_Curve%J_21(j)   = y(3)
         current_Curve%J_22(j)   = y(4)
         current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
-        do while (j < current_Curve%n)
+        do while ((j < current_Curve%n) .and. (k__ < N_arr))
             !write(*,"('N=',i0)") j
             d_s = current_Curve%s(j + 1) - current_Curve%s(j)
             call divprk(ido, n, fcn_s_Jacobian, s, s + d_s, tol, param, y)
+            if (ido == 6) then 
+                ido = 2
+            else if (ido == 2) then
+                j = j + 1
+                current_Curve%J_11(j)   = y(1)
+                current_Curve%J_12(j)   = y(2)
+                current_Curve%J_21(j)   = y(3)
+                current_Curve%J_22(j)   = y(4)
+                current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
+            end if 
+            k__ = k__ + 1
+        end do
+        do while (j < current_Curve%n) 
             j = j + 1
-            current_Curve%J_11(j)   = y(1)
-            current_Curve%J_12(j)   = y(2)
-            current_Curve%J_21(j)   = y(3)
-            current_Curve%J_22(j)   = y(4)
-            current_Curve%J(j)      = dabs(y(1)*y(4) - y(2)*y(3))
+            current_Curve%J_11(j)   = current_Curve%J_11(j-1)
+            current_Curve%J_12(j)   = current_Curve%J_12(j-1)
+            current_Curve%J_21(j)   = current_Curve%J_21(j-1)
+            current_Curve%J_22(j)   = current_Curve%J_22(j-1)
+            current_Curve%J(j)      = current_Curve%J(j-1)
         end do
         call divprk(3, n, fcn_s_Jacobian, current_Curve%s(j - 1), current_Curve%s(j), tol, param, y)
     end do
@@ -1143,7 +1179,6 @@ function fcn_derivative_for_u_ij(i, j, s) ! поиск производных du
     use mod
     integer(4) :: i, j
     real(8) :: s, fcn_derivative_for_u_ij
-    if ((s >= current_Curve%s(1)) .and. (s<= current_Curve%s(current_Curve%n))) then 
         if (i == 1) then
             if (j == 1) then
                 call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du1dx1, 1, s, fcn_derivative_for_u_ij)
@@ -1157,9 +1192,6 @@ function fcn_derivative_for_u_ij(i, j, s) ! поиск производных du
                 call dcsiez(current_Curve%n, current_Curve%s, current_Curve%du2dx2, 1, s, fcn_derivative_for_u_ij)
             end if
         end if 
-    else
-        write(*,*) 'ERROR: fcn_derivative_for_u_ij'
-    end if 
     end function fcn_derivative_for_u_ij
 subroutine find_concentration_by_Jacobian() ! поиск концентрации по Якобиану для каждой кривой
     use mod 

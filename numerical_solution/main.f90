@@ -139,7 +139,7 @@ subroutine run_iteration(prev_force, max_delta)
     if (allocated(Curves)) then
         deallocate(Curves)
     end if
-    
+    !call solve()
     call build_curve()
     call draw_Curves(2)
     call find_derivative()
@@ -181,10 +181,11 @@ subroutine compute_force_delta(prev_force, delta)
     use mod
     real(8), allocatable :: prev_force(:)
     real(8), intent(out) :: delta
-    integer(4) :: nr = 30
-    integer(4) :: ng = 60
+    integer(4) :: nr = 150
+    integer(4) :: ng = 100
     integer(4) :: i, j, point_count
     real(8) bndg(200),bndrv(200), value_, x, y, g, r, max_value
+    real(8) get_psi
     delta = 0d0
     max_value = 0d0
     point_count = (nr + 1) * (ng + 1)
@@ -342,7 +343,3 @@ subroutine extract_curve_positive_x_fast(x_out, y_out, n_out, step) ! извле
     y_out(n_out) = Curves(k)%y(Curves(k)%n)
     boundary_section(n_out) = dcmplx(x_out(n_out), y_out(n_out))
     end subroutine
-
-
-
-
