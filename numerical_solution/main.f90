@@ -16,7 +16,7 @@ subroutine main_1()
     ds_pg           = ds
     dlt             = 0.01d0
     tol             = 1e-8
-    max_iter        = 20
+    max_iter        = 50
     max_delta       = tol + d1
     iteration       = 0
     call init_error_history()
@@ -40,9 +40,11 @@ subroutine append_error_history(iteration_value, error_value)
     integer(4), intent(in) :: iteration_value
     real(8), intent(in) :: error_value
     integer(4), parameter :: unit_error = 97
-    open(unit_error, file='data/error_history.dat', status='old', position='append', action='write')
-    write(unit_error, '(I0,1X,ES24.16)') iteration_value, error_value
-    close(unit_error)
+    if (iteration /= 0) then
+        open(unit_error, file='data/error_history.dat', status='old', position='append', action='write')
+        write(unit_error, '(I0,1X,ES24.16)') iteration_value, error_value
+        close(unit_error)
+    end if
 end
 
 subroutine run_iteration(prev_force, max_delta)
@@ -171,7 +173,7 @@ subroutine init_Meshval()
   call pg_get_array_real(4,1,x,ntr)
   call pg_get_array_real(4,2,y,ntr)
   do i=1,ntr
-    g(i)=n0*body_force(x(i),y(i))
+    g(i)=-n0*body_force(x(i),y(i))
   enddo
   call pg_init_area_gu(g,1)
   deallocate (g,x,y)
@@ -181,36 +183,43 @@ subroutine compute_force_delta(prev_force, delta)
     use mod
     real(8), allocatable :: prev_force(:)
     real(8), intent(out) :: delta
-    integer(4) :: nr = 30
-    integer(4) :: ng = 60
+    integer(4) :: nr = 150
+    integer(4) :: ng = 100
     integer(4) :: i, j, point_count
-    real(8) bndg(200),bndrv(200), value_, x, y, g, r, max_value
+    CHARACTER(LEN=30) :: filename
+    real(8) bndg(200),bndrv(200), value_, x, y, g, r, max_value, get_psi
     delta = 0d0
     max_value = 0d0
     point_count = (nr + 1) * (ng + 1)
-    call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)    
+    call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)
+    WRITE(filename, '(A, I0, A)') 'data/error_fun_', iteration, '.dat'
+    OPEN (1,FILE=filename, STATUS='unknown')
+    write(1,*) 'TITLE = "error"'
+    write(1,*) 'VARIABLES = "X", "Y", "err"'
+    write(1,"('ZONE T=""area"", I=', i0, ', J=', i0, ', F=POINT')") (nr+1),(ng+1)
     if (.not.allocated(prev_force)) then
         allocate(prev_force((nr + 1)*(ng + 1)))
         delta = 1d+2
     end if
-    if (.not.allocated(mesh) .or. .not.allocated(mesh%F_trm)) then
-        delta = 1d+2
-        return
-    end if
+    ! if (.not.allocated(mesh) .or. .not.allocated(mesh%F_trm)) then
+    !     delta = 1d+2
+    !     return
+    ! end if
     do i=1,ng+1
-        g=bndg(i)
-        do j=1,nr+1
-            r=d1+(j-d1)*(bndrv(i)-d1)/nr
-            x=r*dcos(g)
-            y=r*dsin(g)
-            ! value_ = force_from_mesh(x,y)
-            valye_ = get_psi(x,y)
-            if (iteration /= 0) then
-                max_value = max(max_value, abs(value_), abs(prev_force((i-1)*(nr+1)+j)))
-                delta  = delta + abs(value_ - prev_force((i-1)*(nr+1)+j))
-            end if
-            prev_force((i-1)*(nr+1)+j) = value_
-        end do
+		g=bndg(i)
+		do j=1,nr+1
+			r=d1+(j-d1)*(bndrv(i)-d1)/nr
+			x=r*dcos(g)
+			y=r*dsin(g)
+			! value_ = force_from_mesh(x,y)
+			value_ = get_psi(x,y)
+			if (iteration /= 0) then
+				max_value = max(max_value, abs(value_), abs(prev_force((i-1)*(nr+1)+j)))
+				delta  = delta + abs(value_ - prev_force((i-1)*(nr+1)+j))
+                WRITE(1,"(F13.5, ' ', F13.5, ' ', F13.5)") x, y, abs(value_ - prev_force((i-1)*(nr+1)+j))
+			end if
+			prev_force((i-1)*(nr+1)+j) = value_
+		end do
     end do
     if (iteration /= 0) then
         if (max_value > 0d0) then
@@ -219,6 +228,7 @@ subroutine compute_force_delta(prev_force, delta)
             delta = 0d0
         end if
     end if
+    close(1)
   end
 
 subroutine draw_square

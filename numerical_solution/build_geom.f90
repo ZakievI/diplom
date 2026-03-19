@@ -284,7 +284,7 @@ subroutine compute_f_tau(f_tau)
     do i = 1, n_panel
         v__ = cmplx(v_x_c(i), v_y_c(i))
         u__ = cmplx(u_x(i), u_y(i))
-        f_c(i) = compute_Stocks_F(consetr_c(i), u__(i), v__, dlt)
+        f_c(i) = - compute_Stocks_F(consetr_c(i), u__(i), v__, dlt)
         f_tau(i) = (dreal(f_c(i)) * (gsbnd%x(gsbnd%line(force_line_index)%i_begin + i) - gsbnd%x(gsbnd%line(force_line_index)%i_begin + i - 1) + dimag(f_c(i)) * (gsbnd%y(gsbnd%line(force_line_index)%i_begin + i) - gsbnd%y(gsbnd%line(force_line_index)%i_begin + i - 1))))/&
         dsqrt((gsbnd%x(gsbnd%line(force_line_index)%i_begin + i) - gsbnd%x(gsbnd%line(force_line_index)%i_begin + i - 1))**2 + (gsbnd%y(gsbnd%line(force_line_index)%i_begin + i) - gsbnd%y(gsbnd%line(force_line_index)%i_begin + i - 1))**2)
     end do
