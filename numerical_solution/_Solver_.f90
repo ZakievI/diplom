@@ -1424,18 +1424,21 @@ subroutine uvrt_to_xy(tt,vr,vtt,u,v)
     end
 function get_psi(x,y) ! получение функции тока в точке (x,y)
     use mod
-    real(8) x,y
+    real(8) x, y, yy_temp
     real(8) get_psi, pg_get_fun_xy
     if (allocated(boundary_section)) then 
         call pg_bind_domain(2)
         call pg_bind_bound(1)
         if (x >= 0d0) then
-            call dcsiez(size(boundary_section), dreal(boundary_section), dimag(boundary_section), 1, x, y)
-            if (y < y) then
+            call dcsiez(size(boundary_section), dreal(boundary_section), dimag(boundary_section), 1, x, yy_temp)
+            if (y < yy_temp) then
                 call pg_bind_domain(1)
                 call pg_bind_bound(1)
             end if
         end if
+    else
+        call pg_bind_domain(1)
+        call pg_bind_bound(1)
     end if
     get_psi = pg_get_fun_xy(x,y,1,d0,d0,0)
     end function get_psi

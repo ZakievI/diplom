@@ -9,7 +9,7 @@ module mod
     real(8) ds_pg
     real(8) d_zapl, cc1_zapl, dd1_zapl, cc2_zapl, dd2_zapl
     real(8) F_m
-    real(8), PARAMETER :: n0 = 1d0
+    real(8), PARAMETER :: n0 = 10d0
     real(8) H1, L1
     integer(4) iteration
     integer(4) nj ! ����������� ��������� ������� �� ������ 
@@ -19,8 +19,8 @@ module mod
     logical, allocatable :: ffknow(:)
     real(8) :: st                           = 0.1d0
     real(8) :: mu                           = 1 
-    integer(4), parameter :: N_arr          = 50000
-    integer(4), parameter :: num_particle   = 100
+    integer(4), parameter :: N_arr          = 10000
+    integer(4), parameter :: num_particle   = 50
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
     integer(4) :: N_part_1                  = 30
