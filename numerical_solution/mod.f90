@@ -71,8 +71,14 @@ module mod
     type(Curve), pointer :: current_Curve => null()
     !$omp threadprivate(current_Curve)
     type(Mesh_1), allocatable :: mesh
+
     real(8) :: top_coordinat                = 5d0 ! верхний предел запуска частиц
     real(8) :: bottom_coordinat             = 0d0 ! нижний предел запуска частиц
+    
+    ! параметр сгущения для распределения частиц вблизи экстремальной частицы на левой стенке (нижняя область y > bottom_coordinat .and. y < exreme_coordinat)
+    real(8) :: p_left                       = 3.0d0 
+    ! параметр сгущения для распределения частиц вблизи экстремальной частицы на левой стенке (верхняя область y < top_coordinat .and. y > exreme_coordinat)
+    real(8) :: p_right                      = 3.0d0 
     interface dcsiez_checked
         subroutine dcsiez_checked_array(n, x_data, y_data, m, x_query, y_out)
             integer(4) :: n, m

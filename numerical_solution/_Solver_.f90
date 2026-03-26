@@ -402,7 +402,6 @@ subroutine build_curve() ! поиск кривых
 
     real(8) :: area_quadrilateral, search_for_extreme_particles, alfa
     real(8) :: param(mxparm), d_s, s, send, y(n), tol
-    real(8) :: p_left, p_right
     real(8) :: u_x, u_y
     real(8) :: r2, rlim2
 
@@ -425,10 +424,6 @@ subroutine build_curve() ! поиск кривых
     else
         cord_extreme_particles = (top_coordinat + bottom_coordinat) / 2.0d0
     end if
-
-    ! сгущение точек вблизи экстремальной частицы
-    p_left  = 1.0d0
-    p_right = 1.0d0
 
     N_left  = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat) / &
               (top_coordinat - bottom_coordinat))
@@ -594,6 +589,11 @@ subroutine build_curve() ! поиск кривых
                 end if
 
                 if (Curve_tempr(n__,5) /= s) then
+                    if ((y(1) == Curve_tempr(n__,1)) .and. (y(2) == Curve_tempr(n__,2))) then
+                        ! Если после шага не произошло изменения координат, не сохраняем точку, чтобы избежать дублирования
+                        print *, 'Warning: no change in coordinates after step, particle number = ', i, ' n__ = ', n__, ' x = ', y(1), ' y = ', y(2)
+                        exit
+                    end if
                     n__ = n__ + 1
                     Curve_tempr(n__,1) = y(1)
                     Curve_tempr(n__,2) = y(2)
