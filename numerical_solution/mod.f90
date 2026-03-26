@@ -19,8 +19,8 @@ module mod
     logical, allocatable :: ffknow(:)
     real(8) :: st                           = 0.1d0
     real(8) :: mu                           = 1 
-    integer(4), parameter :: N_arr          = 10000
-    integer(4), parameter :: num_particle   = 50
+    integer(4), parameter :: N_arr          = 100000
+    integer(4), parameter :: num_particle   = 10
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
     integer(4) :: N_part_1                  = 30
@@ -29,6 +29,7 @@ module mod
     integer(4) :: N_part_4                  = 20
     integer(4) :: use_parallel_build_cerves = 0
     integer(4) :: use_parallel_build_cerves_J = 0
+    integer(4) :: use_compute_extremal_particale = 0
     integer(4) :: gs_use_parallel_build_grafic = 0
     real(8)    :: dlt
     complex(8), allocatable :: boundary_section(:) 
@@ -44,10 +45,11 @@ module mod
         real(8), allocatable :: s(:)
         real(8), allocatable :: discrepancy_du1dx1(:), discrepancy_du2dx1(:), discrepancy_du1dx2(:), discrepancy_du2dx2(:)
         real(8), allocatable :: aprox_du1dx1(:), aprox_du2dx1(:), aprox_du1dx2(:), aprox_du2dx2(:)
+        integer(4) :: status
         end type
     
-    real(8) :: ds_compute_curves            = 1d-2
-    real(8) :: tol_compute_curves           = 1d-4
+    real(8) :: ds_compute_curves            = 1d-3 ! шаг инегрирования при поиске траектории частицы 
+    real(8) :: tol_compute_curves           = 1d-4 ! точность при поиске траектории частицы
 
     !
     real(8) :: x_touchdown
@@ -69,8 +71,19 @@ module mod
     type(Curve), pointer :: current_Curve => null()
     !$omp threadprivate(current_Curve)
     type(Mesh_1), allocatable :: mesh
-    real(8) :: top_coordinat                = 5d0
-    real(8) :: bottom_coordinat             = 0d0
+    real(8) :: top_coordinat                = 5d0 ! верхний предел запуска частиц
+    real(8) :: bottom_coordinat             = 0d0 ! нижний предел запуска частиц
+    interface dcsiez_checked
+        subroutine dcsiez_checked_array(n, x_data, y_data, m, x_query, y_out)
+            integer(4) :: n, m
+            real(8) :: x_data(*), y_data(*), x_query(*), y_out(*)
+        end subroutine dcsiez_checked_array
+
+        subroutine dcsiez_checked_scalar(n, x_data, y_data, m, x_query, y_out)
+            integer(4) :: n, m
+            real(8) :: x_data(*), y_data(*), x_query, y_out
+        end subroutine dcsiez_checked_scalar
+    end interface dcsiez_checked
 contains
 function body_force(x,y) result(fm)
     real(8), intent(in) :: x,y

@@ -386,45 +386,61 @@ subroutine build_time_isolines() !строим изолинии по време�
     deallocate(index_curves, t_arr)
     
     end subroutine 
-subroutine build_curve() !поиск кривых
+subroutine build_curve() ! поиск кривых
     use mod
-
     implicit none
+
     integer, parameter :: dp = selected_real_kind(15, 307)
-
-    integer(4) :: i, n__, ido, k__
     integer(4), parameter :: n = 4
-    real(8) area_quadrilateral, search_for_extreme_particles, alfa
     integer(4), parameter :: mxparm = 50
-    real(8) :: param(mxparm), d_s, s, y(n), tol
-    real(8), allocatable :: Curve_tempr(:,:)
-    real(8) :: p_left, p_right
-    integer(4) :: N_left, N_right
-    real(8), allocatable :: s_left(:), s_right(:)
-    real(8), allocatable :: x_left(:), x_right(:), x(:)
-    real(8) :: u_x, u_y
-    external fcn_s_1, area_quadrilateral, fcn_s_top_bottom, search_for_extreme_particles
-    
-    tol             = tol_compute_curves
-    d_s             = ds_compute_curves
-    s               = d0
-    ido             = 1
-    dlt             = d0
+    integer(4), parameter :: max_calls = 200000
+    integer(4), parameter :: max_reject = 5000
 
+    integer(4) :: i, n__, ido, kcall, nreject
+    integer(4) :: N_left, N_right
+    integer(4) :: istatus
+
+    real(8) :: area_quadrilateral, search_for_extreme_particles, alfa
+    real(8) :: param(mxparm), d_s, s, send, y(n), tol
+    real(8) :: p_left, p_right
+    real(8) :: u_x, u_y
+    real(8) :: r2, rlim2
+
+    real(8), allocatable :: Curve_tempr(:,:)
+    real(8), allocatable :: s_left(:), s_right(:)
+    real(8), allocatable :: x(:)
+
+    logical :: on_bottom, on_top, inside_domain, hit_particle
+    external fcn_s_1, area_quadrilateral, fcn_s_top_bottom, search_for_extreme_particles
+
+    tol  = tol_compute_curves
+    d_s  = ds_compute_curves
+    dlt  = d0
 
     if (allocated(Curves)) deallocate(Curves)
     allocate(Curves(num_particle))
-    cord_extreme_particles = search_for_extreme_particles()
+
+    if (use_compute_extremal_particale == 1) then
+        cord_extreme_particles = search_for_extreme_particles()
+    else
+        cord_extreme_particles = (top_coordinat + bottom_coordinat) / 2.0d0
+    end if
+
     ! сгущение точек вблизи экстремальной частицы
-    
-    p_left = 2.0d0 ! степень сгущения точек слева от экстремальной частицы
-    p_right = 4.0d0 ! степень сгущения точек справа от экстремальной частицы
-    !N_left = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat)/(top_coordinat - bottom_coordinat)) ! количество точек слева от экстремальной частицы
-    N_left = 20
-    N_right = num_particle - N_left ! количество точек справа от экстремальной частицы
+    p_left  = 1.0d0
+    p_right = 1.0d0
+
+    N_left  = 2 * int(num_particle * (cord_extreme_particles - bottom_coordinat) / &
+              (top_coordinat - bottom_coordinat))
+    N_right = num_particle - N_left
+
+    if (N_left  < 1) N_left  = 1
+    if (N_right < 1) N_right = 1
+    if (N_left + N_right /= num_particle) N_right = num_particle - N_left
+
     allocate(s_left(N_left), s_right(N_right))
     allocate(x(num_particle))
-    
+
     if (N_left == 1) then
         s_left(1) = 0.0d0
     else
@@ -441,131 +457,225 @@ subroutine build_curve() !поиск кривых
         end do
     end if
 
-    ! x_left  = xc - (xc - xmin) * s_left**p_left
-    do i = 2, N_left
-        x(i) = cord_extreme_particles - (cord_extreme_particles - bottom_coordinat) * (s_left(N_left - i + 1)**p_left)
-    end do
-
-    ! x_right = xc + (xmax - xc) * s_right**p_right
-    do i = 1, N_right - 1
-        x(i + N_left) = cord_extreme_particles + eps + (top_coordinat - cord_extreme_particles - eps) * (s_right(i)**p_right)
-    end do
-    
+    ! Левая часть
     x(1) = bottom_coordinat
-    x(N_right + N_left) = top_coordinat
+    do i = 2, N_left
+        x(i) = cord_extreme_particles - (cord_extreme_particles - bottom_coordinat) * &
+               (s_left(N_left - i + 1)**p_left)
+    end do
 
-    !$omp parallel do if (use_parallel_build_cerves == 1) private(i, n__, k__, ido, s, y, Curve_tempr, param)
+    ! Правая часть
+    do i = 1, N_right - 1
+        x(i + N_left) = cord_extreme_particles + eps + &
+                        (top_coordinat - cord_extreme_particles - eps) * (s_right(i)**p_right)
+    end do
+    x(N_left + N_right) = top_coordinat
+
+    !$omp parallel do if (use_parallel_build_cerves == 1) &
+    !$omp private(i, n__, ido, kcall, nreject, istatus, s, send, y, Curve_tempr, param, &
+    !$omp         r2, rlim2, on_bottom, on_top, inside_domain, hit_particle)
     do i = 1, num_particle
-        allocate(Curve_tempr(N_arr,5)) !Curve_tempr = [x, y, V_x, V_y, s]
+
+        allocate(Curve_tempr(N_arr,5)) ! [x, y, V_x, V_y, s]
+        Curve_tempr = d0
+
         write(*,"('I=',i0)") i
-        n__                 = 1
-        k__                 = 1
-        ido                 = 1
-        s                   = d0
 
-        y(1)                = -L1/2
-        !y(2)               = bottom_coordinat + (top_coordinat - bottom_coordinat)*((i-d1)/(num_particle-d1))**3
-        y(2)                = x(i)
-        !Curve_tempr(n__, 1) = -L1/2 
-        ! if ((H1*((i)/(num_particle-d1))**3>cord_extreme_particles).and.(cord_extreme_particles>H1*((i-1)/(num_particle-d1))**3)) then
-        !     !cord_extreme_particles = search_for_extreme_particles()
-        !     y(2) = cord_extreme_particles
-        !     !index_extreme_particles = i
-        ! else
-        !     !Curve_tempr(n__, 2) = H1*(i - d1)/(num_particle - d1)
-        !     ! измененно !!!!!!!!!!
-        !     y(2) = H1*((i-d1)/(num_particle-d1))**3
-        !     ! Curve_tempr(n__, 2) = 0.5d0
-        ! end if
+        !--------------------------------------------------
+        ! Инициализация частицы
+        !--------------------------------------------------
+        n__     = 1                ! число сохраненных точек
+        kcall   = 0                ! число вызовов integrator
+        nreject = 0                ! число подряд rejected steps
+        istatus = -1
 
-        
+        ido     = 1
+        s       = d0
+        send    = s + d_s
+
+        y(1) = -L1/2
+        y(2) = x(i)
+
         call get_uxuy(y(1), y(2), y(3), y(4))
-        param               = d0
-        param(4)            = N_arr
-        param(10)           = 1.0d0
-        param(8)            = 1.0d0
-        Curve_tempr(n__, 1) = y(1)
-        Curve_tempr(n__, 2) = y(2)
-        Curve_tempr(n__, 3) = y(3)
-        Curve_tempr(n__, 4) = y(4)
-        !Curve_tempr(n__, 5) = y(5)
-        Curve_tempr(n__, 5) = s
-        do while((dsqrt(y(1)**2+y(2)**2)>d1+dlt+1d-10).and.(-L1/2<=y(1)).and.(y(1)<=L1/2).and.(y(2)<=H1).and.(d0<=y(2)).and.(k__<N_arr))
-            !write(*,"('N=',i0)") n__
-            if (dabs(Curve_tempr(n__, 2)) == 0.0d0) then
-                call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
-                y(2) = d0
-            elseif (dabs(Curve_tempr(n__, 2) - H1) == 0.0d0) then
-                call divprk(ido, n, fcn_s_top_bottom, s, s+d_s, tol, param, y)
-                y(2) = H1
+
+        param      = d0
+        param(4)   = 100000.d0   ! MXSTEP
+        param(5)   = 0.d0   ! MXFCN
+        param(8)   = 1.0d0       ! return after each attempted step
+        param(10)  = 1.0d0
+
+        Curve_tempr(1,1) = y(1)
+        Curve_tempr(1,2) = y(2)
+        Curve_tempr(1,3) = y(3)
+        Curve_tempr(1,4) = y(4)
+        Curve_tempr(1,5) = s
+
+        rlim2 = (d1 + dlt + 1.0d-10)**2
+
+        do
+            !--------------------------------------------------
+            ! 1. Проверка условий останова
+            !--------------------------------------------------
+            r2 = y(1)**2 + y(2)**2
+            hit_particle = (r2 <= rlim2)
+
+            inside_domain = (-L1/2.d0 <= y(1)) .and. (y(1) <= L1/2.d0) .and. &
+                            (d0       <= y(2)) .and. (y(2) <= H1)
+
+            if (hit_particle) then
+                istatus = 0   ! удар о цилиндр
+                exit
+            end if
+
+            if (.not. inside_domain) then
+                istatus = 1   ! выход из области
+                exit
+            end if
+
+            if (n__ >= N_arr) then
+                istatus = 2   ! заполнен буфер траектории
+                exit
+            end if
+
+            if (kcall >= max_calls) then
+                istatus = 3   ! слишком много вызовов divprk
+                exit
+            end if
+
+            if (nreject >= max_reject) then
+                istatus = 4   ! слишком много rejected steps подряд
+                exit
+            end if
+
+            !--------------------------------------------------
+            ! 2. Выбор RHS
+            !--------------------------------------------------
+            on_bottom = (dabs(y(2))     <= 1d-14)
+            on_top    = (dabs(y(2)-H1)  <= 1d-14)
+
+            if (on_bottom) y(2) = d0
+            if (on_top)    y(2) = H1
+
+            if (on_bottom .or. on_top) then
+                call divprk(ido, n, fcn_s_top_bottom, s, send, tol, param, y)
             else
-                call divprk(ido, n, fcn_s_1, s, s+d_s, tol, param, y)
-            end if 
-            if ((y(2) < d0) .and. (y(1) > d0))then
-                y(2) = d0
-                y(4) = d0
-            elseif ((dabs(y(2)) < eps) .and. (y(1) > d0)) then
-                y(2) = d0
+                call divprk(ido, n, fcn_s_1,          s, send, tol, param, y)
             end if
-            if (y(3) < 0) then
-                write(*,*) 'Error: negative value V_x, particle number = ', i, ' n__ = ', n__, ' x = ', y(1), ' y = ', y(2)
-                exit ! в случае если скорость по x стала отрицательной, что не должно происходить, то выводим ошибку и останавливаем программу
-                ! alfa = datan(y(2)/y(1))
-                ! y(3) = d_s*dcos(alfa)
-                ! y(4) = d_s*dsin(alfa)
-            end if
-            if (ido == 6) then 
+
+            kcall = kcall + 1
+
+            !--------------------------------------------------
+            ! 3. Обработка результата шага
+            !--------------------------------------------------
+            select case (ido)
+
+            case (5)
+                ! Шаг принят: y и s валидны
+                nreject = 0
+
+                ! Подправляем геометрию около нижней стенки справа
+                if ((y(2) < d0) .and. (y(1) > d0)) then
+                    y(2) = d0
+                    y(4) = d0
+                elseif ((dabs(y(2)) < eps) .and. (y(1) > d0)) then
+                    y(2) = d0
+                end if
+
+                if (y(3) < d0) then
+                    write(*,*) 'Error: negative value V_x, particle number = ', i, &
+                               ' n__ = ', n__, ' x = ', y(1), ' y = ', y(2)
+                    call get_uxuy(y(1), y(2), y(3), y(4))
+                    ! V_x = U_x + eps * cos(alfа) 
+                    y(3) = y(3) + eps * (y(1) - Curve_tempr(n__,1))/dsqrt((y(1) - Curve_tempr(n__,1))**2 + (y(2) - Curve_tempr(n__,2))**2)
+                    ! V_y = U_y + eps * sin(alfа)
+                    y(4) = y(4) + eps * (y(2) - Curve_tempr(n__,2))/dsqrt((y(1) - Curve_tempr(n__,1))**2 + (y(2) - Curve_tempr(n__,2))**2)
+                    ! alfa - угол между горизонтом и вектором от последней сохраненной точки до текущей
+                    istatus = 5
+                end if
+
+                if (Curve_tempr(n__,5) /= s) then
+                    n__ = n__ + 1
+                    Curve_tempr(n__,1) = y(1)
+                    Curve_tempr(n__,2) = y(2)
+                    Curve_tempr(n__,3) = y(3)
+                    Curve_tempr(n__,4) = y(4)
+                    Curve_tempr(n__,5) = s
+                end if
+
+                !ido = 2
+
+            case (6)
+                ! Шаг отвергнут: y не записываем
+                nreject = nreject + 1
                 ido = 2
-            else if ((ido == 2) .or. (ido == 5)) then
-              if (Curve_tempr(n__, 5) /= s) then 
-                  n__ = n__ + 1
-                  Curve_tempr(n__, 1) = y(1)
-                  Curve_tempr(n__, 2) = y(2)
-                  Curve_tempr(n__, 3) = y(3)
-                  Curve_tempr(n__, 4) = y(4)
-                  !Curve_tempr(n__, 5) = y(5)
-                  Curve_tempr(n__, 5) = s
-              end if
+
+            case (2)
+                ! Защита на случай такого возврата от библиотеки
+                ido = 2
+
+            case default
+                istatus = 6
+                exit
+
+            end select
+
+            !--------------------------------------------------
+            ! 4. Перенос локального окна интегрирования
+            !--------------------------------------------------
+            if (s >= send) then
+                send = s + d_s
             end if
-            k__ = k__ + 1
+
         end do
+
         allocate(Curves(i)%x(n__))
         allocate(Curves(i)%y(n__))
-        !allocate(Curves(i)%t(n__))
         allocate(Curves(i)%V_x(n__))
         allocate(Curves(i)%V_y(n__))
         allocate(Curves(i)%s(n__))
-        Curves(i)%x(1:n__) = Curve_tempr(1:n__, 1)
-        Curves(i)%y(1:n__) = Curve_tempr(1:n__, 2)
-        Curves(i)%V_x(1:n__) = Curve_tempr(1:n__, 3)
-        Curves(i)%V_y(1:n__) = Curve_tempr(1:n__, 4)
-        !Curves(i)%t(1:n__) = Curve_tempr(1:n__, 5)
-        Curves(i)%s(1:n__) = Curve_tempr(1:n__, 5)
-        Curves(i)%n = n__
-        if (ido /= 1) call divprk(3, n, fcn_s_1, s, s+d_s, tol, param, y)
+
+        Curves(i)%x(1:n__)   = Curve_tempr(1:n__,1)
+        Curves(i)%y(1:n__)   = Curve_tempr(1:n__,2)
+        Curves(i)%V_x(1:n__) = Curve_tempr(1:n__,3)
+        Curves(i)%V_y(1:n__) = Curve_tempr(1:n__,4)
+        Curves(i)%s(1:n__)   = Curve_tempr(1:n__,5)
+        Curves(i)%n          = n__
+
+        ! Если в типе Curves есть поле status, можно сохранить:
+        Curves(i)%status = istatus
+
+        if (ido /= 1) then
+            if ((dabs(y(2)) <= eps) .or. (dabs(y(2)-H1) <= eps)) then
+                call divprk(3, n, fcn_s_top_bottom, s, send, tol, param, y)
+            else
+                call divprk(3, n, fcn_s_1, s, send, tol, param, y)
+            end if
+        end if
+
         deallocate(Curve_tempr)
-    end do 
+
+    end do
     !$omp end parallel do
 
     ! поиск экстремальной частицы, после которой все частицы пролетают мимо цилиндра
-    ! (реализовано так из-за того что при параллельной сборке кривых индексы путаються между собой)
     do i = 1, num_particle
-        if (Curves(i)%x(Curves(i)%n)>d0) then
+        if (Curves(i)%x(Curves(i)%n) > d0) then
             index_extreme_particles = i - 1
             exit
         end if
-        index_extreme_particles = num_particle
+        index_extreme_particles = num_particle - 1
     end do
 
-    ! Сохранение скорости газа для того, чтобы потом поставить 
-    ! граничные условия для решения задчки течения газа
+    ! Сохранение скорости газа
     allocate(Curves(index_extreme_particles + 1)%u_m(Curves(index_extreme_particles + 1)%n))
     do i = 1, Curves(index_extreme_particles + 1)%n
-        call get_uxuy(Curves(index_extreme_particles + 1)%x(i), Curves(index_extreme_particles + 1)%y(i), u_x, u_y)
+        call get_uxuy(Curves(index_extreme_particles + 1)%x(i), &
+                      Curves(index_extreme_particles + 1)%y(i), u_x, u_y)
         Curves(index_extreme_particles + 1)%u_m(i) = cmplx(u_x, u_y)
     end do
 
     deallocate(s_left, s_right, x)
+
     end subroutine build_curve
 subroutine find_derivative() !find the derivative du_i/dx_j of the curve 
     use mod
@@ -607,6 +717,10 @@ subroutine find_derivative() !find the derivative du_i/dx_j of the curve
                           cosfi, sinfi, d0, d0, &
                           d0, d0, cosfi, sinfi /), (/ 4, 4 /))
             b = [d0, -pg_get_fun_xy(Curves(i)%x(j),Curves(i)%y(j),3,d0,d0,2), du1ds, du2ds]
+            !print *, 'a = ', a
+            !print *, 'b = ', b
+            !print *, 'i = ', i
+            !print *, 'j = ', j
             call DLSLRG(nn1, a, nn1, b, 2, xx)
             Curves(i)%du1dx1(j) = xx(1)
             Curves(i)%du1dx2(j) = xx(2)
@@ -1054,6 +1168,9 @@ subroutine fcn_s_1(n, s, y, yprime) !интегрирование по длин�
     integer(4) :: n
     real(8) s, y(n), yprime(n), u_x, u_y, V
     V           = dsqrt(y(3)**2+y(4)**2)
+    if (V == d0) then
+        V = 1d-4
+    end if
     call get_uxuy(y(1), y(2), u_x, u_y)
     yprime(1)   = y(3)/V
     yprime(2)   = y(4)/V
@@ -1298,7 +1415,7 @@ subroutine get_uxuy(x,y,ux,uy) ! получение скорости газа в
             if (x >= 0d0) then
                 call dcsiez(size(boundary_section), dreal(boundary_section), dimag(boundary_section), 1, x, yy)
                 z7 = dcmplx(0d0,1d0)
-                z8 = dcmplx(L1/2,dimag(boundary_section(size(boundary_section))))
+                z8 = dcmplx(dreal(boundary_section(size(boundary_section))),dimag(boundary_section(size(boundary_section))))
                 if (y < yy) then
                     call pg_bind_domain(1)
                     call pg_bind_bound(1)
@@ -1308,30 +1425,30 @@ subroutine get_uxuy(x,y,ux,uy) ! получение скорости газа в
 
         if (cdabs(z-z3)<ds_pg .or. cdabs(z-z4)<ds_pg) then 
             call pg_get_fun_xy_gradient(x + eps,y,5,0,ff1)
-            ux=ff1(2)
-            uy=-ff1(1)
         elseif (cdabs(z-z5)<ds_pg .or. cdabs(z-z6)<ds_pg) then 
             call pg_get_fun_xy_gradient(x - eps,y,5,0,ff1)
-            ux=ff1(2)
-            uy=-ff1(1)
-        elseif (allocated(boundary_section) .and. (cdabs(z-z7)<ds_pg)) then 
-            call pg_get_fun_xy_gradient(x - eps,y,5,0,ff1)
-            ux=ff1(2)
-            uy=-ff1(1)
+        elseif (allocated(boundary_section) .and. (cdabs(z-z7)<ds_pg)) then
+            if (y < yy) then
+                call pg_get_fun_xy_gradient(x + eps,y,5,0,ff1)
+            else 
+                call pg_get_fun_xy_gradient(x - eps,y,5,0,ff1)
+            end if
         elseif (allocated(boundary_section) .and. (cdabs(z-z8)<ds_pg)) then 
-            call pg_get_fun_xy_gradient(x - eps,y,5,0,ff1)
-            ux=ff1(2)
-            uy=-ff1(1)
+            if (y < yy) then
+                call pg_get_fun_xy_gradient(x - eps,y,5,0,ff1)
+            else 
+                call pg_get_fun_xy_gradient(x + eps,y,5,0,ff1)
+            end if
         else
             call pg_get_fun_xy_gradient(x,y,5,0,ff1)
-            ux=ff1(2)
-            uy=-ff1(1)
         endif
+
+        ux=ff1(2)
+        uy=-ff1(1)
         
     endif
-
     end subroutine get_uxuy
-subroutine dcsiez_checked(n, x_data, y_data, m, x_query, y_out)
+subroutine dcsiez_checked_array(n, x_data, y_data, m, x_query, y_out)
     implicit none
     integer(4) :: n, m
     integer(4) :: i, j, k, m_unique
@@ -1369,7 +1486,20 @@ subroutine dcsiez_checked(n, x_data, y_data, m, x_query, y_out)
     do k = 1, m
         y_out(k) = y_unique(map_idx(k))
     end do
-    end subroutine dcsiez_checked
+    end subroutine dcsiez_checked_array
+
+subroutine dcsiez_checked_scalar(n, x_data, y_data, m, x_query, y_out)
+    implicit none
+    integer(4) :: n, m
+    real(8) :: x_data(*), y_data(*), x_query, y_out
+    real(8) :: x_query_arr(1), y_out_arr(1)
+
+    if (m <= 0) return
+
+    x_query_arr(1) = x_query
+    call dcsiez(n, x_data, y_data, 1, x_query_arr, y_out_arr)
+    y_out = y_out_arr(1)
+    end subroutine dcsiez_checked_scalar
 subroutine init_zaplat ! инициализация компонентов заплатки для вычисления скорости вблизи угла на цилиндре
     use mod
     real(8) rr,pg_get_fun_xy,ux,uy,tt,x,y,ff1(2)
