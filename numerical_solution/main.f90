@@ -40,7 +40,7 @@ subroutine append_error_history(iteration_value, error_value)
     integer(4), intent(in) :: iteration_value
     real(8), intent(in) :: error_value
     integer(4), parameter :: unit_error = 97
-    if (iteration /= 0) then
+    if (iteration_value > 0) then
         open(unit_error, file='data/error_history.dat', status='old', position='append', action='write')
         write(unit_error, '(I0,1X,ES24.16)') iteration_value, error_value
         close(unit_error)
