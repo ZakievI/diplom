@@ -20,7 +20,7 @@ module mod
     real(8) :: st                           = 5d0
     real(8) :: mu                           = 1 
     integer(4), parameter :: N_arr          = 10000
-    integer(4), parameter :: num_particle   = 50
+    integer(4), parameter :: num_particle   = 20
     real(8) :: cord_extreme_particles
     integer(4) :: index_extreme_particles   = 1
     integer(4) :: N_part_1                  = 30
@@ -72,6 +72,22 @@ module mod
     real(8) :: top_coordinat                = 5d0
     real(8) :: bottom_coordinat             = 0d0
 contains
+subroutine open_tecplot_file(unit_id, filename, title, variables_line, append_data)
+    integer(4), intent(in) :: unit_id
+    character(len=*), intent(in) :: filename, title, variables_line
+    logical, intent(in) :: append_data
+    logical :: file_exists
+
+    inquire(file=filename, exist=file_exists)
+    if (append_data .and. file_exists) then
+        open(unit_id, file=filename, status='old', position='append', action='write')
+    else
+        open(unit_id, file=filename, status='replace', action='write')
+        write(unit_id, '(A)') 'TITLE = "' // trim(title) // '"'
+        write(unit_id, '(A)') 'VARIABLES = ' // trim(variables_line)
+    end if
+end subroutine open_tecplot_file
+
 function body_force(x,y) result(fm)
     real(8), intent(in) :: x,y
     real(8) :: fm

@@ -186,17 +186,18 @@ subroutine compute_force_delta(prev_force, delta)
     integer(4) :: nr = 150
     integer(4) :: ng = 100
     integer(4) :: i, j, point_count
-    CHARACTER(LEN=30) :: filename
+    character(len=*), parameter :: filename = 'data/error_fun.dat'
+    character(len=120) :: zone_name
     real(8) bndg(200),bndrv(200), value_, x, y, g, r, max_value, get_psi
     delta = 0d0
     max_value = 0d0
     point_count = (nr + 1) * (ng + 1)
     call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)
-    WRITE(filename, '(A, I0, A)') 'data/error_fun_', iteration, '.dat'
-    OPEN (1,FILE=filename, STATUS='unknown')
-    write(1,*) 'TITLE = "error"'
-    write(1,*) 'VARIABLES = "X", "Y", "err"'
-    write(1,"('ZONE T=""area"", I=', i0, ', J=', i0, ', F=POINT')") (nr+1),(ng+1)
+    call open_tecplot_file(1, filename, 'error', '"X", "Y", "err"', iteration /= 0)
+    if (iteration /= 0) then
+        write(zone_name, '("iter_", I0, "_area")') iteration
+        write(1,"('ZONE T=""',A,'"", I=', i0, ', J=', i0, ', F=POINT')") trim(zone_name), (nr+1), (ng+1)
+    end if
     if (.not.allocated(prev_force)) then
         allocate(prev_force((nr + 1)*(ng + 1)))
         delta = 1d+2
@@ -235,17 +236,16 @@ subroutine draw_square
     use mod
     integer(4) nr,ng,i,j,mode
     real(8) g,r,x,y,psi,Vx,Vy,om,pg_get_fun_xy,bndg(200),bndrv(200), yy
-    CHARACTER(LEN=30) :: filename
+    character(len=*), parameter :: filename = 'data/data_fluid.dat'
+    character(len=120) :: zone_name
     ng=60 !число ячеек по gamma
     call ga_init_vneshg(ng,bndg,bndrv,H1,L1/2,8)
 
-    WRITE(filename, '(A, I0, A)') 'data/data_fluid_', iteration, '.dat'
-    OPEN (1,FILE=filename, STATUS='unknown')
+    call open_tecplot_file(1, filename, 'velosity', '"X", "Y", "psi", "Vx", "Vy", "om"', iteration /= 0)
     nr=20 !число ячеек по r
 
-    write(1,*) 'TITLE = "velosity"'
-    write(1,*) 'VARIABLES = "X", "Y", "psi", "Vx", "Vy", "om"'
-    write(1,"('ZONE T=""area"", I=', i0, ', J=', i0, ', F=POINT')") (nr+1),(ng+1)
+    write(zone_name, '("iter_", I0, "_area")') iteration
+    write(1,"('ZONE T=""',A,'"", I=', i0, ', J=', i0, ', F=POINT')") trim(zone_name), (nr+1), (ng+1)
     do i=1,ng+1
         g=bndg(i)
         do j=1,nr+1

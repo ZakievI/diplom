@@ -303,20 +303,21 @@ subroutine draw_Curves(par) !вывод кривых
     !   2-вывод траектории
     integer(4) :: i, l
     integer(4) :: par
-    CHARACTER(LEN=30) :: filename
-    WRITE(filename, '(A, I0, A)') 'data/traektorie_', iteration, '.dat'
-    open (1, file=filename, STATUS='unknown')
-    write(1,*) 'title = "traektorie"'
+    character(len=*), parameter :: filename = 'data/traektorie.dat'
+    character(len=120) :: variables_line
+    character(len=120) :: zone_name
     select case (par)
     case (1)
-        write(1,*) 'variables = "x", "y", "s", "consetr", "J_11", "J_12", "J_21", "J_22"'
+        variables_line = '"x", "y", "s", "consetr", "J_11", "J_12", "J_21", "J_22"'
     case (2)
-        write(1,*) 'variables = "x", "y", "V_x", "V_y"'
+        variables_line = '"x", "y", "V_x", "V_y"'
     case DEFAULT
-        write(1,*) 'variables = "x", "y"'
+        variables_line = '"x", "y"'
     end select
+    call open_tecplot_file(1, filename, 'traektorie', variables_line, iteration /= 0)
     do i = 1, size(Curves)
-        write(1,"('ZONE T=""area',i0,'"", I=', i0, ', F=POINT')") i, Curves(i)%n
+        write(zone_name, '("iter_", I0, "_area_", I0)') iteration, i
+        write(1,"('ZONE T=""',A,'"", I=', i0, ', F=POINT')") trim(zone_name), Curves(i)%n
         do l = 1, Curves(i)%n
             select case (par)
             case (1)
@@ -331,6 +332,7 @@ subroutine draw_Curves(par) !вывод кривых
             end select
         end do
     end do
+    close(1)
     end subroutine
 subroutine build_time_isolines() !строим изолинии по времени
     use mod
@@ -794,30 +796,32 @@ subroutine draw_mesh(par) !вывод сетки
     !   2-вывод сетки
     !   3-вывод сетки с силой f в узлах
     integer(4) i,k,par
-    character(200) formatstr
-    CHARACTER(LEN=30) :: filename
-    WRITE(filename, '(A, I0, A)') 'data/tr_mesh_', iteration, '.dat'
-    OPEN (1,FILE=filename, STATUS='unknown')
-    write(1,*) 'TITLE = "Triangle Mesh"'
+    character(len=*), parameter :: filename = 'data/tr_mesh.dat'
+    character(len=120) :: variables_line
+    character(len=120) :: zone_name
     select case (par)
     case (1)
-        write(1,*) 'VARIABLES = "X", "Y", "C"'
-        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
-        write(1,trim(formatstr)) mesh%n, mesh%ntr
+        variables_line = '"X", "Y", "C"'
+    case(2)
+        variables_line = '"X", "Y"'
+    case(3)
+        variables_line = '"X", "Y", "F_x", "F_y"'
+    case DEFAULT
+        variables_line = '"X", "Y"'
+    end select
+    call open_tecplot_file(1, filename, 'Triangle Mesh', variables_line, iteration /= 0)
+    write(zone_name, '("iter_", I0, "_area_e")') iteration
+    write(1,"('ZONE T=""',A,'"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')") trim(zone_name), mesh%n, mesh%ntr
+    select case (par)
+    case (1)
         do i = 1, mesh%n
             write(1,"(F9.5, ' ', F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i)), mesh%c(i)
         end do
     case(2)
-        write(1,*) 'VARIABLES = "X", "Y"'
-        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
-        write(1,trim(formatstr)) mesh%n, mesh%ntr
         do i = 1, mesh%n
             write(1,"(F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i))
         end do
     case(3)
-        write(1,*) 'VARIABLES = "X", "Y", "F_x", "F_y"'
-        formatstr="('ZONE T=""area_e"" N=', i0, ', E=', i0, ', F=FEPOINT, ET=QUADRILATERAL')"
-        write(1,trim(formatstr)) mesh%n, mesh%ntr
         do i = 1, mesh%n
             write(1,"(F9.5, ' ', F9.5, ' ', F9.5, ' ', F9.5)") dreal(mesh%z_m(i)), dimag(mesh%z_m(i)), dreal(mesh%f_m(i)), dimag(mesh%f_m(i))
         end do
@@ -832,9 +836,18 @@ subroutine draw_mesh_with_cell(par)
     !par=
     !   1-вывод сетки с F
     integer(4) i,k,par
-    CHARACTER(LEN=30) :: filename
-    WRITE(filename, '(A, I0, A)') 'data/mesh_data_', iteration, '.txt'
-    OPEN (1,FILE=filename, STATUS='unknown')
+    character(len=*), parameter :: filename = 'data/mesh_data.txt'
+    logical :: append_data
+    logical :: file_exists
+    append_data = iteration /= 0
+    inquire(file=filename, exist=file_exists)
+    if (append_data .and. file_exists) then
+        open(1, file=filename, status='old', position='append', action='write')
+        write(1,*)
+    else
+        open(1, file=filename, status='replace', action='write')
+    end if
+    write(1,"(A, I0)") 'ITERATION ', iteration
     write(1,*) 'NODES CELLS NODES_PER_CELL'
     write(1,"(I, ' ', I, ' ', I)") mesh%n, mesh%ntr, mesh%npe
 
